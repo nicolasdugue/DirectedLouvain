@@ -18,19 +18,19 @@ This package offers a set of functions to use in order to compute
 communities on graphs weighted or unweighted. A typical sequence of 
 actions is:
 
-* Conversion from a text format (each line contains a couple "src dest")
+Conversion from a text format (each line contains a couple "src dest")
   ./convert -i graph.txt -o graph.bin
-*This program can also be used to convert weighted graphs (each line contain
+This program can also be used to convert weighted graphs (each line contain
 a triple "src dest w") using -w option:
   ./convert -i graph.txt -o graph.bin -w graph.weights
-*Finally, nodes can be renumbered from 0 to nb_nodes - 1 using -r option
+Finally, nodes can be renumbered from 0 to nb_nodes - 1 using -r option
 (less space wasted in some cases):
   ./convert -i graph.txt -o graph.bin -r
 
 -----------------------------------------------------------------------------
 **Compute communities**
 
-* Computes communities and displays hierarchical tree:
+Computes communities and displays hierarchical tree:
   ./community graph.bin -l -1 -v > graph.tree
 
 To ensure a faster computation (with a loss of quality), one can use
@@ -48,11 +48,11 @@ The program can also start with any given partition using -p option
 -----------------------------------------------------------------------------
 **Display communities information**
 
-* Displays information on the tree structure (number of hierarchical
+Displays information on the tree structure (number of hierarchical
 levels and nodes per level):
   ./hierarchy graph.tree
 
-*Displays the belonging of nodes to communities for a given level of
+Displays the belonging of nodes to communities for a given level of
 the tree:
   ./hierarchy graph.tree -l 2 > graph_node2comm_level2
 
