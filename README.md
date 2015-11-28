@@ -19,42 +19,54 @@ communities on graphs weighted or unweighted. A typical sequence of
 actions is:
 
 Conversion from a text format (each line contains a couple "src dest")
-  ./convert -i graph.txt -o graph.bin
+
+    ./convert -i graph.txt -o graph.bin
+  
 This program can also be used to convert weighted graphs (each line contain
 a triple "src dest w") using -w option:
-  ./convert -i graph.txt -o graph.bin -w graph.weights
+
+    ./convert -i graph.txt -o graph.bin -w graph.weights
+  
 Finally, nodes can be renumbered from 0 to nb_nodes - 1 using -r option
 (less space wasted in some cases):
-  ./convert -i graph.txt -o graph.bin -r
+
+    ./convert -i graph.txt -o graph.bin -r
 
 -----------------------------------------------------------------------------
 **Compute communities**
 
 Computes communities and displays hierarchical tree:
-  ./community graph.bin -l -1 -v > graph.tree
+
+    ./community graph.bin -l -1 -v > graph.tree
 
 To ensure a faster computation (with a loss of quality), one can use
 the -q option to specify that the program must stop if the increase of
 modularity is below epsilon for a given iteration or pass:
-  ./community graph.bin -l -1 -q 0.0001 > graph.tree
+
+    ./community graph.bin -l -1 -q 0.0001 > graph.tree
 
 The program can deal with weighted networks using -w option:
-  ./community graph.bin -l -1 -w graph.weights > graph.tree
+
+    ./community graph.bin -l -1 -w graph.weights > graph.tree
+    
 In this specific case, the convertion step must also use the -w option.
 
 The program can also start with any given partition using -p option
-  ./community graph.bin -p graph.part -v
+
+    ./community graph.bin -p graph.part -v
   
 -----------------------------------------------------------------------------
 **Display communities information**
 
 Displays information on the tree structure (number of hierarchical
 levels and nodes per level):
-  ./hierarchy graph.tree
+
+    ./hierarchy graph.tree
 
 Displays the belonging of nodes to communities for a given level of
 the tree:
-  ./hierarchy graph.tree -l 2 > graph_node2comm_level2
+
+    ./hierarchy graph.tree -l 2 > graph_node2comm_level2
 
 -----------------------------------------------------------------------------
 
