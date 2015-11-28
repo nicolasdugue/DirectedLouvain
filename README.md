@@ -3,12 +3,15 @@
 The algorithm used in this package is the same that was developped by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded based on the [Louvain algorithm webpage] (https://sites.google.com/site/findcommunities/) (**[2]**).
 The algorithm was then adjusted to optimize the directed modularity of Leich and Newman instead of the classic modularity.
 These modifications were mostly made by [Anthony perez] (http://www.univ-orleans.fr/lifo/membres/Anthony.Perez), and a few by [Nicolas Dugué] (http://www.univ-orleans.fr/lifo/membres/Nicolas.Dugue/).
-The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks] (https://hal.archives-ouvertes.fr/hal-01231784)
+
+The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks] (https://hal.archives-ouvertes.fr/hal-01231784) (**[3]**) and was also succesfully used in [A community role approach to assess social capitalists visibility in the Twitter network] (https://hal.archives-ouvertes.fr/hal-01163741) with Vincent Labatut and Anthony Perez (**[1]**).
+
+**The README below is from the Louvain algorithm : our package works in a similar way**
 
 -----------------------------------------------------------------------------
-**The README below is from the Louvain algorithm : our package works in a similar way**
------------------------------------------------------------------------------
------------------------------------------------------------------------------
+
+
+
 **Convert**
 
 This package offers a set of functions to use in order to compute 
@@ -57,3 +60,10 @@ the tree:
 
 Known bugs or restrictions:
 - the number of nodes is stored on 4 bytes and the number of links on 8 bytes.
+
+-----------------------------------------------------------------------------
+
+## References
+* **[1]** Nicolas Dugué, Vincent Labatut, Anthony Perez. A community role approach to assess social capitalists visibility in the Twitter network. Social Network Analysis and Mining, Springer, 2015, 5, pp.26.
+* **[2]** BLONDEL, Vincent D., GUILLAUME, Jean-Loup, LAMBIOTTE, Renaud, et al. Fast unfolding of communities in large networks. Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.
+* **[3]** Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks. [Research Report] Université d'Orléans. 2015.
