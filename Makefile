@@ -9,7 +9,7 @@ BINDIR=bin
 
 CFLAGS= -ansi -O5 -Wall
 LDFLAGS= -ansi -lm -Wall
-EXEC=community convert hierarchy high_degree inverse reverse overlap
+EXEC=community convert hierarchy
 
 SRC= $(wildcard $(SRCDIR)/*.cpp)
 OBJ1= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph_binary.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
