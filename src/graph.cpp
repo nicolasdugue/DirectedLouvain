@@ -178,21 +178,6 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
 	finput.close(); 
 	
-  
-	unsigned int s = links_out.size();					
-  // outputs weights in a separate file
-  if (type==WEIGHTED) {
-    ofstream foutput_w;
-    foutput_w.open(filename_w,fstream::out | fstream::binary);
-    for (unsigned int i=0 ; i<s ; i++) {
-      for (unsigned int j=0 ; j<links_out[i].size() ; j++) {
-        float weight = links_out[i][j].second;
-        foutput_w.write((char *)(&weight),sizeof(float));
-      }
-    }
-    foutput_w.close();
-  }
-  cout << "done" << endl;
 
 }
 
@@ -241,11 +226,25 @@ int src, dest, cpt;
 	
 }
 
+	unsigned int s = links_out.size();					
+  // outputs weights in a separate file
+  if (type==WEIGHTED) {
+    ofstream foutput_w;
+    foutput_w.open(filename_w,fstream::out | fstream::binary);
+    for (unsigned int i=0 ; i<s ; i++) {
+      for (unsigned int j=0 ; j<links_out[i].size() ; j++) {
+        float weight = links_out[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(float));
+      }
+    }
+    foutput_w.close();
+  }
+  cout << "done" << endl;
+
 
 	ofstream fbin;
   fbin.open(filename, fstream::out | fstream::binary);
 // Writing out information
-	unsigned int s = links_out.size();
 	cout << "number of nodes : " << s << endl;
 	cout << "writing in binary file..." << endl;
 	// outputs number of nodes
