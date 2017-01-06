@@ -233,15 +233,15 @@ int src, dest, cpt;
     foutput_w.open(filename_w,fstream::out | fstream::binary);
     for (unsigned int i=0 ; i<s ; i++) {
       for (unsigned int j=0 ; j<links_out[i].size() ; j++) {
-        float weight = links_out[i][j].second;
-        foutput_w.write((char *)(&weight),sizeof(float));
+        double weight = links_out[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(double));
       }
     }
     s = links_in.size();
     for (unsigned int i=0 ; i<s ; i++) {
       for (unsigned int j=0 ; j<links_in[i].size() ; j++) {
-        float weight = links_in[i][j].second;
-        foutput_w.write((char *)(&weight),sizeof(float));
+        double weight = links_in[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(double));
       }
     }
     foutput_w.close();
@@ -424,12 +424,19 @@ cout << tot_in << endl;
   
   // outputs weights in a separate file
   if (type==WEIGHTED) {
-    ofstream foutput_w;
+     ofstream foutput_w;
     foutput_w.open(filename_w,fstream::out | fstream::binary);
     for (unsigned int i=0 ; i<s ; i++) {
       for (unsigned int j=0 ; j<links_out[i].size() ; j++) {
-	float weight = links_out[i][j].second;
-	foutput_w.write((char *)(&weight),sizeof(float));
+        float weight = links_out[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(float));
+      }
+    }
+    s = links_in.size();
+    for (unsigned int i=0 ; i<s ; i++) {
+      for (unsigned int j=0 ; j<links_in[i].size() ; j++) {
+        float weight = links_in[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(float));
       }
     }
     foutput_w.close();
