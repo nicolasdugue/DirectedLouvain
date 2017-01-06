@@ -114,7 +114,8 @@ display_time(const char *str) {
 int
 main(int argc, char **argv) {
   srand(time(NULL));
-ofstream foutput;
+
+ofstream foutput;
         foutput.open("modularity_values_louvain_oriente.txt", fstream::app | fstream::binary);
 
   parse_args(argc, argv);
@@ -123,6 +124,7 @@ main(int argc, char **argv) {
   if (verbose)
     display_time("Begin");
   Community c(filename, filename_w, type, -1, precision, do_renumber);
+  cerr << "OK" << endl;
   if (filename_part!=NULL)
     c.init_partition(filename_part);
   Graph* g = NULL;
@@ -130,7 +132,8 @@ main(int argc, char **argv) {
   double mod=c.modularity(), new_mod;
   int nb_pass = 0;
   int level=0;
-do{
+
+do{
 
 	nb_pass++;
     if (verbose) {

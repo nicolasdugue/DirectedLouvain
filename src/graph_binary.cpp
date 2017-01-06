@@ -33,47 +33,47 @@ Graph::Graph(char *filename, char *filename_w, int type, bool renumbered) {
   ifstream finput;
   finput.open(filename,fstream::in | fstream::binary);
   
-  cout << "number of nodes" << endl;
+  cerr << "number of nodes" << endl;
   // Read number of nodes on 4 bytes
   finput.read((char *)&nb_nodes, sizeof(int));
   assert(finput.rdstate() == ios::goodbit);
-  cout << "done: " << nb_nodes << endl;
+  cerr << "done: " << nb_nodes << endl;
   
   // Read cumulative out degree sequence: 8 bytes for each node
   // cum_degree[0]=degree(0); cum_degree[1]=degree(0)+degree(1), etc.
-	cout << "degrees out" << endl;
+	cerr << "degrees out" << endl;
   degrees_out.resize(nb_nodes);
   finput.read((char *)&degrees_out[0], nb_nodes*sizeof(long));
-	cout << "done : " << degrees_out[nb_nodes - 1] << endl;
+	cerr << "done : " << degrees_out[nb_nodes - 1] << endl;
 
 // Read links_out: 4 bytes for each link 
-	cout << "links_out" << endl;
+	//cerr << "links_out" << endl;
   nb_links_out=degrees_out[nb_nodes-1];
   links.resize(nb_links_out);
   finput.read((char *)(&links[0]), (long)nb_links_out*sizeof(unsigned int)); 
-	cout << "done" << endl;
+//	cout << "done" << endl;
   
   // Read cumulative in degree sequence: 8 bytes for each node
   // cum_degree[0]=degree(0); cum_degree[1]=degree(0)+degree(1), etc.
-	cout << "degrees in" << endl;
+	cerr << "degrees in" << endl;
   degrees_in.resize(nb_nodes);
   finput.read((char *)&degrees_in[0], nb_nodes*sizeof(long));
-	cout << "done : " << degrees_in[nb_nodes - 1] << endl;
+	cerr << "done : " << degrees_in[nb_nodes - 1] << endl;
 
  // Read links_in: 4 bytes for each link 
-	cout << "links in" << endl;
+	//cerr << "links in" << endl;
   nb_links_in=degrees_in[nb_nodes-1];
   links_in.resize(nb_links_in);
   finput.read((char *)(&links_in[0]), (long)nb_links_in*sizeof(unsigned int)); 
-	cout << "done" << endl; 
+	//cout << "done" << endl; 
  
   // Read correspondance of labels
   if(renumbered) {
-	cout << "correspondance" << endl;
+	cerr << "correspondance" << endl;
   correspondance.resize(nb_nodes);
   finput.read((char *)(&correspondance[0]), nb_nodes*sizeof(unsigned long long int)); 
   }
-  cout << "done" << endl;
+  //cout << "done" << endl;
  
   // IF WEIGHTED : read weights: 4 bytes for each link (each link is counted twice)
   weights.resize(0);
@@ -81,10 +81,14 @@ Graph::Graph(char *filename, char *filename_w, int type, bool renumbered) {
 	
   total_weight=0;
   if (type==WEIGHTED) {
+    cerr << "Weights reading" << endl;
     ifstream finput_w;
     finput_w.open(filename_w,fstream::in | fstream::binary);
     weights.resize(nb_links_out);
     finput_w.read((char *)&weights[0], (long)nb_links_out*sizeof(int));  
+    weights_in.resize(nb_links_out);
+    finput_w.read((char *)&weights_in[0], (long)nb_links_in*sizeof(int));  
+    cerr << "Done" << endl;
   }    
 
   // Compute total weight
@@ -212,7 +216,8 @@ if(node == 0) {
 			
 			ratio = (float)out / in;
 			overlap = max(inter.size()/(float)out, inter.size()/(float)in); 
-		}
+		
+}
 		else {
 			ratio = 0;
 			overlap = 0;

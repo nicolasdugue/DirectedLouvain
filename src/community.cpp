@@ -19,7 +19,9 @@
 using namespace std;
 
 Community::Community(char * filename, char * filename_w, int type, int nbp, double minm, bool renumbered) {
+  cerr << "Reading graph" << endl;
   g = new Graph(filename, filename_w, type, renumbered);
+  cerr << "Graph read" << endl;
   size = (*g).nb_nodes;
   neigh_weight.resize(size,-1);
   neigh_pos.resize(size);
@@ -44,6 +46,7 @@ Community::Community(char * filename, char * filename_w, int type, int nbp, doub
 
   nb_pass = nbp;
   min_modularity = minm;
+  cerr << "Community ok" << endl;
 }
 
 Community::Community(Graph* gc, int nbp, double minm) {

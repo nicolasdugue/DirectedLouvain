@@ -179,7 +179,7 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 	finput.close(); 
 	
 
-}
+	}
 
 }
 else {
@@ -234,6 +234,13 @@ int src, dest, cpt;
     for (unsigned int i=0 ; i<s ; i++) {
       for (unsigned int j=0 ; j<links_out[i].size() ; j++) {
         float weight = links_out[i][j].second;
+        foutput_w.write((char *)(&weight),sizeof(float));
+      }
+    }
+    s = links_in.size();
+    for (unsigned int i=0 ; i<s ; i++) {
+      for (unsigned int j=0 ; j<links_in[i].size() ; j++) {
+        float weight = links_in[i][j].second;
         foutput_w.write((char *)(&weight),sizeof(float));
       }
     }
