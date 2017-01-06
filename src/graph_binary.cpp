@@ -7,10 +7,7 @@
 //
 // This program must not be distributed without agreement of the above mentionned authors.
 //-----------------------------------------------------------------------------
-// Author   : E. Lefebvre, adapted by J.-L. Guillaume
-// Email    : jean-loup.guillaume@lip6.fr
-// Location : Paris, France
-// Time	    : February 2008
+// Author   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
