@@ -16,14 +16,12 @@
 
 using namespace std;
 
-Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool do_renumber) {
+
+
+Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool do_renumber, unsigned int nodes) {
         ifstream finput;
 
         if(do_renumber) {
-                map<unsigned long long int, unsigned int>::iterator it_src;
-                map<unsigned long long int, unsigned int>::iterator it_dest;
-
-                unsigned int cpt = 1;
 
 
                 unsigned int nb_links=0;
@@ -36,37 +34,45 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
                 cout << "Renumerotation begins..." << endl;
 
+                //The correspondance will finally be stored in this structure
                 correspondance.resize(0);
 
-                /* Creating a bunch of maps... NOT ANYMORE :( */
-                unsigned int* corres = new unsigned int[numeric_limits<unsigned int>::max()];
-                memset(corres, 0, numeric_limits<unsigned int>::max()*sizeof(unsigned int));
+                unsigned int max_int=nodes;
+                //Creates the correspondance table
+                unsigned int* corres = new unsigned int[max_int];
+                memset(corres, 0, max_int*sizeof(unsigned int));
+                cout << "Init fast correspondance table" << endl;
+
+                //Creates the specific table for huge ints that have to be stored as long long int
                 map<unsigned long long int, unsigned int > corres_big_ids;
+                map<unsigned long long int, unsigned int>::iterator it_src;
+                map<unsigned long long int, unsigned int>::iterator it_dest;
 
                 finput.open(in_filename,fstream::in);
-                unsigned int src_prec, dest_prec;
-                src_prec = 1;
-                dest_prec = 1;
+                //unsigned int src_prec, dest_prec;
+                //src_prec = 1;
+                //dest_prec = 1;
+                unsigned long long int cpt = 1;
 
+                cout << "Start reading" << endl;
                 if(finput) {
 
-                        unsigned long long int src, dest;
-                        unsigned int pos_src, pos_dest;
+                        unsigned int src, dest;
+                        //unsigned int pos_src, pos_dest;
 
                         /* We first do the renumerotation and build the correspondance */
                         while(finput >> src >> dest) {
 
                                 if(type == WEIGHTED)
                                         finput >> weight;
-
-                                if(src < numeric_limits<unsigned int>::max()) {
+                                //If src is a long that can be stored as an int
+                                //cout << src <<" "<< dest << endl;
+                                if(src < max_int) {
                                         if(corres[src] == 0) {
 
                                                 corres[src] = cpt;
 
-                                                correspondance.resize(correspondance.size()+1);
-                                                correspondance[cpt-1] = src;
-                                                cpt++;
+                                                cpt=maj_corresp(src, cpt);
                                         }
                                 }
 
@@ -76,21 +82,17 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
                                                 corres_big_ids.insert(make_pair(src, cpt));
 
-                                                correspondance.resize(correspondance.size()+1);
-                                                correspondance[cpt-1] = src;
-                                                cpt++;
+                                                cpt=maj_corresp(src, cpt);
 
                                         }
                                 }
 
-                                if(dest < numeric_limits<unsigned int>::max()) {
+                                if(dest < max_int) {
                                         if(corres[dest] == 0) {
 
                                                 corres[dest] = cpt;
 
-                                                correspondance.resize(correspondance.size()+1);
-                                                correspondance[cpt-1] = dest;
-                                                cpt++;
+                                                cpt=maj_corresp(dest, cpt);
                                         }
                                 }
 
@@ -98,17 +100,15 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
                                         if(corres_big_ids.find(dest) == corres_big_ids.end()) {
 
-                                                corres_big_ids.insert(make_pair(src, cpt));
+                                                corres_big_ids.insert(make_pair(dest, cpt));
 
-                                                correspondance.resize(correspondance.size()+1);
-                                                correspondance[cpt-1] = dest;
-                                                cpt++;
+                                                cpt=maj_corresp(dest, cpt);
 
                                         }
                                 }
 
                                 unsigned int pos_src, pos_dest;
-                                if(src < numeric_limits<unsigned int>::max()) {
+                                if(src < max_int) {
                                         pos_src = corres[src] - 1;
                                 }
                                 else {
@@ -117,7 +117,7 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
                                         pos_src = it_src->second - 1;
                                 }
 
-                                if(dest < numeric_limits<unsigned int>::max()) {
+                                if(dest < max_int) {
                                         pos_dest = corres[dest] - 1;
                                 } else{
                                         map<unsigned long long int, unsigned int>::iterator it_dest;
@@ -127,13 +127,16 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
 
                                 nb_links++;
-
+                                //cout << nb_links << endl;
                                 // TODO: count nb_links while parsing for the maximum, and pourcent the progression
-                                if(nb_links % 500 == 0) cout << "50000000 ecrits" << endl;
-                                foutput << pos_src << " " << pos_dest << endl;
+                                if(nb_links % 5000000 == 0) cout << "5000000 ecrits" << endl;
+                                if(type == WEIGHTED)
+                                        foutput << pos_src << " " << pos_dest << " " << weight<< endl;
+                                else
+                                        foutput << pos_src << " " << pos_dest << endl;
 
-                                src_prec = src;
-                                dest_prec = dest;
+                                //src_prec = src;
+                                //dest_prec = dest;
 
                         }
 
@@ -145,24 +148,27 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
                         /* Release memory */
                         delete[] corres;
 
-                        src_prec = 1;
-                        dest_prec = 1;
+                        //src_prec = 1;
+                        //dest_prec = 1;
 
                         // Then we build the graph reading the new graph
                         // Out links first
                         finput.open(tmp, fstream::in);
+                        weight = 1.f;
+                        cout << "cpt :" << cpt << endl;
                         while(finput >> src >> dest) {
 
                                 if(type == WEIGHTED)
                                         finput >> weight;
 
-                                if (links_out.size()<=max(src,dest)+1) {
+                                if (links_out.size() <= (max(src,dest)+1)) {
                                         links_out.resize(max(src,dest)+1);
                                 }
+                                //cout << src<<" " << dest<< " " << links_out.size() << endl;
 
                                 links_out[src].push_back(make_pair(dest,weight));
 
-                                if (links_in.size()<=max(src,dest)+1) {
+                                if (links_in.size() <= (max(src,dest)+1)) {
                                         links_in.resize(max(src,dest)+1);
                                 }
 
@@ -188,9 +194,9 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
                 int src, dest, cpt;
                 cpt = 0;
 
-                int src_prec, dest_prec;
-                src_prec = -1;
-                dest_prec = -1;
+                //int src_prec, dest_prec;
+                //src_prec = -1;
+                //dest_prec = -1;
 
                 int nb_links=0;
                 float weight = 1.f;
@@ -329,6 +335,15 @@ Graph::Graph(char *in_filename, char *filename, char* filename_w, int type, bool
 
 }
 
+unsigned long long int
+Graph::maj_corresp(unsigned int dest, unsigned long long int cpt) {
+        unsigned long long int taille=correspondance.size()+1;
+        correspondance.resize(taille);
+        correspondance[cpt - 1] = dest;
+        cpt++;
+        return cpt;
+}
+
 /* Permet de gerer les multigraphes : si on a dans le fichier 1 4 3 et 1 4 6,
  * le graphe original aura deux paires (4,3) et (4,6) dans la liste d'adjacence
  * de 1. Du coup, cette procedure remplacera ca par (4,9).
@@ -427,6 +442,7 @@ Graph::display_binary(char *filename, char *filename_w, int type, bool do_renumb
         // outputs weights in a separate file
         if (type==WEIGHTED) {
                 ofstream foutput_w;
+                cout << filename_w << endl;
                 foutput_w.open(filename_w,fstream::out | fstream::binary);
                 for (unsigned int i=0; i<s; i++) {
                         for (unsigned int j=0; j<links_out[i].size(); j++) {

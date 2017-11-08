@@ -12,14 +12,16 @@
 // see readme.txt for more details
 
 #include "../include/graph.h"
+#include <string>
 
-using namespace std;
+//using namespace std;
 
 char *infile   = NULL;
 char *outfile  = NULL;
 char *outfile_w  = NULL;
 int type       = UNWEIGHTED;
 bool do_renumber = false;
+unsigned int nodes=100000;
 
 void
 usage(char *prog_name, const char *more) {
@@ -57,6 +59,10 @@ parse_args(int argc, char **argv) {
                         case 'r':
                                 do_renumber=true;
                                 break;
+                        case 'n':
+                                nodes = std::stoi(argv[i+1]);
+                                i++;
+                                break;
                         default:
                                 usage(argv[0], "Unknown option\n");
                         }
@@ -73,7 +79,7 @@ main(int argc, char **argv) {
         parse_args(argc, argv);
         Graph* g;
 
-        g = new Graph(infile, outfile, outfile_w, type, do_renumber);
+        g = new Graph(infile, outfile, outfile_w, type, do_renumber, nodes);
 
 
 }
