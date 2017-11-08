@@ -26,9 +26,10 @@ unsigned int nodes=100000;
 void
 usage(char *prog_name, const char *more) {
         cerr << more;
-        cerr << "usage: " << prog_name << " -i input_file -o outfile [-r] [-w outfile_weight]" << endl << endl;
+        cerr << "usage: " << prog_name << " -i input_file -o outfile [-r] [-w outfile_weight][-n nodes_number]" << endl << endl;
         cerr << "read the graph and convert it to binary format." << endl;
         cerr << "-r\tnodes are renumbered from 0 to nb_nodes-1 (the order is kept)." << endl;
+        cerr << "-n\tto roughly specify how much nodes contain your graph (improves memory usage)" << endl;
         cerr << "-w filename\tread the graph as a weighted one and writes the weights in a separate file." << endl;
         cerr << "-h\tshow this usage message." << endl;
         exit(0);
@@ -52,6 +53,8 @@ parse_args(int argc, char **argv) {
                                 i++;
                                 break;
                         case 'w':
+                                if (i==argc-1)
+                                      usage(argv[0], "Weight file missing\n");
                                 type = WEIGHTED;
                                 outfile_w = argv[i+1];
                                 i++;
@@ -60,6 +63,8 @@ parse_args(int argc, char **argv) {
                                 do_renumber=true;
                                 break;
                         case 'n':
+                                if (i==argc-1)
+                                      usage(argv[0], "Number of nodes missing\n");
                                 nodes = std::stoi(argv[i+1]);
                                 i++;
                                 break;
