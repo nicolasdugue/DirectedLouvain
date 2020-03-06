@@ -83,7 +83,7 @@ Graph::Graph(char *filename, char *filename_w, int type, bool renumbered) {
                 finput_w.open(filename_w,fstream::in | fstream::binary);
                 weights.resize(nb_links_out);
                 finput_w.read((char *)&weights[0], nb_links_out*sizeof(double));
-                weights_in.resize(nb_links_out);
+                weights_in.resize(nb_links_in);
                 finput_w.read((char *)&weights_in[0], nb_links_in*sizeof(double));
                 cerr << "Done" << endl;
         }
