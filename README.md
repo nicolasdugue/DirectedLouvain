@@ -2,7 +2,7 @@
 
 The algorithm used in this package is the same that was developped by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded based on the [Louvain algorithm webpage] (https://sites.google.com/site/findcommunities/) (**[2]**).
 The algorithm was then adjusted to optimize the directed modularity of Leich and Newman instead of the classic modularity.
-These modifications were mostly made by [Anthony perez] (http://www.univ-orleans.fr/lifo/membres/Anthony.Perez), and a few by [Nicolas Dugué] (http://www.univ-orleans.fr/lifo/membres/Nicolas.Dugue/).
+These modifications were mostly made by [Anthony perez] (http://www.univ-orleans.fr/lifo/membres/Anthony.Perez), and a few by [Nicolas Dugué] (https://lium.univ-lemans.fr/team/nicolas-dugue/).
 
 The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks] (https://hal.archives-ouvertes.fr/hal-01231784) (**[3]**) and was also succesfully used in [A community role approach to assess social capitalists visibility in the Twitter network] (https://hal.archives-ouvertes.fr/hal-01163741) with Vincent Labatut and Anthony Perez (**[1]**).
 
