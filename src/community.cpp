@@ -24,7 +24,8 @@ Community::Community(char * filename, char * filename_w, int type, int nbp, doub
     neigh_pos.resize(size);
     neigh_last = 0;
 
-    n2c.resize(size); in .resize(size);
+    n2c.resize(size); 
+    in .resize(size);
     tot.resize(size);
     tot_out.resize(size);
     tot_in.resize(size);

@@ -30,6 +30,7 @@ using namespace std;
 
 class Graph {
     private:
+        /* TODO: ULLI if not renumbered ? */
         vector<vector<pair<unsigned int,float> > > links_out;
         vector<vector<pair<unsigned int,float> > > links_in;
         /* FIXME: is it possible to have a map with adjustable value types ?

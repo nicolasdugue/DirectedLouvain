@@ -49,7 +49,7 @@ static void convert(string filename, vector<ULLI> &correspondance, vector<unsign
                 if (corres[src] == 0) {
                     corres[src] = cpt++;
                     correspondance.push_back(src);
-                    //maj_corresp(this->correspondance, src, cpt);
+                    //maj_corresp(correspondance, src, cpt);
                 }
             } else {
                 if (corres_big_ids.find(src) == corres_big_ids.end()) {
@@ -62,11 +62,13 @@ static void convert(string filename, vector<ULLI> &correspondance, vector<unsign
                 if (corres[dest] == 0) {
                     corres[dest] = cpt++;
                     correspondance.push_back(dest);
+                    //maj_corresp(correspondance, dest, cpt);
                 }
             } else {
                 if (corres_big_ids.find(dest) == corres_big_ids.end()) {
                     corres_big_ids.insert(make_pair(dest, cpt++));
                     correspondance.push_back(dest);
+                    //maj_corresp(correspondance, dest, cpt);
                 }
             }
         }
@@ -77,6 +79,7 @@ static void convert(string filename, vector<ULLI> &correspondance, vector<unsign
 Graph::Graph(string in_filename, string filename, string filename_w, int type, bool do_renumber) {
     ifstream finput;
 
+    /* FIXME: this has nothing to do in the constructor */
     if (do_renumber) {
 
         unsigned int nb_links = 0;
@@ -100,6 +103,7 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
         map < ULLI, unsigned int > corres_big_ids;
 
         convert(in_filename, this->correspondance, corres, corres_big_ids, type);
+
         if(finput) {
             unsigned int src, dest;
             while (finput >> src >> dest) {
@@ -130,6 +134,7 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
         cerr << "Renumerotation ends..." << endl;
         cerr << "Building the graph... links out" << endl;
         foutput.close();
+        finput.close();
 
         // Then we build the graph reading the new graph
         // Out links first
@@ -141,7 +146,6 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
 
         unsigned int src, dest;
         while (finput >> src >> dest) {
-
             if (type == WEIGHTED)
                 finput >> weight;
 
@@ -186,55 +190,58 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
 
     }
 
-    /* FIXME: this is not the number of nodes if not renumbered! */
-    unsigned int s = links_out.size();
+    /* /!\FIXME/!\: this is not the number of nodes if not renumbered! */
+    /* FIXME: this belongs to the constructor since links_out is released 
+     * once written (a better way would be to have a function that writes 
+     * by appending (file opened before) and releases memory at the same time */
+    size_t s = links_out.size();
     // outputs weights in a separate file
     if (type == WEIGHTED) {
         ofstream foutput_w;
         foutput_w.open(filename_w, fstream::out | fstream::binary);
-        for (unsigned int i = 0; i < s; i++) {
-            for (unsigned int j = 0; j < links_out[i].size(); j++) {
+        for (size_t i = 0; i < s; i++) {
+            for (size_t j = 0; j < links_out[i].size(); j++) {
                 double weight = links_out[i][j].second;
                 foutput_w.write((char * )( & weight), sizeof(double));
             }
         }
         s = links_in.size();
-        for (unsigned int i = 0; i < s; i++) {
-            for (unsigned int j = 0; j < links_in[i].size(); j++) {
+        for (size_t i = 0; i < s; i++) {
+            for (size_t j = 0; j < links_in[i].size(); j++) {
                 double weight = links_in[i][j].second;
                 foutput_w.write((char * )( & weight), sizeof(double));
             }
         }
         foutput_w.close();
     }
-    cout << "done" << endl;
+    cerr << "done" << endl;
 
     ofstream fbin;
     fbin.open(filename, fstream::out | fstream::binary);
     cerr << "number of nodes : " << s << endl;
     cerr << "writing in binary file..." << endl;
     // outputs number of nodes
-    fbin.write((char * )( & s), sizeof(int));
+    fbin.write((char * )( & s), sizeof(size_t));
 
     // outputs cumulative degree sequence
     /* Contient uniquement les degres sortants en oriente */
     long tot = 0;
-    for (unsigned int i = 0; i < s; i++) {
+    for (size_t i = 0; i < s; i++) {
         tot += (long) links_out[i].size();
         fbin.write((char * )( & tot), sizeof(long));
     }
 
     // outputs links_out
-    for (unsigned int i = 0; i < s; i++) {
-        for (unsigned int j = 0; j < links_out[i].size(); j++) {
-            ULLI dest = links_out[i][j].first;
+    for (size_t i = 0; i < s; i++) {
+        for (size_t j = 0; j < links_out[i].size(); j++) {
+            unsigned int dest = links_out[i][j].first;
             fbin.write((char * )( & dest), sizeof(unsigned int));
         }
     }
     cerr << "done." << endl;
     cerr << "releasing memory..." << endl;
     // Release memory
-    for (unsigned int i = 0; i < links_out.size(); i++) {
+    for (size_t i = 0; i < links_out.size(); i++) {
         links_out[i].clear();
         vector < pair < unsigned int, float > > ().swap(links_out[i]);
     }
@@ -244,21 +251,21 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
 
     // Writing information --- only in-degrees
     long tot_in = 0;
-    for (unsigned int i = 0; i < s; i++) {
+    for (size_t i = 0; i < s; i++) {
         tot_in += (long) links_in[i].size();
         fbin.write((char * )( & tot_in), sizeof(long));
     }
 
     // outputs links_in
-    for (unsigned int i = 0; i < s; i++) {
-        for (unsigned int j = 0; j < links_in[i].size(); j++) {
-            ULLI dest = links_in[i][j].first;
+    for (size_t i = 0; i < s; i++) {
+        for (size_t j = 0; j < links_in[i].size(); j++) {
+            unsigned int dest = links_in[i][j].first;
             fbin.write((char * )( & dest), sizeof(unsigned int));
         }
     }
     cerr << "releasing memory..." << endl;
     // Release memory
-    for (unsigned int i = 0; i < links_in.size(); i++) {
+    for (size_t i = 0; i < links_in.size(); i++) {
         links_in[i].clear();
         vector < pair < unsigned int, float > > ().swap(links_in[i]);
     }
@@ -268,7 +275,7 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
 
     // outputs correspondance
     if (do_renumber) {
-        for (unsigned int i = 0; i < s; i++) {
+        for (size_t i = 0; i < s; i++) {
             ULLI corr = correspondance[i];
             fbin.write((char * )( & corr), sizeof(ULLI));
         }
@@ -292,10 +299,9 @@ void
 Graph::clean(int type) {
     for (unsigned int i = 0; i < links_out.size(); i++) {
         map < ULLI, float > m;
-        map < ULLI, float > ::iterator it;
 
-        for (unsigned int j = 0; j < links_out[i].size(); j++) {
-            it = m.find(links_out[i][j].first);
+        for (size_t j = 0; j < links_out[i].size(); j++) {
+            auto it = m.find(links_out[i][j].first);
             if (it == m.end())
                 m.insert(make_pair(links_out[i][j].first, links_out[i][j].second));
             else if (type == WEIGHTED)
@@ -303,7 +309,7 @@ Graph::clean(int type) {
         }
 
         vector < pair < unsigned int, float > > v;
-        for (it = m.begin(); it != m.end(); it++)
+        for (auto it = m.begin(); it != m.end(); it++)
             v.push_back( * it);
         links_out[i].clear();
         links_out[i] = v;
