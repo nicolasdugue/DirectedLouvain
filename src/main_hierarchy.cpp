@@ -69,6 +69,7 @@ parse_args(int argc, char ** argv) {
     if (filename == NULL)
         usage(argv[0], "No input file has been provided.\n");
 }
+/* FIXME: nothing happens if nonexisting file (need to check this) */
 int
 main(int argc, char ** argv) {
     parse_args(argc, argv);

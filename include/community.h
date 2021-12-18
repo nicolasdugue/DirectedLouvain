@@ -52,6 +52,7 @@ class Community {
   Community (char *filename, char *filename_w, int type, int nb_pass, double min_modularity, bool renumbered);
   // copy graph
   Community (Graph* g, int nb_pass, double min_modularity);
+  ~Community() { delete g; }
 
   // initiliazes the partition with something else than all nodes alone
   void init_partition(char *filename_part);

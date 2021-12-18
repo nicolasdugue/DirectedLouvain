@@ -269,6 +269,12 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
 
 }
 
+Graph::Graph(const Graph &g) {
+    this->links_out = g.links_out;
+    this->links_in = g.links_in;
+    this->correspondants = g.correspondance;
+}
+
 unsigned long long int
 Graph::maj_corresp(unsigned int dest, unsigned long long int cpt) {
     unsigned long long int taille = correspondance.size() + 1;

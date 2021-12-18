@@ -83,8 +83,6 @@ parse_args(int argc, char ** argv) {
 int
 main(int argc, char ** argv) {
     parse_args(argc, argv);
-    Graph * g;
-
-    g = new Graph(infile, outfile, outfile_w, type, do_renumber, nodes);
-
+    Graph *g = new Graph(infile, outfile, outfile_w, type, do_renumber, nodes);
+    delete g;
 }

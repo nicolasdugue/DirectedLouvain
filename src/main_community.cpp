@@ -119,36 +119,39 @@ main(int argc, char ** argv) {
     time( & time_begin);
     if (verbose)
         display_time("Begin");
-    Community c(filename, filename_w, type, -1, precision, do_renumber);
+    Community *c = new Community(filename, filename_w, type, -1, precision, do_renumber);
     cerr << "OK" << endl;
     if (filename_part != NULL)
-        c.init_partition(filename_part);
+        c->init_partition(filename_part);
     Graph * g = NULL;
     bool improvement = true;
-    double mod = c.modularity(), new_mod;
+    double mod = c->modularity(), new_mod;
     int nb_pass = 0;
     int level = 0;
 
     do {
-
         nb_pass++;
+        /* TODO: does not work with (*g).nb_nodes if g is NULL */
         if (verbose) {
             cerr << "level " << level << ":\n";
             display_time("  start computation");
             cerr << "  network size: " <<
-                ( * (c.g)).nb_nodes << " nodes, " <<
-                ( * (c.g)).nb_links_out << " links, " <<
-                ( * (c.g)).total_weight << " weight." << endl;
+                ( * (c->g)).nb_nodes << " nodes, " <<
+                ( * (c->g)).nb_links_out << " links, " <<
+                ( * (c->g)).total_weight << " weight." << endl;
         }
 
-        improvement = c.one_level();
-        new_mod = c.modularity();
+        improvement = c->one_level();
+        new_mod = c->modularity();
         if (++level == display_level)
-            ( * g).display();
+            (* (c->g)).display();
         if (display_level == -1)
-            c.display_partition();
-        g = c.partition2graph_binary();
-        c = Community(g, -1, precision);
+            c->display_partition();
+        g = c->partition2graph_binary();
+        delete c;
+        c = new Community(g, -1, precision);
+        delete g;
+        /* FIXME: memory leak for not destroying objects */
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 
@@ -159,6 +162,7 @@ main(int argc, char ** argv) {
             improvement = true;
     } while (improvement);
 
+    delete c;
     time( & time_end);
     if (verbose) {
         display_time("End");

@@ -36,6 +36,7 @@ vector<vector<pair<unsigned int,float> > > links_in;
 vector<unsigned long long int> correspondance;
 
 Graph (char* in_filename, char *filename, char* filename_w, int type, bool do_renumber, unsigned int nodes);
+Graph (const Graph& );
 
 unsigned long long int maj_corresp(unsigned int dest, unsigned long long int cpt);
 

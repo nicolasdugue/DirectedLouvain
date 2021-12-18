@@ -100,7 +100,7 @@ class Graph {
 
 inline unsigned int
 Graph::nb_neighbors_out(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (node==0)
     return degrees_out[0];
@@ -110,7 +110,7 @@ Graph::nb_neighbors_out(unsigned int node) {
 
 inline unsigned int
 Graph::nb_neighbors_in(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (node==0)
     return degrees_in[0];
@@ -120,7 +120,7 @@ Graph::nb_neighbors_in(unsigned int node) {
 
 inline double
 Graph::nb_selfloops(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   pair<vector<unsigned int>::iterator, vector<double>::iterator > p = neighbors(node);
   for (float i=0 ; i<nb_neighbors_out(node) ; i++) {
@@ -137,7 +137,7 @@ Graph::nb_selfloops(unsigned int node) {
 
 inline double
 Graph::out_weighted_degree(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (weights.size()==0)
     return (double)nb_neighbors_out(node);
@@ -153,7 +153,7 @@ Graph::out_weighted_degree(unsigned int node) {
 
 inline double
 Graph::in_weighted_degree(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (weights.size()==0)
     return (double)nb_neighbors_in(node);
@@ -169,7 +169,7 @@ Graph::in_weighted_degree(unsigned int node) {
 
 inline double
 Graph::weighted_degree(unsigned int node) {
-  assert(node >=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   return out_weighted_degree(node) + in_weighted_degree(node);
 
@@ -180,7 +180,7 @@ Graph::weighted_degree(unsigned int node) {
  */
 inline pair<vector<unsigned int>::iterator, vector<double>::iterator >
 Graph::neighbors(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (node==0)
     return make_pair(links.begin(), weights.begin());
@@ -195,7 +195,7 @@ Graph::neighbors(unsigned int node) {
  */
 inline pair<vector<unsigned int>::iterator, vector<double>::iterator >
 Graph::in_neighbors(unsigned int node) {
-  assert(node>=0 && node<nb_nodes);
+  assert(node<nb_nodes);
 
   if (node==0)
     return make_pair(links_in.begin(), weights_in.begin());

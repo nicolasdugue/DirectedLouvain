@@ -47,7 +47,7 @@ Community::Community(char * filename, char * filename_w, int type, int nbp, doub
 }
 
 Community::Community(Graph * gc, int nbp, double minm) {
-    g = gc;
+    g = new Graph(*gc);
     size = ( * g).nb_nodes;
 
     neigh_weight.resize(size, -1);
@@ -150,7 +150,7 @@ Community::neigh_comm(float node) {
         if (neigh != node) {
             // if the community is discovered for the first time
             if (neigh_weight[neigh_comm] == -1) {
-                neigh_weight[neigh_comm] = 0. f;
+                neigh_weight[neigh_comm] = 0.f;
                 neigh_pos[neigh_last++] = neigh_comm;
             }
             // the degree of i towards this community is updated
@@ -239,11 +239,11 @@ Graph *
         }
 
         // compute weighted graph
-        Graph * g2 = new Graph();
-        ( * g2).nb_nodes = comm_nodes.size();
+        Graph *g2 = new Graph();
+        (*g2).nb_nodes = comm_nodes.size();
 
-        ( * g2).degrees_out.resize(comm_nodes.size());
-        ( * g2).degrees_in.resize(comm_nodes.size());
+        (*g2).degrees_out.resize(comm_nodes.size());
+        (*g2).degrees_in.resize(comm_nodes.size());
 
         double neigh_weight;
 
@@ -275,7 +275,7 @@ Graph *
                 for (int i = 0; i < deg; i++) {
                     int neigh = * (p_in.first + i);
                     int neigh_comm = renumber[n2c[neigh]];
-                    neigh_weight = (( * g).weights_in.size() == 0) ? 1. f : * (p_in.second + i);
+                    neigh_weight = (( * g).weights_in.size() == 0) ? 1.f : * (p_in.second + i);
 
                     it_in = m_in.find(neigh_comm);
                     if (it_in == m_in.end())
@@ -317,12 +317,15 @@ Community::one_level() {
     vector < int > random_order(size);
     for (int i = 0; i < size; i++)
         random_order[i] = i;
-    for (int i = 0; i < size - 1; i++) {
+    /* FIXME: commented for the sake of reproducibility 
+     * TODO: random_shuffle
+     */
+    /*for (int i = 0; i < size - 1; i++) {
         int rand_pos = rand() % (size - i) + i;
         int tmp = random_order[i];
         random_order[i] = random_order[rand_pos];
         random_order[rand_pos] = tmp;
-    }
+    }*/
 
     // repeat while
     //   there is an improvement of modularity
