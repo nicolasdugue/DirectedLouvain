@@ -30,6 +30,10 @@
 using namespace std;
 
 class Graph {
+    /* TODO: insert number of nodes as attribute 
+     * TODO: use string instead of char* 
+     * TODO: typename
+     */
 public:
 vector<vector<pair<unsigned int,float> > > links_out;
 vector<vector<pair<unsigned int,float> > > links_in;

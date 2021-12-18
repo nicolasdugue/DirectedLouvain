@@ -82,7 +82,7 @@ main(int argc, char ** argv) {
     vector < int > corres(0);
     int l = -1;
     while (!finput.eof()) {
-        int node, nodecomm, nodecorr;
+        int node, nodecomm;
         finput >> node >> nodecomm;
 
         if (finput) {
@@ -109,7 +109,7 @@ main(int argc, char ** argv) {
             for (unsigned int i = 0; i < levels[0].size(); i++)
                 n2c[i] = i;
 
-            for (l = 0; l < levels.size(); l++)
+            for (size_t l = 0; l < levels.size(); l++)
                 for (unsigned int node = 0; node < levels[0].size(); node++)
                     n2c[node] = levels[l][n2c[node]];
 

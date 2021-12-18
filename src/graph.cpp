@@ -25,7 +25,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
         unsigned int nb_links = 0;
         float weight = 1.f;
         ofstream foutput;
-        char * tmp = new char[strlen(in_filename) + 6];
+        char * tmp = new char[strlen(in_filename) + 7]();
         strcat(tmp, in_filename);
         strcat(tmp, "_renum");
         foutput.open(tmp, fstream::out | fstream::binary);
@@ -120,6 +120,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
             // Then we build the graph reading the new graph
             // Out links first
             finput.open(tmp, fstream:: in );
+            delete[] tmp;
             weight = 1.f;
             while (finput >> src >> dest) {
 
@@ -177,6 +178,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
 
     }
 
+    /* FIXME: this is not the number of nodes if not renumbered! */
     unsigned int s = links_out.size();
     // outputs weights in a separate file
     if (type == WEIGHTED) {
@@ -272,7 +274,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
 Graph::Graph(const Graph &g) {
     this->links_out = g.links_out;
     this->links_in = g.links_in;
-    this->correspondants = g.correspondance;
+    this->correspondance = g.correspondance;
 }
 
 unsigned long long int
