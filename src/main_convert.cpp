@@ -11,17 +11,16 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#include "../include/graph.h"
-#include <string>
+#include "../include/graph.hpp"
 
 //using namespace std;
 
-char * infile = NULL;
-char * outfile = NULL;
-char * outfile_w = NULL;
+string infile = "";
+string outfile = "";
+string outfile_w = "";
 int type = UNWEIGHTED;
 bool do_renumber = false;
-unsigned int nodes = 100000;
+/* FIXME: why this value? */
 
 void
 usage(char * prog_name,
@@ -30,7 +29,6 @@ usage(char * prog_name,
     cerr << "usage: " << prog_name << " -i input_file -o outfile [-r] [-w outfile_weight][-n nodes_number]" << endl << endl;
     cerr << "read the graph and convert it to binary format." << endl;
     cerr << "-r\tnodes are renumbered from 0 to nb_nodes-1 (the order is kept)." << endl;
-    cerr << "-n\tto roughly specify how much nodes contain your graph (improves memory usage)" << endl;
     cerr << "-w filename\tread the graph as a weighted one and writes the weights in a separate file." << endl;
     cerr << "-h\tshow this usage message." << endl;
     exit(0);
@@ -63,12 +61,6 @@ parse_args(int argc, char ** argv) {
             case 'r':
                 do_renumber = true;
                 break;
-            case 'n':
-                if (i == argc - 1)
-                    usage(argv[0], "Number of nodes missing\n");
-                nodes = std::stoi(argv[i + 1]);
-                i++;
-                break;
             default:
                 usage(argv[0], "Unknown option\n");
             }
@@ -76,13 +68,13 @@ parse_args(int argc, char ** argv) {
             usage(argv[0], "More than one filename\n");
         }
     }
-    if (infile == NULL || outfile == NULL)
+    if (infile == "" || outfile == "")
         usage(argv[0], "In or outfile missing\n");
 }
 
 int
 main(int argc, char ** argv) {
     parse_args(argc, argv);
-    Graph *g = new Graph(infile, outfile, outfile_w, type, do_renumber, nodes);
+    Graph *g = new Graph(infile, outfile, outfile_w, type, do_renumber);
     delete g;
 }

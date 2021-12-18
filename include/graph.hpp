@@ -11,42 +11,40 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
 
-#include <stdlib.h>
-#include <stdio.h>
+#define WEIGHTED   0
+#define UNWEIGHTED 1
+
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <map>
-#include <set>
 #include <algorithm>
-#include <limits>
-#define WEIGHTED   0
-#define UNWEIGHTED 1
+#include <string>
+
+typedef unsigned long long int ULLI;
 
 using namespace std;
 
 class Graph {
-    /* TODO: insert number of nodes as attribute 
-     * TODO: use string instead of char* 
-     * TODO: typename
-     */
-public:
-vector<vector<pair<unsigned int,float> > > links_out;
-vector<vector<pair<unsigned int,float> > > links_in;
-vector<unsigned long long int> correspondance;
+    private:
+        vector<vector<pair<unsigned int,float> > > links_out;
+        vector<vector<pair<unsigned int,float> > > links_in;
+        /* FIXME: is it possible to have a map with adjustable value types ?
+         * vector<void*> and use necessary memory? */
+        vector<ULLI> correspondance;
 
-Graph (char* in_filename, char *filename, char* filename_w, int type, bool do_renumber, unsigned int nodes);
-Graph (const Graph& );
+    public:
+        Graph (string in_filename, string filename, string filename_w, int type, bool do_renumber);
+        Graph (const Graph& );
+        ~Graph() {}
 
-unsigned long long int maj_corresp(unsigned int dest, unsigned long long int cpt);
-
-void clean(int type);
-void display(int type);
-void display_binary(char *filename, char *filename_w, int type, bool do_renumber);
+        /* FIXME: is it used somewhere? */
+        void clean(int type);
+        void display(int type);
+        void display_binary(char *filename, char *filename_w, int type, bool do_renumber);
 };
 
 #endif // GRAPH_H

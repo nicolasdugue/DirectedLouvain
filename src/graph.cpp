@@ -11,13 +11,70 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#include <cstring>
-
-#include "../include/graph.h"
+#include "../include/graph.hpp"
 
 using namespace std;
 
-Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, bool do_renumber, unsigned int nodes) {
+/* FIXME: rename */
+const unsigned int nodes = 100000;
+
+/* FIXME: Why TF did we use this instead of push_back ?! 
+static void
+maj_corresp(vector<ULLI> &corresp, unsigned int dest, ULLI &cpt) {
+    ULLI taille = corresp.size() + 1;
+    corresp.resize(taille);
+    corresp[cpt - 1] = dest;
+    ++cpt;
+}*/
+
+static void convert(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type) {
+
+    ifstream finput;
+    finput.open(filename, fstream:: in );
+    /* FIXME: ugly trick, this starts at 1 to say "if corres[node] == 0 then it has not be assigned yet" */
+    ULLI cpt = 1;
+    float weight = 1.f;
+
+    cerr << "Start reading" << endl;
+    if (finput) {
+        unsigned int src, dest;
+
+        /* We first do the renumerotation and build the correspondance */
+        while (finput >> src >> dest) {
+
+            if (type == WEIGHTED)
+                finput >> weight;
+            //If src is a long that can be stored as an int
+            if (src < nodes) {
+                if (corres[src] == 0) {
+                    corres[src] = cpt++;
+                    correspondance.push_back(src);
+                    //maj_corresp(this->correspondance, src, cpt);
+                }
+            } else {
+                if (corres_big_ids.find(src) == corres_big_ids.end()) {
+                    corres_big_ids.insert(make_pair(src, cpt++));
+                    correspondance.push_back(src);
+                }
+            }
+
+            if (dest < nodes) {
+                if (corres[dest] == 0) {
+                    corres[dest] = cpt++;
+                    correspondance.push_back(dest);
+                }
+            } else {
+                if (corres_big_ids.find(dest) == corres_big_ids.end()) {
+                    corres_big_ids.insert(make_pair(dest, cpt++));
+                    correspondance.push_back(dest);
+                }
+            }
+        }
+    }
+    finput.close();
+}
+
+Graph::Graph(string in_filename, string filename, string filename_w, int type, bool do_renumber) {
     ifstream finput;
 
     if (do_renumber) {
@@ -25,126 +82,77 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
         unsigned int nb_links = 0;
         float weight = 1.f;
         ofstream foutput;
-        char * tmp = new char[strlen(in_filename) + 7]();
-        strcat(tmp, in_filename);
-        strcat(tmp, "_renum");
+        string tmp = "";
+        /* TODO: split on string to add "_renum" before extension */
+        tmp+=in_filename;
+        tmp+="_renum";
+
+        finput.open(in_filename, fstream:: in );
         foutput.open(tmp, fstream::out | fstream::binary);
 
         cerr << "Renumerotation begins..." << endl;
 
-        //The correspondance will finally be stored in this structure
         correspondance.resize(0);
 
-        unsigned int max_int = nodes;
         //Creates the correspondance table
-        unsigned int * corres = new unsigned int[max_int];
-        memset(corres, 0, max_int * sizeof(unsigned int));
-
+        vector<unsigned int> corres(nodes,0);
         //Creates the specific table for huge ints that have to be stored as long long int
-        map < unsigned long long int, unsigned int > corres_big_ids;
-        map < unsigned long long int, unsigned int > ::iterator it_src;
-        map < unsigned long long int, unsigned int > ::iterator it_dest;
+        map < ULLI, unsigned int > corres_big_ids;
 
-        finput.open(in_filename, fstream:: in );
-        unsigned long long int cpt = 1;
-
-        cout << "Start reading" << endl;
-        if (finput) {
-
+        convert(in_filename, this->correspondance, corres, corres_big_ids, type);
+        if(finput) {
             unsigned int src, dest;
-
-            /* We first do the renumerotation and build the correspondance */
             while (finput >> src >> dest) {
-
-                if (type == WEIGHTED)
-                    finput >> weight;
-                //If src is a long that can be stored as an int
-                if (src < max_int) {
-                    if (corres[src] == 0) {
-                        corres[src] = cpt;
-                        cpt = maj_corresp(src, cpt);
-                    }
-                } else {
-                    if (corres_big_ids.find(src) == corres_big_ids.end()) {
-                        corres_big_ids.insert(make_pair(src, cpt));
-                        cpt = maj_corresp(src, cpt);
-                    }
-                }
-
-                if (dest < max_int) {
-                    if (corres[dest] == 0) {
-                        corres[dest] = cpt;
-                        cpt = maj_corresp(dest, cpt);
-                    }
-                } else {
-                    if (corres_big_ids.find(dest) == corres_big_ids.end()) {
-                        corres_big_ids.insert(make_pair(dest, cpt));
-                        cpt = maj_corresp(dest, cpt);
-                    }
-                }
-
                 unsigned int pos_src, pos_dest;
-                if (src < max_int) {
+                if (src < nodes) 
                     pos_src = corres[src] - 1;
-                } else {
-                    map < unsigned long long int, unsigned int > ::iterator it_src;
-                    it_src = corres_big_ids.find(src);
+                else {
+                    auto it_src = corres_big_ids.find(src);
                     pos_src = it_src -> second - 1;
                 }
 
-                if (dest < max_int) {
+                if (dest < nodes) 
                     pos_dest = corres[dest] - 1;
-                } else {
-                    map < unsigned long long int, unsigned int > ::iterator it_dest;
-                    it_dest = corres_big_ids.find(dest);
+                else {
+                    auto it_dest = corres_big_ids.find(dest);
                     pos_dest = it_dest -> second - 1;
                 }
 
                 nb_links++;
                 // TODO: count nb_links while parsing for the maximum, and pourcent the progression
+                foutput << pos_src << " " << pos_dest;
                 if (type == WEIGHTED)
-                    foutput << pos_src << " " << pos_dest << " " << weight << endl;
-                else
-                    foutput << pos_src << " " << pos_dest << endl;
-
+                    foutput << " " << weight;
+                foutput << endl;
             }
-
-            finput.close();
-            cerr << "Renumerotation ends..." << endl;
-            cerr << "Building the graph... links out" << endl;
-            foutput.close();
-
-            /* Release memory */
-            delete[] corres;
-
-            // Then we build the graph reading the new graph
-            // Out links first
-            finput.open(tmp, fstream:: in );
-            delete[] tmp;
-            weight = 1.f;
-            while (finput >> src >> dest) {
-
-                if (type == WEIGHTED)
-                    finput >> weight;
-
-                if (links_out.size() <= (max(src, dest) + 1)) {
-                    links_out.resize(max(src, dest) + 1);
-                }
-
-                links_out[src].push_back(make_pair(dest, weight));
-
-                if (links_in.size() <= (max(src, dest) + 1)) {
-                    links_in.resize(max(src, dest) + 1);
-                }
-
-                links_in[dest].push_back(make_pair(src, weight));
-
-                nb_links++;
-            }
-
-            cerr << "done." << endl;
-            finput.close();
         }
+
+        cerr << "Renumerotation ends..." << endl;
+        cerr << "Building the graph... links out" << endl;
+        foutput.close();
+
+        // Then we build the graph reading the new graph
+        // Out links first
+        finput.open(tmp, fstream:: in );
+        weight = 1.f;
+        /* FIXME: since the graph is renumbered, we may avoid resizing so much */
+        links_out.resize(this->correspondance.size());
+        links_in.resize(this->correspondance.size());
+
+        unsigned int src, dest;
+        while (finput >> src >> dest) {
+
+            if (type == WEIGHTED)
+                finput >> weight;
+
+            links_out[src].push_back(make_pair(dest, weight));
+            links_in[dest].push_back(make_pair(src, weight));
+
+            nb_links++;
+        }
+
+        cerr << "done." << endl;
+        finput.close();
 
     } else {
 
@@ -219,7 +227,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
     // outputs links_out
     for (unsigned int i = 0; i < s; i++) {
         for (unsigned int j = 0; j < links_out[i].size(); j++) {
-            unsigned long long int dest = links_out[i][j].first;
+            ULLI dest = links_out[i][j].first;
             fbin.write((char * )( & dest), sizeof(unsigned int));
         }
     }
@@ -244,7 +252,7 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
     // outputs links_in
     for (unsigned int i = 0; i < s; i++) {
         for (unsigned int j = 0; j < links_in[i].size(); j++) {
-            unsigned long long int dest = links_in[i][j].first;
+            ULLI dest = links_in[i][j].first;
             fbin.write((char * )( & dest), sizeof(unsigned int));
         }
     }
@@ -261,8 +269,8 @@ Graph::Graph(char * in_filename, char * filename, char * filename_w, int type, b
     // outputs correspondance
     if (do_renumber) {
         for (unsigned int i = 0; i < s; i++) {
-            unsigned long long int corr = correspondance[i];
-            fbin.write((char * )( & corr), sizeof(unsigned long long int));
+            ULLI corr = correspondance[i];
+            fbin.write((char * )( & corr), sizeof(ULLI));
         }
     }
 
@@ -277,23 +285,14 @@ Graph::Graph(const Graph &g) {
     this->correspondance = g.correspondance;
 }
 
-unsigned long long int
-Graph::maj_corresp(unsigned int dest, unsigned long long int cpt) {
-    unsigned long long int taille = correspondance.size() + 1;
-    correspondance.resize(taille);
-    correspondance[cpt - 1] = dest;
-    cpt++;
-    return cpt;
-}
-
 /* This procedure allows for multigraphs: if the input file contains 1 4 3 and 1 4 6 
  * then this procedure will replace (4,3) and (4,6) in the adjacency list of 1 by (4,9)
  */
 void
 Graph::clean(int type) {
     for (unsigned int i = 0; i < links_out.size(); i++) {
-        map < unsigned long long int, float > m;
-        map < unsigned long long int, float > ::iterator it;
+        map < ULLI, float > m;
+        map < ULLI, float > ::iterator it;
 
         for (unsigned int j = 0; j < links_out[i].size(); j++) {
             it = m.find(links_out[i][j].first);
@@ -354,15 +353,15 @@ Graph::display_binary(char * filename, char * filename_w, int type, bool do_renu
     // outputs correspondance
     if (do_renumber) {
         for (unsigned int i = 0; i < s; i++) {
-            unsigned long long int corr = correspondance[i];
-            foutput.write((char * )( & corr), sizeof(unsigned long long int));
+            ULLI corr = correspondance[i];
+            foutput.write((char * )( & corr), sizeof(ULLI));
         }
     }
 
     // outputs links_out
     for (unsigned int i = 0; i < s; i++) {
         for (unsigned int j = 0; j < links_out[i].size(); j++) {
-            unsigned long long int dest = links_out[i][j].first;
+            ULLI dest = links_out[i][j].first;
             foutput.write((char * )( & dest), sizeof(unsigned int));
         }
     }
@@ -370,7 +369,7 @@ Graph::display_binary(char * filename, char * filename_w, int type, bool do_renu
     // outputs links_in
     for (unsigned int i = 0; i < s; i++) {
         for (unsigned int j = 0; j < links_in[i].size(); j++) {
-            unsigned long long int dest = links_in[i][j].first;
+            ULLI dest = links_in[i][j].first;
             foutput.write((char * )( & dest), sizeof(unsigned int));
         }
     }
