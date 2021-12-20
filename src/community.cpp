@@ -165,7 +165,7 @@ Community::neigh_comm(float node) {
     // at this stage no neighboring community has to be visited
     neigh_last = 0;
 
-    pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = ( * g).neighbors(node);
+    pair < size_t, size_t > p = ( * g).neighbors(node);
 
     float deg = ( * g).nb_neighbors_out(node);
 
@@ -176,9 +176,9 @@ Community::neigh_comm(float node) {
 
     for (float i = 0; i < deg; i++) {
         // fetching neighbors of i, their community and the corresponding degrees
-        float neigh = * (p.first + i);
+        float neigh = g->links[p.first + i];
         float neigh_comm = n2c[neigh];
-        double neigh_w = (( * g).weights.size() == 0) ? 1. : * (p.second + i);
+        double neigh_w = (( * g).weights.size() == 0) ? 1. : g->weights[p.second + i];
 
         if (neigh != node) {
             // if the community is discovered for the first time
@@ -192,15 +192,15 @@ Community::neigh_comm(float node) {
     }
 
     // we proceed similarly on in-neighbors
-    pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p_in = ( * g).in_neighbors(node);
+    pair < size_t, size_t > p_in = ( * g).in_neighbors(node);
 
     float deg_in = ( * g).nb_neighbors_in(node);
 
     for (float i = 0; i < deg_in; i++) {
 
-        float neigh_in = * (p_in.first + i);
+        float neigh_in = g->links_in[p_in.first + i];
         float neigh_comm_in = n2c[neigh_in];
-        double neigh_w_in = (( * g).weights_in.size() == 0) ? 1. : * (p_in.second + i);
+        double neigh_w_in = (( * g).weights_in.size() == 0) ? 1. : g->weights_in[p_in.second + i];
 
         if (neigh_in != node) {
             if (neigh_weight[neigh_comm_in] == -1) {
@@ -225,11 +225,11 @@ Community::partition2graph() {
             renumber[i] = final++;
 
     for (int i = 0; i < size; i++) {
-        pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = ( * g).neighbors(i);
+        pair < size_t, size_t > p = ( * g).neighbors(i);
 
         int deg = ( * g).nb_neighbors_out(i);
         for (int j = 0; j < deg; j++) {
-            int neigh = * (p.first + j);
+            int neigh = g->links[p.first + j];
             cout << renumber[n2c[i]] << " " << renumber[n2c[neigh]] << endl;
         }
     }
@@ -288,12 +288,12 @@ Graph *
             int comm_size = comm_nodes[comm].size();
             for (int node = 0; node < comm_size; node++) {
                 // we first deal with out-neighbors communities
-                pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = ( * g).neighbors(comm_nodes[comm][node]);
+                pair < size_t, size_t > p = ( * g).neighbors(comm_nodes[comm][node]);
                 int deg = ( * g).nb_neighbors_out(comm_nodes[comm][node]);
                 for (int i = 0; i < deg; i++) {
-                    int neigh = * (p.first + i);
+                    int neigh = g->links[p.first + i];
                     int neigh_comm = renumber[n2c[neigh]];
-                    neigh_weight = (( * g).weights.size() == 0) ? 1. : * (p.second + i);
+                    neigh_weight = (( * g).weights.size() == 0) ? 1. : g->weights[p.second + i];
 
                     it_out = m_out.find(neigh_comm);
                     if (it_out == m_out.end())
@@ -303,12 +303,12 @@ Graph *
                 }
 
                 // same thing for in-neighbors communities
-                pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p_in = ( * g).in_neighbors(comm_nodes[comm][node]);
+                pair < size_t, size_t > p_in = ( * g).in_neighbors(comm_nodes[comm][node]);
                 deg = ( * g).nb_neighbors_in(comm_nodes[comm][node]);
                 for (int i = 0; i < deg; i++) {
-                    int neigh = * (p_in.first + i);
+                    int neigh = g->links_in[p_in.first + i];
                     int neigh_comm = renumber[n2c[neigh]];
-                    neigh_weight = (( * g).weights_in.size() == 0) ? 1.f : * (p_in.second + i);
+                    neigh_weight = (( * g).weights_in.size() == 0) ? 1.f : g->weights_in[p_in.second + i];
 
                     it_in = m_in.find(neigh_comm);
                     if (it_in == m_in.end())

@@ -35,13 +35,13 @@ class Graph {
         unsigned int nb_nodes;
         unsigned int nb_links_out;
         unsigned int nb_links_in;
-        double total_weight;  
+        float total_weight;  
 
         vector<unsigned long> degrees_out;
         vector<unsigned long> degrees_in;
         vector<unsigned int> links;
         vector<unsigned int> links_in;
-        vector<double> weights, weights_in;
+        vector<float> weights, weights_in;
 
         vector<ULLI> correspondance;
 
@@ -64,22 +64,22 @@ class Graph {
         inline unsigned int nb_neighbors_in(unsigned int node);
 
         // return the number of self loops of the node
-        inline double nb_selfloops(unsigned int node);
+        inline float nb_selfloops(unsigned int node);
 
         // return the weighted degree of the node
-        inline double out_weighted_degree(unsigned int node);
+        inline float out_weighted_degree(unsigned int node);
 
         // return the weighted in-degree of the node
-        inline double in_weighted_degree(unsigned int node);
+        inline float in_weighted_degree(unsigned int node);
 
         // return the total degree
-        inline double weighted_degree(unsigned int node);
+        inline float weighted_degree(unsigned int node);
 
-        // return pointers to the first out-neighbor and first weight of the node
-        inline pair<vector<unsigned int>::iterator, vector<double>::iterator > neighbors(unsigned int node);
+        // return positions of the first out-neighbor and first weight of the node
+        inline pair<size_t, size_t > neighbors(unsigned int node);
 
         // return pointers to the first in-neighbor and first weight of the node
-        inline pair<vector<unsigned int>::iterator, vector<double>::iterator > in_neighbors(unsigned int node);
+        inline pair<size_t, size_t> in_neighbors(unsigned int node);
 };
 
 
@@ -103,15 +103,45 @@ Graph::nb_neighbors_in(unsigned int node) {
         return degrees_in[node]-degrees_in[node-1];
 }
 
-inline double
+/* Out-neighbors 
+ * DONE: SI LE DEGRE NE CHANGE PAS ON RETOURNE 0 
+ */
+inline pair<size_t, size_t>
+Graph::neighbors(unsigned int node) {
+    assert(node<nb_nodes);
+
+    if (node==0)
+        return make_pair(0,0);
+    else if (weights.size()!=0)
+        return make_pair(degrees_out[node-1], degrees_out[node-1]);
+    else
+        return make_pair(degrees_out[node-1], 0);
+}
+
+/* In-neighbors 
+ * TODO: ADAPTER POIDS OUT/IN
+ */
+inline pair<size_t, size_t>
+Graph::in_neighbors(unsigned int node) {
+    assert(node<nb_nodes);
+
+    if (node==0)
+        return make_pair(0,0);
+    else if (weights_in.size()!=0)
+        return make_pair(degrees_in[node-1], degrees_in[node-1]);
+    else 
+        return make_pair(degrees_in[node-1], 0);
+}
+
+inline float
 Graph::nb_selfloops(unsigned int node) {
     assert(node<nb_nodes);
 
-    pair<vector<unsigned int>::iterator, vector<double>::iterator > p = neighbors(node);
-    for (float i=0 ; i<nb_neighbors_out(node) ; i++) {
-        if (*(p.first+i)==node) {
+    pair<size_t, size_t > p = neighbors(node);
+    for (float i=0 ; i<nb_neighbors_out(node) ; ++i) {
+        if (links[p.first+i]==node) {
             if (weights.size()!=0)
-                return (double)*(p.second+i);
+                return (float)weights[p.second+i];
             else 
                 return 1.;
         }
@@ -120,74 +150,45 @@ Graph::nb_selfloops(unsigned int node) {
     return 0.;
 }
 
-inline double
+
+inline float
 Graph::out_weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
 
     if (weights.size()==0)
-        return (double)nb_neighbors_out(node);
+        return (float)nb_neighbors_out(node);
     else {
-        pair<vector<unsigned int>::iterator, vector<double>::iterator > p = neighbors(node);
-        double res = 0;
+        pair<size_t, size_t > p = neighbors(node);
+        float res = 0;
         for (unsigned int i=0 ; i<nb_neighbors_out(node) ; i++) {
-            res += (double)*(p.second+i);
+            res += (float)weights[p.second+i];
         }
         return res;
     }
 }
 
-inline double
+inline float
 Graph::in_weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
 
     if (weights.size()==0)
-        return (double)nb_neighbors_in(node);
+        return (float)nb_neighbors_in(node);
     else {
-        pair<vector<unsigned int>::iterator, vector<double>::iterator > p = in_neighbors(node);
-        double res = 0;
+        pair<size_t, size_t> p = in_neighbors(node);
+        float res = 0;
         for (unsigned int i=0 ; i<nb_neighbors_in(node) ; i++) {
-            res += (double)*(p.second+i);
+            res += (float)weights_in[p.second+i];
         }
         return res;
     }
 }
 
-inline double
+inline float
 Graph::weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
 
     return out_weighted_degree(node) + in_weighted_degree(node);
 
-}
-
-/* Out-neighbors 
- * DONE: SI LE DEGRE NE CHANGE PAS ON RETOURNE 0 
- */
-inline pair<vector<unsigned int>::iterator, vector<double>::iterator >
-Graph::neighbors(unsigned int node) {
-    assert(node<nb_nodes);
-
-    if (node==0)
-        return make_pair(links.begin(), weights.begin());
-    else if (weights.size()!=0)
-        return make_pair(links.begin()+degrees_out[node-1], weights.begin()+degrees_out[node-1]);
-    else
-        return make_pair(links.begin()+degrees_out[node-1], weights.begin());
-}
-
-/* In-neighbors 
- * TODO: ADAPTER POIDS OUT/IN
- */
-inline pair<vector<unsigned int>::iterator, vector<double>::iterator >
-Graph::in_neighbors(unsigned int node) {
-    assert(node<nb_nodes);
-
-    if (node==0)
-        return make_pair(links_in.begin(), weights_in.begin());
-    else if (weights.size()!=0)
-        return make_pair(links_in.begin()+degrees_in[node-1], weights_in.begin()+degrees_in[node-1]);
-    else 
-        return make_pair(links_in.begin()+degrees_in[node-1], weights_in.begin());
 }
 
 

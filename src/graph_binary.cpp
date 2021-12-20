@@ -30,10 +30,9 @@ Graph::Graph() {
 const unsigned int nodes = 10000000;
 
 static void build_map(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type);
-static void init_attributes(Graph &g, const vector<vector<pair<unsigned int,float> > > &LOUT, const vector<vector<pair<unsigned int,float> > > &LIN, int type);
+static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN, int type);
 
 Graph::Graph(string in_filename, int type) {
-    ifstream finput;
     vector<vector<pair<unsigned int,float> > > LOUT;
     vector<vector<pair<unsigned int,float> > > LIN;
 
@@ -44,8 +43,6 @@ Graph::Graph(string in_filename, int type) {
     /* TODO: split on string to add "_renum" before extension */
     tmp+=in_filename;
     tmp+="_renum";
-
-    finput.open(in_filename, fstream:: in );
 
     cerr << "Renumerotation begins..." << endl;
 
@@ -59,19 +56,18 @@ Graph::Graph(string in_filename, int type) {
     build_map(in_filename, this->correspondance, corres, corres_big_ids, type);
 
     cerr << "Renumerotation ends..." << endl;
-    finput.close();
 
     // Then we build the graph reading the new graph
     // Out links first
+    ifstream finput;
     finput.open(in_filename, fstream:: in );
     weight = 1.f;
     /* FIXME: since the graph is renumbered, we may avoid resizing so much */
     LOUT.resize(this->correspondance.size());
     LIN.resize(this->correspondance.size());
 
-    unsigned int src, dest;
+    unsigned int src, dest, map_src, map_dest;
     while (finput >> src >> dest) {
-        unsigned int map_src, map_dest;
         if (src < nodes) 
             map_src = corres[src] - 1;
         else {
@@ -96,7 +92,7 @@ Graph::Graph(string in_filename, int type) {
     cerr << "done." << endl;
     finput.close();
 
-    init_attributes(*this, LIN, LOUT, type);
+    //init_attributes(*this, LIN, LOUT, type);
     /* FIXME: needed only if reproducibility option is chosen */
     //foutput.open(tmp, fstream::out | fstream::binary);
     //foutput.close();
@@ -190,74 +186,18 @@ Graph::Graph(string filename, string filename_w, int type) {
 void
 Graph::display() {
     for (unsigned int node = 0; node < nb_nodes; node++) {
-        pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = neighbors(node);
+        pair < size_t, size_t > p = neighbors(node);
         cout << node << ":";
         for (unsigned int i = 0; i < nb_neighbors_out(node); i++) {
             if (true) {
                 if (weights.size() != 0)
-                    cout << " (" << * (p.first + i) << " " << * (p.second + i) << ")";
+                    cout << " (" << links[p.first + i] << " " << weights[p.second + i] << ")";
                 else
-                    cout << " " << * (p.first + i);
+                    cout << " " << links[p.first+i];
             }
         }
         cout << endl;
     }
-}
-
-void
-Graph::writeFile(string outNeighbors, string inNeighbors) {
-
-    ofstream foutput;
-    foutput.open(outNeighbors.c_str(), fstream::out | fstream::binary);
-
-    // fetching out-neighbors
-    for (unsigned int node = 0; node < nb_nodes; node++) {
-
-        pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = neighbors(node);
-        for (unsigned int i = 0; i < nb_neighbors_out(node); i++) 
-            foutput << correspondance[node] << " " << correspondance[ * (p.first + i)] << endl;
-
-    }
-
-    foutput.close();
-
-    ofstream foutputIn;
-    foutputIn.open(inNeighbors.c_str(), fstream::out | fstream::binary);
-
-    // fetching in-neighbors
-    for (unsigned int node = 0; node < nb_nodes; node++) {
-
-        pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p1 = in_neighbors(node);
-        for (unsigned int i = 0; i < nb_neighbors_in(node); i++) 
-            foutputIn << correspondance[node] << " " << correspondance[ * (p1.first + i)] << endl;
-
-    }
-
-}
-
-bool
-Graph::check_symmetry() {
-    int error = 0;
-    for (unsigned int node = 0; node < nb_nodes; node++) {
-        pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p = neighbors(node);
-        for (unsigned int i = 0; i < nb_neighbors_out(node); i++) {
-            unsigned int neigh = * (p.first + i);
-            double weight = * (p.second + i);
-
-            pair < vector < unsigned int > ::iterator, vector < double > ::iterator > p_neigh = neighbors(neigh);
-            for (unsigned int j = 0; j < nb_neighbors_out(neigh); j++) {
-                unsigned int neigh_neigh = * (p_neigh.first + j);
-                double neigh_weight = * (p_neigh.second + j);
-
-                if (node == neigh_neigh && weight != neigh_weight) {
-                    cout << node << " " << neigh << " " << weight << " " << neigh_weight << endl;
-                    if (error++ == 10)
-                        exit(0);
-                }
-            }
-        }
-    }
-    return (error == 0);
 }
 
 void
@@ -312,7 +252,7 @@ static void build_map(string filename, vector<ULLI> &correspondance, vector<unsi
     finput.close();
 }
 
-static void init_attributes(Graph &g, const vector<vector<pair<unsigned int,float> > > &LOUT, const vector<vector<pair<unsigned int,float> > > &LIN, int type) {
+static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN, int type) {
     g.nb_nodes = LOUT.size();
     cerr << "number of nodes: " << g.nb_nodes << endl;
 
@@ -327,6 +267,23 @@ static void init_attributes(Graph &g, const vector<vector<pair<unsigned int,floa
     g.links.resize(g.nb_links_out);
     cerr << g.nb_links_out << endl;
 
+    unsigned long int total_LOUT = 0;
+    for (size_t i = 0; i < g.nb_nodes; i++) {
+        for (auto edge : LOUT[i]) {
+            g.links[total_LOUT]=edge.first;
+            ++total_LOUT;
+        }
+    }
+
+    // Release memory
+    for (size_t i = 0; i < LOUT.size(); i++) {
+        LOUT[i].clear();
+        vector < pair < unsigned int, float > > ().swap(LOUT[i]);
+    }
+
+    LOUT.clear();
+    vector < vector < pair < unsigned int, float > > > ().swap(LOUT);
+
     cerr << "degrees in:";
     // Read cumulative in degree sequence: 8 bytes for each node
     g.degrees_in.resize(g.nb_nodes);
@@ -339,13 +296,6 @@ static void init_attributes(Graph &g, const vector<vector<pair<unsigned int,floa
     g.links_in.resize(g.nb_links_in);
     cerr << g.nb_links_in << endl;
 
-    unsigned long int total_LOUT = 0;
-    for (size_t i = 0; i < g.nb_nodes; i++) {
-        for (auto edge : LOUT[i]) {
-            g.links[total_LOUT]=edge.first;
-            ++total_LOUT;
-        }
-    }
 
     unsigned long int total_LIN = 0;
     for (size_t i = 0; i < g.nb_nodes; i++) {
