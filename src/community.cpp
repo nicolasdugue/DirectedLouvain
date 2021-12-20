@@ -15,9 +15,41 @@
 
 using namespace std;
 
-Community::Community(char * filename, char * filename_w, int type, int nbp, double minm, bool renumbered) {
+Community::Community(string in_filename, int type, int nbp, double minm) {
     cerr << "Reading graph" << endl;
-    g = new Graph(filename, filename_w, type, renumbered);
+    g = new Graph(in_filename, type);
+    cerr << "Graph read" << endl;
+    size = ( * g).nb_nodes;
+    neigh_weight.resize(size, -1);
+    neigh_pos.resize(size);
+    neigh_last = 0;
+
+    n2c.resize(size); 
+    in .resize(size);
+    tot.resize(size);
+    tot_out.resize(size);
+    tot_in.resize(size);
+
+    for (int i = 0; i < size; i++) {
+        // i belongs to its own community
+        n2c[i] = i;
+        // computing weighted directed degree of i
+        tot_out[i] = ( * g).out_weighted_degree(i);
+        tot_in[i] = ( * g).in_weighted_degree(i);
+        tot[i] = tot_out[i] + tot_in[i];
+        /* the total number of edges inside the community corresponds to 
+         * the number of self-loops after contraction
+         */
+        in [i] = ( * g).nb_selfloops(i);
+    }
+
+    nb_pass = nbp;
+    min_modularity = minm;
+}
+
+Community::Community(string bin_filename, string filename_w, int type, int nbp, double minm) {
+    cerr << "Reading graph" << endl;
+    g = new Graph(bin_filename, filename_w, type);
     cerr << "Graph read" << endl;
     size = ( * g).nb_nodes;
     neigh_weight.resize(size, -1);
@@ -72,7 +104,7 @@ Community::Community(Graph * gc, int nbp, double minm) {
 }
 
 void
-Community::init_partition(char * filename) {
+Community::init_partition(string filename) {
     ifstream finput;
     finput.open(filename, fstream:: in );
 

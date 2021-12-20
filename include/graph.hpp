@@ -45,7 +45,7 @@ class Graph {
         /* FIXME: is it used somewhere? */
         void clean(int type);
         void display(int type);
-        void display_binary(char *filename, char *filename_w, int type, bool do_renumber);
+        void display_binary(string filename, string filename_w, int type, bool do_renumber);
 };
 
 #endif // GRAPH_H

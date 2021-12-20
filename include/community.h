@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 
-#include "graph_binary.h"
+#include "graph_binary.hpp"
 
 using namespace std;
 
@@ -49,13 +49,14 @@ class Community {
   // constructors:
   // reads graph from file using graph constructor
   // type defined the weighted/unweighted status of the graph file
-  Community (char *filename, char *filename_w, int type, int nb_pass, double min_modularity, bool renumbered);
+  Community (string in_filename, int type, int nb_pass, double min_modularity);
+  Community (string bin_filename, string filename_w, int type, int nb_pass, double min_modularity);
   // copy graph
   Community (Graph* g, int nb_pass, double min_modularity);
   ~Community() { delete g; }
 
   // initiliazes the partition with something else than all nodes alone
-  void init_partition(char *filename_part);
+  void init_partition(string filename_part);
 
   // display the community of each node
   void display();

@@ -19,21 +19,19 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include "../include/graph_binary.h"
+#include "../include/graph_binary.hpp"
 #include "../include/community.h"
 
 using namespace std;
 
-char * filename = NULL;
-char * filename_w = NULL;
-char * filename_part = NULL;
+string filename = "";
+string filename_w = "";
+string filename_part = "";
 int type = UNWEIGHTED;
 int nb_pass = 0;
 double precision = 0.000001;
 int display_level = -2;
 int k1 = 16;
-bool do_renumber = false;
-
 bool verbose = false;
 
 void
@@ -85,14 +83,11 @@ parse_args(int argc, char ** argv) {
             case 'v':
                 verbose = true;
                 break;
-            case 'r':
-                do_renumber = true;
-                break;
             default:
                 usage(argv[0], "Unknown option\n");
             }
         } else {
-            if (filename == NULL)
+            if (filename == "")
                 filename = argv[i];
             else
                 usage(argv[0], "More than one filename\n");
@@ -119,9 +114,10 @@ main(int argc, char ** argv) {
     time( & time_begin);
     if (verbose)
         display_time("Begin");
-    Community *c = new Community(filename, filename_w, type, -1, precision, do_renumber);
+    Community *c = new Community(filename, type, -1, precision);
+    //Community *c = new Community(filename, "", type, -1, precision);
     cerr << "OK" << endl;
-    if (filename_part != NULL)
+    if (filename_part != "")
         c->init_partition(filename_part);
     Graph * g = NULL;
     bool improvement = true;
@@ -158,7 +154,7 @@ main(int argc, char ** argv) {
         mod = new_mod;
         if (verbose)
             display_time("  end computation");
-        if (filename_part != NULL && level == 1) // do at least one more computation if partition is provided
+        if (filename_part != "" && level == 1) // do at least one more computation if partition is provided
             improvement = true;
     } while (improvement);
 
