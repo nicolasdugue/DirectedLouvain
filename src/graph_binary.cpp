@@ -27,7 +27,7 @@ Graph::Graph() {
 }
 
 /* FIXME: rename */
-const unsigned int nodes = 10000000;
+const unsigned int nodes = 1000000;
 
 static void build_map(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type);
 static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN, int type);
@@ -71,15 +71,15 @@ Graph::Graph(string in_filename, int type) {
         if (src < nodes) 
             map_src = corres[src] - 1;
         else {
-            auto it_src = corres_big_ids.find(src);
-            map_src = it_src -> second - 1;
+            map_src = corres_big_ids[src]-1;
+            //map_src = it_src -> second - 1;
         }
 
         if (dest < nodes) 
             map_dest = corres[dest] - 1;
         else {
-            auto it_dest = corres_big_ids.find(dest);
-            map_dest = it_dest -> second - 1;
+            map_dest = corres_big_ids[dest]-1;
+            //map_dest = it_dest -> second - 1;
         }
 
         if (type == WEIGHTED)
@@ -92,7 +92,7 @@ Graph::Graph(string in_filename, int type) {
     cerr << "done." << endl;
     finput.close();
 
-    //init_attributes(*this, LIN, LOUT, type);
+    init_attributes(*this, LIN, LOUT, type);
     /* FIXME: needed only if reproducibility option is chosen */
     //foutput.open(tmp, fstream::out | fstream::binary);
     //foutput.close();

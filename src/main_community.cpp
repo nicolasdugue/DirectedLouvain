@@ -114,21 +114,20 @@ main(int argc, char ** argv) {
     time( & time_begin);
     if (verbose)
         display_time("Begin");
-    Graph * g = new Graph(filename, type);
-    //Community *c = new Community(filename, type, -1, precision);
+    Community *c = new Community(filename, type, -1, precision);
     //Community *c = new Community(filename, "", type, -1, precision);
     cerr << "OK" << endl;
-    //if (filename_part != "")
-    //    c->init_partition(filename_part);
-    //Graph * g = NULL;
+    if (filename_part != "")
+        c->init_partition(filename_part);
+    Graph * g = NULL;
     bool improvement = true;
-    //double mod = c->modularity(), new_mod;
+    double mod = c->modularity(), new_mod;
     int nb_pass = 0;
     int level = 0;
 
-    /*do {
+    do {
         nb_pass++;
-        // TODO: does not work with (*g).nb_nodes if g is NULL 
+        /* TODO: does not work with (*g).nb_nodes if g is NULL */
         if (verbose) {
             cerr << "level " << level << ":\n";
             display_time("  start computation");
@@ -148,7 +147,7 @@ main(int argc, char ** argv) {
         delete c;
         c = new Community(g, -1, precision);
         delete g;
-        // FIXME: memory leak for not destroying objects 
+        /* FIXME: memory leak for not destroying objects */
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 
@@ -157,15 +156,15 @@ main(int argc, char ** argv) {
             display_time("  end computation");
         if (filename_part != "" && level == 1) // do at least one more computation if partition is provided
             improvement = true;
-    } while (improvement);*/
+    } while (improvement);
 
-    /*delete c;
+    delete c;
     time( & time_end);
     if (verbose) {
         display_time("End");
         cerr << "Total duration: " << (time_end - time_begin) << " sec." << endl;
     }
     cerr << new_mod << endl;
-    foutput << new_mod << endl;*/
+    foutput << new_mod << endl;
     foutput.close();
 }

@@ -90,19 +90,20 @@ Graph::Graph(string in_filename, string filename, string filename_w, int type, b
         build_map(in_filename, this->correspondance, corres, corres_big_ids, type);
 
         if(finput) {
-            unsigned int src, dest, pos_src, pos_dest;
+            unsigned int src, dest;
             while (finput >> src >> dest) {
+                unsigned int pos_src, pos_dest;
                 if (src < nodes) 
                     pos_src = corres[src] - 1;
                 else {
-                    map<unsigned long long int, unsigned int>::iterator it_src = corres_big_ids.find(src);
+                    auto it_src = corres_big_ids.find(src);
                     pos_src = it_src -> second - 1;
                 }
 
                 if (dest < nodes) 
                     pos_dest = corres[dest] - 1;
                 else {
-                    map<unsigned long long int, unsigned int>::iterator it_dest = corres_big_ids.find(dest);
+                    auto it_dest = corres_big_ids.find(dest);
                     pos_dest = it_dest -> second - 1;
                 }
 
