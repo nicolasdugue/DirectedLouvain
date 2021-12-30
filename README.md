@@ -9,7 +9,8 @@ The directed modularity is proved to be more efficient in the case of directed g
 **The README below is adapted from the Louvain algorithm: our package works in a similar way.**
 
 -----------------------------------------------------------------------------
-## How to 
+## How to use
+
 Computes communities and displays hierarchical tree:
 
     ./bin/community graph/graph.txt -l -1 -v > graph.tree
