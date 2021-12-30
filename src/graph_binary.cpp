@@ -36,12 +36,10 @@ Graph::Graph(string in_filename, short type, bool reproducibility, bool renumber
 
     this->type = type;
 
-    /* FIXME: this has nothing to do in the constructor */
     float weight = 1.f;
 
     string extension = in_filename.substr(in_filename.size()-4,in_filename.size());
 
-    /* FIXME: explain the difference between txt and bin */
     if(extension!=".bin") {
         correspondance.resize(0);
 
@@ -73,15 +71,13 @@ Graph::Graph(string in_filename, short type, bool reproducibility, bool renumber
 
             if (src < nodes) 
                 map_src = corres[src];
-            else {
+            else 
                 map_src = corres_big_ids[src];
-            }
 
             if (dest < nodes) 
                 map_dest = corres[dest];
-            else {
+            else 
                 map_dest = corres_big_ids[dest];
-            }
 
             LOUT[map_src].push_back(make_pair(map_dest, weight));
             LIN[map_dest].push_back(make_pair(map_src, weight));
@@ -229,13 +225,11 @@ static unsigned int build_map(string filename, vector<ULI> &correspondance, vect
         cerr << "renumbering graph..." << endl;
     ifstream finput;
     finput.open(filename, fstream:: in );
-    /* FIXME: ugly trick, this starts at 1 to say "if corres[node] == 0 then it has not be assigned yet" */
     unsigned int cpt = 0;
     float weight = 1.f;
     if (finput) {
         unsigned int src, dest;
 
-        /* We first do the renumerotation and build the correspondance */
         while (finput >> src >> dest) {
 
             if (type == WEIGHTED)
