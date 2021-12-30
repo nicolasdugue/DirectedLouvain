@@ -1,4 +1,4 @@
-# DirectedLouvain
+# Directed Louvain algorithm
 
 The algorithm used in this package is based on the Louvain algorithm developed by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded on the [Louvain algorithm webpage] (https://sites.google.com/site/findcommunities/) (**[2]**).
 The algorithm was then adjusted to handle directed graphs and to optimize the directed modularity of Leich and Newman instead of the classic modularity.
@@ -9,15 +9,14 @@ The directed modularity is proved to be more efficient in the case of directed g
 **The README below is adapted from the Louvain algorithm: our package works in a similar way**
 
 -----------------------------------------------------------------------------
-## Compute communities
-
-### How to use
+## How to 
 Computes communities and displays hierarchical tree:
 
     ./bin/community graph/graph.txt -l -1 -v > graph.tree
 
-The graph **must** be in edgelist format, that is one edge per line as follows:  \\
-`src dest [weight]`
+The graph **must** be in edgelist format, that is one edge per line as follows:  
+
+    `src dest [weight]`
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
 This file **must** be generated using the `-r` option, see below. In this case, the 
@@ -33,8 +32,13 @@ Several options are available, among which:
 + `-r` for reproducibility purposes: the renumbered and binary graphs are stored on 
 files and can be reused. 
 
-For example, using `graph/graph.txt` one obtains: 
-    `./bin/community graph/graph.txt -l -1 -v -w -r > graph/graph.tree` 
+More options and information are provided using `./bin/community`
+
+## Examples 
+Using `graph/graph.txt` one obtains: 
+
+    ./bin/community graph/graph.txt -l -1 -v -w -r > graph/graph.tree
+
 to compute hierarchical community structure (using **original** label nodes) 
 by first renumbering the graph, and 
 then writing files for reproducibility. The next runs would thus be: 
@@ -42,9 +46,8 @@ then writing files for reproducibility. The next runs would thus be:
     ./bin/community graph/graph.bin -w -l -1 > graph/graph.tree
 
 Finally, using an already renumbered graph one gets: 
-    ./bin/community graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
 
-More information is provided using `./bin/community`
+    ./bin/community graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
 
 The program can also start with any given partition using -p option
 
