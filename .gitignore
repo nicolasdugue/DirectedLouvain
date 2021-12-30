@@ -33,3 +33,4 @@ obj/
 modularity_values_louvain_oriente.txt
 *.bin
 *.tree
+*renum*
