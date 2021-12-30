@@ -32,3 +32,4 @@ obj/
 *links-anon*
 modularity_values_louvain_oriente.txt
 *.bin
+*.tree
