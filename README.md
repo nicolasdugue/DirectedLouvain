@@ -11,9 +11,9 @@ The directed modularity is proved to be more efficient in the case of directed g
 -----------------------------------------------------------------------------
 ## How to use
 
-Computes communities and displays hierarchical tree:
+The algorithm works in two steps, namely computing communities and then displaying hierarchical tree. 
 
-    ./bin/community graph/graph.txt -l -1 -v > graph.tree
+### Computing communities
 
 The graph **must** be in edgelist format, that is one edge per line as follows (the `weight` being optional):  
 
@@ -23,6 +23,10 @@ Moreover, it is **mandatory** that vertices of the input graph are numbered from
 To ensure a proper computation of the communities, the default computation encompasses a renumbering of the input graph. 
 The option `-n` indicates that the graph is already numbered from `0` to `n-1` and hence avoids renumbering. 
 **Important**: communities are written using the **original label nodes**.
+
+The standard command is:
+
+    ./bin/community graph/graph.txt -l -1 -v > graph.tree
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
 This file **must** be generated using the `-r` option, see below. In this case, the 
