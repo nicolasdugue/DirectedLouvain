@@ -14,9 +14,9 @@ Computes communities and displays hierarchical tree:
 
     ./bin/community graph/graph.txt -l -1 -v > graph.tree
 
-The graph **must** be in edgelist format, that is one edge per line as follows:  
+The graph **must** be in edgelist format, that is one edge per line as follows (the `weight` being optional):  
 
-    `src dest [weight]`
+    src dest [weight]
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
 This file **must** be generated using the `-r` option, see below. In this case, the 
