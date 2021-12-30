@@ -6,7 +6,7 @@ These modifications were mostly made by [Anthony perez] (https://www.univ-orlean
 
 The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks] (https://hal.archives-ouvertes.fr/hal-01231784) (**[3]**) and was also succesfully used in [A community role approach to assess social capitalists visibility in the Twitter network] (https://hal.archives-ouvertes.fr/hal-01163741) with Vincent Labatut and Anthony Perez (**[1]**).
 
-**The README below is adapted from the Louvain algorithm: our package works in a similar way**
+**The README below is adapted from the Louvain algorithm: our package works in a similar way.**
 
 -----------------------------------------------------------------------------
 ## How to 
@@ -18,13 +18,14 @@ The graph **must** be in edgelist format, that is one edge per line as follows (
 
     src dest [weight]
 
+Moreover, it is **mandatory** that vertices of the input graph are numbered from `0` to `n-1`. 
+To ensure a proper computation of the communities, the default computation encompasses a renumbering of the input graph. 
+The option `-n` indicates that the graph is already numbered from `0` to `n-1` and hence avoids renumbering. 
+**Important**: communities are written using the **original label nodes**.
+
 Another possibility is to pass a binary file containing all information regarding the graph. 
 This file **must** be generated using the `-r` option, see below. In this case, the 
 only mandatory option is `-w` to indicate whether the graph is weighted. 
-
-This procedure encompasses a renumbering of the input graph to ensure a proper 
-computation of the communities. This is done by default, but the option `-n` 
-indicates that the graph is already numbered from `0` to `n-1` and hence avoids renumbering. 
 
 Several options are available, among which:
 + `-w` to indicate that the input graph is weighted
