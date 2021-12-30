@@ -17,7 +17,7 @@
 using namespace std;
 
 /* FIXME: rename */
-const unsigned int nodes = 10000000;
+const unsigned int nodes = 1000000;
 
 static void build_map(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type) {
 
@@ -43,8 +43,10 @@ static void build_map(string filename, vector<ULLI> &correspondance, vector<unsi
                     correspondance.push_back(src);
                 }
             } else {
-                corres_big_ids[src] = cpt++;
-                correspondance.push_back(src);
+                if(corres_big_ids.find(src) == corres_big_ids.end()) {
+                    corres_big_ids[src] = cpt++;
+                    correspondance.push_back(src);
+                }
             }
 
             if (dest < nodes) {
@@ -53,8 +55,10 @@ static void build_map(string filename, vector<ULLI> &correspondance, vector<unsi
                     correspondance.push_back(dest);
                 }
             } else {
-                corres_big_ids[dest] = cpt++;
-                correspondance.push_back(dest);
+                if(corres_big_ids.find(dest) == corres_big_ids.end()) {
+                    corres_big_ids[dest] = cpt++;
+                    correspondance.push_back(dest);
+                }
             }
         }
     }

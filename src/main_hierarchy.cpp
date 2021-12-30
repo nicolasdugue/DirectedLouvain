@@ -84,6 +84,7 @@ main(int argc, char ** argv) {
     while (!finput.eof()) {
         int node, nodecomm;
         finput >> node >> nodecomm;
+        corres.push_back(node);
 
         if (finput) {
             if (node == 0) {
@@ -114,7 +115,7 @@ main(int argc, char ** argv) {
                     n2c[node] = levels[l][n2c[node]];
 
             for (unsigned int node = 0; node < levels[0].size(); node++)
-                cout << node << " " << n2c[node] << endl;
+                cout << corres[node] << " " << n2c[node] << endl;
 
         } else {
             vector < int > n2c(levels[0].size());
@@ -127,7 +128,7 @@ main(int argc, char ** argv) {
                     n2c[node] = levels[l][n2c[node]];
 
             for (unsigned int node = 0; node < levels[0].size(); node++)
-                cout << node << " " << n2c[node] << endl;
+                cout << corres[node] << " " << n2c[node] << endl;
         }
 
     }

@@ -11,8 +11,8 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
+#ifndef GRAPH_BINARY_HPP
+#define GRAPH_BINARY_HPP
 
 #include <cassert>
 #include <iostream>
@@ -26,12 +26,15 @@
 #define UNWEIGHTED 1
 #define EMPTY -1 
 
-typedef unsigned long long int ULLI;
+typedef unsigned int ULI;
 
 using namespace std;
 
 class Graph {
-    public:
+    private:
+        friend class Community;
+        short type; 
+
         unsigned int nb_nodes;
         unsigned int nb_links_out;
         unsigned int nb_links_in;
@@ -43,22 +46,35 @@ class Graph {
         vector<unsigned int> links_in;
         vector<float> weights, weights_in;
 
-        vector<ULLI> correspondance;
+        vector<ULI> correspondance;
 
+    public:
         Graph();
-        Graph(string in_filename, int type); 
-        Graph(string filename, string filename_w, int type); 
-        Graph(int nb_nodes, int nb_links, float total_weight, int *degrees_out, int *links, float *weights);
+        Graph(string in_filename, short type, bool reproducibility, bool renumbering); 
+        Graph (const Graph& );
 
-        void display(void);
-        void display_reverse(void);
-        void display_binary(char *outfile);
+        unsigned int get_nb_nodes() const { return this->nb_nodes; }
+        unsigned int get_nb_links_out() const { return this->nb_links_out; }
+        unsigned int get_nb_links_in() const { return this->nb_links_in; }
+
+        float get_total_weight() const { return this->total_weight; }
+        float get_total_weight_out() { return this->weights.size(); }
+        float get_total_weight_in() { return this->weights_in.size(); }
+
+        vector<ULI> get_correspondance() { return this->correspondance; }
+
+        friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN);
+
+        void display() const;
+        void display_reverse();
+        void load_from_binary(string filename); 
+        void display_binary(string outfile);
         bool check_symmetry();
 
         void writeFile(string outNeighbors, string inNeighbors);
 
         // return the number of out neighbors (degree) of the node
-        inline unsigned int nb_neighbors_out(unsigned int node);
+        inline unsigned int nb_neighbors_out(unsigned int node) const;
 
         // return the number of out neighbors (degree) of the node
         inline unsigned int nb_neighbors_in(unsigned int node);
@@ -76,7 +92,7 @@ class Graph {
         inline float weighted_degree(unsigned int node);
 
         // return positions of the first out-neighbor and first weight of the node
-        inline pair<size_t, size_t > neighbors(unsigned int node);
+        inline pair<size_t, size_t > neighbors(unsigned int node) const;
 
         // return pointers to the first in-neighbor and first weight of the node
         inline pair<size_t, size_t> in_neighbors(unsigned int node);
@@ -84,7 +100,7 @@ class Graph {
 
 
 inline unsigned int
-Graph::nb_neighbors_out(unsigned int node) {
+Graph::nb_neighbors_out(unsigned int node) const {
     assert(node<nb_nodes);
 
     if (node==0)
@@ -107,7 +123,7 @@ Graph::nb_neighbors_in(unsigned int node) {
  * DONE: SI LE DEGRE NE CHANGE PAS ON RETOURNE 0 
  */
 inline pair<size_t, size_t>
-Graph::neighbors(unsigned int node) {
+Graph::neighbors(unsigned int node) const {
     assert(node<nb_nodes);
 
     if (node==0)
@@ -150,7 +166,6 @@ Graph::nb_selfloops(unsigned int node) {
     return 0.;
 }
 
-
 inline float
 Graph::out_weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
@@ -192,4 +207,4 @@ Graph::weighted_degree(unsigned int node) {
 }
 
 
-#endif // GRAPH_HPP
+#endif // GRAPH_BINARY_HPP

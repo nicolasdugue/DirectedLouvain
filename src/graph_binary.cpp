@@ -19,6 +19,10 @@
 #include <math.h>
 #include "../include/graph_binary.hpp"
 
+/* FIXME: rename */
+const unsigned int nodes = 10000000;
+static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, int type, bool renumbering);
+
 Graph::Graph() {
     nb_nodes = 0;
     nb_links_out = 0;
@@ -26,174 +30,171 @@ Graph::Graph() {
     total_weight = 0;
 }
 
-/* FIXME: rename */
-const unsigned int nodes = 1000000;
-
-static void build_map(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type);
-static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN, int type);
-
-Graph::Graph(string in_filename, int type) {
+Graph::Graph(string in_filename, short type, bool reproducibility, bool renumbering) {
     vector<vector<pair<unsigned int,float> > > LOUT;
     vector<vector<pair<unsigned int,float> > > LIN;
 
+    this->type = type;
+
     /* FIXME: this has nothing to do in the constructor */
     float weight = 1.f;
-    ofstream foutput;
-    string tmp = "";
-    /* TODO: split on string to add "_renum" before extension */
-    tmp+=in_filename;
-    tmp+="_renum";
 
-    cerr << "Renumerotation begins..." << endl;
+    string extension = in_filename.substr(in_filename.size()-4,in_filename.size());
 
-    correspondance.resize(0);
+    /* FIXME: explain the difference between txt and bin */
+    if(extension!=".bin") {
+        correspondance.resize(0);
 
-    //Creates the correspondance table
-    vector<unsigned int> corres(nodes,0);
-    //Creates the specific table for huge ints that have to be stored as long long int
-    map < ULLI, unsigned int > corres_big_ids;
+        //Creates the correspondance table
+        vector<int> corres(nodes,-1);
+        //Creates the specific table for huge ints that have to be stored as long long int
+        map < ULI, unsigned int > corres_big_ids;
+        this->nb_nodes = build_map(in_filename, this->correspondance, corres, corres_big_ids, this->type, renumbering);
 
-    build_map(in_filename, this->correspondance, corres, corres_big_ids, type);
+        /* FIXME: since the graph is renumbered, we may avoid resizing so much */
+        LOUT.resize(this->correspondance.size());
+        LIN.resize(this->correspondance.size());
 
-    cerr << "Renumerotation ends..." << endl;
-
-    // Then we build the graph reading the new graph
-    // Out links first
-    ifstream finput;
-    finput.open(in_filename, fstream:: in );
-    weight = 1.f;
-    /* FIXME: since the graph is renumbered, we may avoid resizing so much */
-    LOUT.resize(this->correspondance.size());
-    LIN.resize(this->correspondance.size());
-
-    unsigned int src, dest, map_src, map_dest;
-    while (finput >> src >> dest) {
-        if (src < nodes) 
-            map_src = corres[src] - 1;
-        else {
-            map_src = corres_big_ids[src]-1;
-            //map_src = it_src -> second - 1;
+        ifstream finput;
+        finput.open(in_filename, fstream:: in );
+        ofstream foutput;
+        string name = in_filename.substr(0,in_filename.size()-4);
+        unsigned int src, dest, map_src, map_dest;
+        if(reproducibility) {
+            /* TODO: split on string to add "_renum" before extension */
+            string tmp=name+"_renum";
+            tmp+=extension;
+            foutput.open(tmp, fstream::out | fstream::binary);
         }
-
-        if (dest < nodes) 
-            map_dest = corres[dest] - 1;
-        else {
-            map_dest = corres_big_ids[dest]-1;
-            //map_dest = it_dest -> second - 1;
-        }
-
-        if (type == WEIGHTED)
-            finput >> weight;
-
-        LOUT[map_src].push_back(make_pair(map_dest, weight));
-        LIN[map_dest].push_back(make_pair(map_src, weight));
-    }
-
-    cerr << "done." << endl;
-    finput.close();
-
-    init_attributes(*this, LIN, LOUT, type);
-    /* FIXME: needed only if reproducibility option is chosen */
-    //foutput.open(tmp, fstream::out | fstream::binary);
-    //foutput.close();
-    /*if(finput) {
-        unsigned int src, dest;
         while (finput >> src >> dest) {
-            unsigned int map_src, map_dest;
+            weight = 1.f;
+            if (type == WEIGHTED)
+                finput >> weight;
+
             if (src < nodes) 
-                map_src = corres[src] - 1;
+                map_src = corres[src];
             else {
-                auto it_src = corres_big_ids.find(src);
-                map_src = it_src -> second - 1;
+                map_src = corres_big_ids[src];
             }
 
             if (dest < nodes) 
-                map_dest = corres[dest] - 1;
+                map_dest = corres[dest];
             else {
-                auto it_dest = corres_big_ids.find(dest);
-                map_dest = it_dest -> second - 1;
+                map_dest = corres_big_ids[dest];
             }
 
-            foutput << map_src << " " << map_dest;
-            if (type == WEIGHTED)
-                foutput << " " << weight;
-            foutput << endl;
-        }
-    }*/
+            LOUT[map_src].push_back(make_pair(map_dest, weight));
+            LIN[map_dest].push_back(make_pair(map_src, weight));
 
+            if(reproducibility) {
+                foutput << map_src << " " << map_dest;
+                if (type == WEIGHTED)
+                    foutput << " " << weight;
+                foutput << endl;
+            }
+        }
+
+        if(reproducibility) 
+            foutput.close();
+
+        finput.close();
+        init_attributes(*this, LOUT, LIN);
+
+        if(reproducibility) 
+            this->display_binary(name+".bin");
+        
+    }
+    else
+        this->load_from_binary(in_filename);
 }
 
+Graph::Graph(const Graph &g) {
+    this->type = g.type; 
+
+    this->links = g.links;
+    this->links_in = g.links_in;
+    this->degrees_out = g.degrees_out;
+    this->degrees_in = g.degrees_in;
+    this->weights = g.weights;
+    this->weights_in = g.weights_in;
+    this->correspondance = g.correspondance;
+
+    this->nb_nodes = g.nb_nodes;
+    this->nb_links_out = g.nb_links_out;
+    this->nb_links_in = g.nb_links_in;
+    this->total_weight = g.total_weight;
+}
+
+
 /* Reading from binary */
-Graph::Graph(string filename, string filename_w, int type) {
+void Graph::load_from_binary(string filename) {
     ifstream finput;
     finput.open(filename, fstream:: in | fstream::binary);
+    weights.resize(0);
+    weights_in.resize(0);
 
-    cerr << "number of nodes" << endl;
+    cerr << "number of nodes: ";
     // Read number of nodes on 4 bytes
-    finput.read((char * ) & nb_nodes, sizeof(size_t));
+    finput.read((char * ) & nb_nodes, sizeof(unsigned int));
     assert(finput.rdstate() == ios::goodbit);
-    cerr << "done: " << nb_nodes << endl;
+    cerr << nb_nodes << endl;
 
     // Read cumulative out degree sequence: 8 bytes for each node
-    cerr << "degrees out" << endl;
+    cerr << "total degrees out: ";
     degrees_out.resize(nb_nodes);
-    finput.read((char * ) & degrees_out[0], nb_nodes * sizeof(unsigned long int));
-    cerr << "done : " << degrees_out[nb_nodes - 1] << endl;
+    finput.read((char * ) & degrees_out[0], nb_nodes * sizeof(unsigned long));
+    cerr << degrees_out[nb_nodes - 1] << endl;
+
+    /* FIXME: really the same thing? */
+    this->total_weight = degrees_out[nb_nodes-1];
 
     // Read links: 4 bytes for each link
     nb_links_out = degrees_out[nb_nodes - 1];
     links.resize(nb_links_out);
     finput.read((char * )( & links[0]), (long) nb_links_out * sizeof(unsigned int));
 
+    if (this->type == WEIGHTED) {
+        weights.resize(nb_links_out);
+        finput.read((char * ) & weights[0], nb_links_out * sizeof(float));
+    }
+
     // Read cumulative in degree sequence: 8 bytes for each node
-    cerr << "degrees in" << endl;
+    cerr << "total degrees in: ";
     degrees_in.resize(nb_nodes);
-    finput.read((char * ) & degrees_in[0], nb_nodes * sizeof(unsigned long int));
-    cerr << "done : " << degrees_in[nb_nodes - 1] << endl;
+    finput.read((char * ) & degrees_in[0], nb_nodes * sizeof(unsigned long));
+    cerr << degrees_in[nb_nodes - 1] << endl;
 
     // Read links_in: 4 bytes for each link
     nb_links_in = degrees_in[nb_nodes - 1];
     links_in.resize(nb_links_in);
     finput.read((char * )( & links_in[0]), (long) nb_links_in * sizeof(unsigned int));
 
-    // Read correspondance of labels
-    cerr << "correspondance" << endl;
-    correspondance.resize(nb_nodes);
-    finput.read((char * )( & correspondance[0]), nb_nodes * sizeof(unsigned long long int));
-
-    // if weighted, read weights: 4 bytes for each link (each link is counted twice)
-    weights.resize(0);
-    weights_in.resize(0);
-
-    total_weight = 0;
     if (type == WEIGHTED) {
-        cerr << "Weights reading" << endl;
-        ifstream finput_w;
-        finput_w.open(filename_w, fstream:: in | fstream::binary);
-        weights.resize(nb_links_out);
-        finput_w.read((char * ) & weights[0], nb_links_out * sizeof(float));
         weights_in.resize(nb_links_in);
-        finput_w.read((char * ) & weights_in[0], nb_links_in * sizeof(float));
-        cerr << "Done" << endl;
+        finput.read((char * ) & weights_in[0], nb_links_in * sizeof(float));
     }
 
-    // Compute total weight
-    for (unsigned int i = 0; i < nb_nodes; i++) {
+    // Read correspondance of labels
+    correspondance.resize(nb_nodes);
+    finput.read((char * )( & correspondance[0]), nb_nodes * sizeof(ULI));
+
+    /* FIXME: why do we compute once again the total weighted out degree? 
+    for (unsigned int i = 0; i < nb_nodes; ++i) {
         total_weight += out_weighted_degree(i);
-    }
+    }*/
 }
 
 void
-Graph::display() {
+Graph::display() const {
     for (unsigned int node = 0; node < nb_nodes; node++) {
         pair < size_t, size_t > p = neighbors(node);
-        cout << node << ":";
-        for (unsigned int i = 0; i < nb_neighbors_out(node); i++) {
+        cout << this->correspondance[node] << ":";
+        for (unsigned int i = 0; i < nb_neighbors_out(node); ++i) {
             if (true) {
                 if (weights.size() != 0)
-                    cout << " (" << links[p.first + i] << " " << weights[p.second + i] << ")";
+                    cout << " (" << this->correspondance[links[p.first + i]] << " " << weights[p.second + i] << ")";
                 else
-                    cout << " " << links[p.first+i];
+                    cout << " " << this->correspondance[links[p.first+i]];
             }
         }
         cout << endl;
@@ -201,23 +202,35 @@ Graph::display() {
 }
 
 void
-Graph::display_binary(char * outfile) {
+Graph::display_binary(string outfile) {
     ofstream foutput;
     foutput.open(outfile, fstream::out | fstream::binary);
 
-    foutput.write((char * )( & nb_nodes), 4);
-    foutput.write((char * )( & degrees_out[0]), 4 * nb_nodes);
-    foutput.write((char * )( & links[0]), 8 * nb_links_out);
-    foutput.write((char * )( & degrees_in[0]), 4 * nb_nodes);
-    foutput.write((char * )( & links_in[0]), 8 * nb_links_in);
+    foutput.write((char * )( & nb_nodes), sizeof(unsigned int));
+    foutput.write((char * )( & degrees_out[0]), sizeof(unsigned long) * nb_nodes);
+    foutput.write((char * )( & links[0]), sizeof(unsigned int) * nb_links_out);
+    if(this->type==WEIGHTED)
+        foutput.write((char * )( & weights[0]), sizeof(float) * nb_links_out);
+    foutput.write((char * )( & degrees_in[0]), sizeof(unsigned long) * nb_nodes);
+    foutput.write((char * )( & links_in[0]), sizeof(unsigned int) * nb_links_in);
+    if(this->type==WEIGHTED)
+        foutput.write((char * )( & weights_in[0]), sizeof(float) * nb_links_in);
+    
+    for (auto c : this->correspondance) {
+        foutput.write((char * )( & c), sizeof(ULI));
+    }
+
+    foutput.close();
 }
 
-static void build_map(string filename, vector<ULLI> &correspondance, vector<unsigned int> &corres, map<ULLI, unsigned int> &corres_big_ids, int type) {
+static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, int type, bool renumbering) {
 
+    if(renumbering)
+        cerr << "renumbering graph..." << endl;
     ifstream finput;
     finput.open(filename, fstream:: in );
     /* FIXME: ugly trick, this starts at 1 to say "if corres[node] == 0 then it has not be assigned yet" */
-    ULLI cpt = 1;
+    unsigned int cpt = 0;
     float weight = 1.f;
     if (finput) {
         unsigned int src, dest;
@@ -229,37 +242,54 @@ static void build_map(string filename, vector<ULLI> &correspondance, vector<unsi
                 finput >> weight;
             //If src is a long that can be stored as an int
             if (src < nodes) {
-                if (corres[src] == 0) {
+                if (corres[src] == -1) {
                     corres[src] = cpt++;
-                    correspondance.push_back(src);
+                    if(renumbering)
+                        correspondance.push_back(src);
                 }
             } else {
-                corres_big_ids[src] = cpt++;
-                correspondance.push_back(src);
+                if(corres_big_ids.find(src) == corres_big_ids.end()) {
+                    corres_big_ids[src] = cpt++;
+                    if(renumbering)
+                        correspondance.push_back(src);
+                }
             }
 
             if (dest < nodes) {
-                if (corres[dest] == 0) {
+                if (corres[dest] == -1) {
                     corres[dest] = cpt++;
-                    correspondance.push_back(dest);
+                    if(renumbering)
+                        correspondance.push_back(dest);
                 }
             } else {
-                corres_big_ids[dest] = cpt++;
-                correspondance.push_back(dest);
+                if(corres_big_ids.find(dest) == corres_big_ids.end()) {
+                    corres_big_ids[dest] = cpt++;
+                    if(renumbering)
+                        correspondance.push_back(dest);
+                }
             }
         }
     }
+
+    /* If the graph is already renumbered the correspondance must be identity */
+    if(!renumbering) {
+        for(unsigned int i = 0; i < cpt; ++i)
+            correspondance.push_back(i);
+    }
+    else 
+        cerr << "done." << endl;
+
     finput.close();
+    return cpt;
 }
 
-static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN, int type) {
-    g.nb_nodes = LOUT.size();
+void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN) {
     cerr << "number of nodes: " << g.nb_nodes << endl;
 
-    cerr << "degrees out:";
+    cerr << "degrees out: ";
     g.degrees_out.resize(g.nb_nodes);
     unsigned long int tot = 0;
-    for (size_t i = 0; i < g.nb_nodes; i++) {
+    for (size_t i = 0; i < g.nb_nodes; ++i) {
         tot += (unsigned long int) LOUT[i].size();
         g.degrees_out[i] = tot;
     }
@@ -267,16 +297,25 @@ static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > >
     g.links.resize(g.nb_links_out);
     cerr << g.nb_links_out << endl;
 
+    if(g.type==WEIGHTED) {
+        g.weights.resize(g.nb_links_out);
+    }
+    else {
+        g.weights.resize(0);
+    }
+
     unsigned long int total_LOUT = 0;
-    for (size_t i = 0; i < g.nb_nodes; i++) {
+    for (size_t i = 0; i < g.nb_nodes; ++i) {
         for (auto edge : LOUT[i]) {
             g.links[total_LOUT]=edge.first;
+            if(g.type==WEIGHTED)
+                g.weights[total_LOUT]=edge.second;
             ++total_LOUT;
         }
     }
 
     // Release memory
-    for (size_t i = 0; i < LOUT.size(); i++) {
+    for (size_t i = 0; i < LOUT.size(); ++i) {
         LOUT[i].clear();
         vector < pair < unsigned int, float > > ().swap(LOUT[i]);
     }
@@ -284,11 +323,10 @@ static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > >
     LOUT.clear();
     vector < vector < pair < unsigned int, float > > > ().swap(LOUT);
 
-    cerr << "degrees in:";
-    // Read cumulative in degree sequence: 8 bytes for each node
+    cerr << "degrees in: ";
     g.degrees_in.resize(g.nb_nodes);
     tot = 0;
-    for (size_t i = 0; i < g.nb_nodes; i++) {
+    for (size_t i = 0; i < g.nb_nodes; ++i) {
         tot += (unsigned long int) LIN[i].size();
         g.degrees_in[i] = tot;
     }
@@ -296,40 +334,25 @@ static void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > >
     g.links_in.resize(g.nb_links_in);
     cerr << g.nb_links_in << endl;
 
+    if(g.type==WEIGHTED) {
+        g.weights_in.resize(g.nb_links_in);
+    }
+    else {
+        g.weights_in.resize(0);
+    }
 
     unsigned long int total_LIN = 0;
-    for (size_t i = 0; i < g.nb_nodes; i++) {
+    for (size_t i = 0; i < g.nb_nodes; ++i) {
         for (auto edge : LIN[i]) {
             g.links_in[total_LIN]=edge.first;
+            if(g.type==WEIGHTED)
+                g.weights_in[total_LIN]=edge.second;
             ++total_LIN;
         }
     }
 
-    // if weighted, read weights: 4 bytes for each link (each link is counted twice)
-    if(type==WEIGHTED) {
-        g.weights.resize(g.nb_links_out);
-        g.weights_in.resize(g.nb_links_in);
-
-        for (size_t i = 0; i < g.nb_nodes; i++) {
-            for (auto edge : LOUT[i]) 
-                g.weights[i]=edge.second;
-        }
-
-        for (size_t i = 0; i < g.nb_nodes; i++) {
-            for (auto edge : LIN[i]) 
-                g.weights_in[i]=edge.second;
-        }
-    }
-    else {
-        g.weights.resize(0);
-        g.weights_in.resize(0);
-    }
-
     // Compute total weight
-    g.total_weight = 0.;
-    for (unsigned int i = 0; i < g.nb_nodes; i++) {
-        g.total_weight += g.out_weighted_degree(i);
-    }
+    g.total_weight = g.degrees_out[g.nb_nodes-1];
     cerr << "total weight: " << g.total_weight << endl;
 }
 
