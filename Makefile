@@ -9,11 +9,10 @@ BINDIR=bin
 
 CFLAGS := --std=c++11 -Wall -Wextra -pedantic -ggdb -Wno-unused-parameter -Wno-return-type -Wno-variadic-macros
 LDFLAGS= -lm
-EXEC=community convert hierarchy
+EXEC=community hierarchy
 
 SRC= $(wildcard $(SRCDIR)/*.cpp)
 OBJ1= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph_binary.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
-OBJ2= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o)
 OBJ3 = $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph_binary.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
 
 all: $(EXEC)
@@ -24,22 +23,7 @@ Debug: $(EXEC)
 community : $(OBJ1) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_community.o)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
-convert : $(OBJ2) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_convert.o)
-	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
-
 hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_hierarchy.o)
-	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
-
-high_degree : $(OBJ3) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_high_degree.o)
-	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
-
-inverse : $(OBJ3) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_compare.o)
-	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
-
-reverse : $(OBJ3) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_reverse.o)
-	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
-
-overlap : $(OBJ3) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_overlap.o)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 ##########################################
