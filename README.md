@@ -39,10 +39,10 @@ to compute hierarchical community structure (using **original** label nodes)
 by first renumbering the graph, and 
 then writing files for reproducibility. The next runs would thus be: 
 
-    `./bin/community graph/graph.bin -w -l -1 > graph/graph.tree`
+    ./bin/community graph/graph.bin -w -l -1 > graph/graph.tree
 
 Finally, using an already renumbered graph one gets: 
-    `./bin/community graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree`
+    ./bin/community graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
 
 More information is provided using `./bin/community`
 
