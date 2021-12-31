@@ -1,4 +1,4 @@
-// File: graph_binary.h
+// File: graph.hpp
 // -- graph handling header file
 //-----------------------------------------------------------------------------
 // Community detection 
@@ -11,8 +11,8 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#ifndef GRAPH_BINARY_HPP
-#define GRAPH_BINARY_HPP
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
 
 #include <cassert>
 #include <iostream>
@@ -26,6 +26,10 @@
 #define UNWEIGHTED 1
 #define EMPTY -1 
 
+// To see the working of controlled
+// optimization "Ofast"
+#pragma GCC optimize("Ofast")
+
 typedef unsigned int ULI;
 
 using namespace std;
@@ -38,13 +42,14 @@ class Graph {
         unsigned int nb_nodes;
         unsigned int nb_links_out;
         unsigned int nb_links_in;
-        float total_weight;  
+        /* FIXME: is this normal that this corresponds to total _out_ weight? */
+        double total_weight;  
 
         vector<unsigned long> degrees_out;
         vector<unsigned long> degrees_in;
         vector<unsigned int> links;
         vector<unsigned int> links_in;
-        vector<float> weights, weights_in;
+        vector<double> weights, weights_in;
 
         vector<ULI> correspondance;
 
@@ -57,18 +62,18 @@ class Graph {
         unsigned int get_nb_links_out() const { return this->nb_links_out; }
         unsigned int get_nb_links_in() const { return this->nb_links_in; }
 
-        float get_total_weight() const { return this->total_weight; }
-        float get_total_weight_out() { return this->weights.size(); }
-        float get_total_weight_in() { return this->weights_in.size(); }
+        double get_total_weight() const { return this->total_weight; }
+        double get_total_weight_out() { return this->weights.size(); }
+        double get_total_weight_in() { return this->weights_in.size(); }
 
         vector<ULI> get_correspondance() { return this->correspondance; }
 
-        friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN);
+        friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN);
 
         void display() const;
         void display_reverse();
-        void load_from_binary(string filename); 
-        void display_binary(string outfile);
+        void load(string filename); 
+        void write(string outfile);
         bool check_symmetry();
 
         void writeFile(string outNeighbors, string inNeighbors);
@@ -78,13 +83,13 @@ class Graph {
         // return the number of out neighbors (degree) of the node
         inline unsigned int nb_neighbors_in(unsigned int node);
         // return the number of self loops of the node
-        inline float nb_selfloops(unsigned int node);
+        inline double nb_selfloops(unsigned int node);
         // return the weighted degree of the node
-        inline float out_weighted_degree(unsigned int node);
+        inline double out_weighted_degree(unsigned int node);
         // return the weighted in-degree of the node
-        inline float in_weighted_degree(unsigned int node);
+        inline double in_weighted_degree(unsigned int node);
         // return the total degree
-        inline float weighted_degree(unsigned int node);
+        inline double weighted_degree(unsigned int node);
         // return positions of the first out-neighbor and first weight of the node
         inline pair<size_t, size_t > neighbors(unsigned int node) const;
         // return pointers to the first in-neighbor and first weight of the node
@@ -107,7 +112,7 @@ Graph::nb_neighbors_in(unsigned int node) {
 }
 
 /* Out-neighbors 
- * DONE: SI LE DEGRE NE CHANGE PAS ON RETOURNE 0 
+ * TODO: use iterator again ---for optimization sake? 
  */
 inline pair<size_t, size_t>
 Graph::neighbors(unsigned int node) const {
@@ -138,15 +143,15 @@ Graph::in_neighbors(unsigned int node) {
         return make_pair(degrees_in[node-1], 0);
 }
 
-inline float
+inline double
 Graph::nb_selfloops(unsigned int node) {
     assert(node<nb_nodes);
 
     pair<size_t, size_t > p = neighbors(node);
-    for (float i=0 ; i<nb_neighbors_out(node) ; ++i) {
+    for (double i=0 ; i<nb_neighbors_out(node) ; ++i) {
         if (links[p.first+i]==node) {
             if (weights.size()!=0)
-                return (float)weights[p.second+i];
+                return (double)weights[p.second+i];
             else 
                 return 1.;
         }
@@ -155,39 +160,39 @@ Graph::nb_selfloops(unsigned int node) {
     return 0.;
 }
 
-inline float
+inline double
 Graph::out_weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
     if (weights.size()==0)
-        return (float)nb_neighbors_out(node);
+        return (double)nb_neighbors_out(node);
     else {
         pair<size_t, size_t > p = neighbors(node);
-        float res = 0;
+        double res = 0;
         for (unsigned int i=0 ; i<nb_neighbors_out(node) ; ++i) 
-            res += (float)weights[p.second+i];
+            res += (double)weights[p.second+i];
         return res;
     }
 }
 
-inline float
+inline double
 Graph::in_weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
     if (weights.size()==0)
-        return (float)nb_neighbors_in(node);
+        return (double)nb_neighbors_in(node);
     else {
         pair<size_t, size_t> p = in_neighbors(node);
-        float res = 0;
+        double res = 0;
         for (unsigned int i=0 ; i<nb_neighbors_in(node) ; ++i) 
-            res += (float)weights_in[p.second+i];
+            res += (double)weights_in[p.second+i];
         return res;
     }
 }
 
-inline float
+inline double
 Graph::weighted_degree(unsigned int node) {
     assert(node<nb_nodes);
     return out_weighted_degree(node) + in_weighted_degree(node);
 
 }
 
-#endif // GRAPH_BINARY_HPP
+#endif // GRAPH_HPP

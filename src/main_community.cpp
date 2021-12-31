@@ -25,7 +25,7 @@ using namespace std;
 
 string filename = "";
 string filename_part = "";
-int type = UNWEIGHTED;
+short type = UNWEIGHTED;
 int nb_pass = 0;
 double precision = 0.000001;
 int display_level = -2;
@@ -36,7 +36,7 @@ bool renumbering = true;
 
 void
 usage(char * prog_name,
-    const char * more) {
+        const char * more) {
     cerr << more;
     cerr << "usage: " << prog_name << " input_file [-w weight_file] [-p part_file] [-q epsilon] [-l display_level] [-v] [-h]" << endl << endl;
     cerr << "input_file: file containing the graph to decompose in communities." << endl;
@@ -62,36 +62,36 @@ parse_args(int argc, char ** argv) {
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             switch (argv[i][1]) {
-            case 'r':
-                reproducibility=true;
-                break;
-            case 'w':
-                type = WEIGHTED;
-                break;
-            case 'n':
-                renumbering=false;
-                break;
-            case 'p':
-                filename_part = argv[i + 1];
-                i++;
-                break;
-            case 'q':
-                precision = atof(argv[i + 1]);
-                i++;
-                break;
-            case 'l':
-                display_level = atoi(argv[i + 1]);
-                i++;
-                break;
-            case 'k':
-                k1 = atoi(argv[i + 1]);
-                i++;
-                break;
-            case 'v':
-                verbose = true;
-                break;
-            default:
-                usage(argv[0], "Unknown option\n");
+                case 'r':
+                    reproducibility=true;
+                    break;
+                case 'w':
+                    type = WEIGHTED;
+                    break;
+                case 'n':
+                    renumbering=false;
+                    break;
+                case 'p':
+                    filename_part = argv[i + 1];
+                    i++;
+                    break;
+                case 'q':
+                    precision = atof(argv[i + 1]);
+                    i++;
+                    break;
+                case 'l':
+                    display_level = atoi(argv[i + 1]);
+                    i++;
+                    break;
+                case 'k':
+                    k1 = atoi(argv[i + 1]);
+                    i++;
+                    break;
+                case 'v':
+                    verbose = true;
+                    break;
+                default:
+                    usage(argv[0], "Unknown option\n");
             }
         } else {
             if (filename == "")
@@ -114,11 +114,9 @@ main(int argc, char ** argv) {
     srand(time(NULL));
 
     ofstream foutput;
-    foutput.open("modularity_values_louvain_oriente.txt", fstream::app | fstream::binary);
+    foutput.open("modularity_values_directed_louvain.txt", fstream::app | fstream::binary);
 
     parse_args(argc, argv);
-    time_t time_begin, time_end;
-    time( & time_begin);
     if (verbose)
         display_time("Begin");
     Community *c = new Community(filename, type, -1, precision, reproducibility, renumbering);
@@ -130,9 +128,11 @@ main(int argc, char ** argv) {
     int nb_pass = 0;
     int level = 0;
 
+    time_t time_begin, time_end;
+    time( & time_begin);
     do {
         const Graph *community_graph = c->get_graph();
-        nb_pass++;
+        ++nb_pass;
         if (verbose) {
             cerr << "level " << level << ":\n";
             display_time("  start computation");
@@ -163,7 +163,7 @@ main(int argc, char ** argv) {
     } while (improvement);
 
     delete c;
-    time( & time_end);
+    time(&time_end);
     if (verbose) {
         display_time("End");
         cerr << "Total duration: " << (time_end - time_begin) << " sec." << endl;

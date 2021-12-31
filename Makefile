@@ -12,8 +12,8 @@ LDFLAGS= -lm
 EXEC=community hierarchy
 
 SRC= $(wildcard $(SRCDIR)/*.cpp)
-OBJ1= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph_binary.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
-OBJ3 = $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph_binary.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
+OBJ1= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
+OBJ3 = $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
 
 all: $(EXEC)
 Debug: CFLAGS += -DDEBUG -g
@@ -23,7 +23,7 @@ Debug: $(EXEC)
 community : $(OBJ1) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_community.o)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
-hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_hierarchy.o)
+hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/hierarchy.o)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 ##########################################
@@ -39,4 +39,4 @@ $(LIBDIR)/%.o: $(SRCDIR)/%.cpp
 cleanDebug:
 	rm -f $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~
 clean:
-	rm -f $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~
+	rm -f $(BINDIR)/* $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~

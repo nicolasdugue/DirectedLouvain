@@ -1,4 +1,4 @@
-// File: graph_binary.cpp
+// File: graph.cpp
 // -- graph handling source
 //-----------------------------------------------------------------------------
 // Community detection
@@ -17,7 +17,7 @@
 #include <string>
 #include <string.h>
 #include <math.h>
-#include "../include/graph_binary.hpp"
+#include "../include/graph.hpp"
 
 /* FIXME: rename */
 const unsigned int nodes = 10000000;
@@ -31,12 +31,12 @@ Graph::Graph() {
 }
 
 Graph::Graph(string in_filename, short type, bool reproducibility, bool renumbering) {
-    vector<vector<pair<unsigned int,float> > > LOUT;
-    vector<vector<pair<unsigned int,float> > > LIN;
+    vector<vector<pair<unsigned int,double> > > LOUT;
+    vector<vector<pair<unsigned int,double> > > LIN;
 
     this->type = type;
 
-    float weight = 1.f;
+    double weight = 1.f;
 
     string extension = in_filename.substr(in_filename.size()-4,in_filename.size());
 
@@ -49,7 +49,6 @@ Graph::Graph(string in_filename, short type, bool reproducibility, bool renumber
         map < ULI, unsigned int > corres_big_ids;
         this->nb_nodes = build_map(in_filename, this->correspondance, corres, corres_big_ids, this->type, renumbering);
 
-        /* FIXME: since the graph is renumbered, we may avoid resizing so much */
         LOUT.resize(this->correspondance.size());
         LIN.resize(this->correspondance.size());
 
@@ -58,12 +57,13 @@ Graph::Graph(string in_filename, short type, bool reproducibility, bool renumber
         ofstream foutput;
         string name = in_filename.substr(0,in_filename.size()-4);
         unsigned int src, dest, map_src, map_dest;
+        /* FIXME: move into build_map to avoid double reading */
         if(reproducibility) {
-            /* TODO: split on string to add "_renum" before extension */
             string tmp=name+"_renum";
             tmp+=extension;
             foutput.open(tmp, fstream::out | fstream::binary);
         }
+        cerr << "initializing graph..." << endl;
         while (finput >> src >> dest) {
             weight = 1.f;
             if (type == WEIGHTED)
@@ -94,14 +94,16 @@ Graph::Graph(string in_filename, short type, bool reproducibility, bool renumber
             foutput.close();
 
         finput.close();
+        /* FIXME: actually writing directly into file then reading from it seems faster */
         init_attributes(*this, LOUT, LIN);
 
         if(reproducibility) 
-            this->display_binary(name+".bin");
+            this->write(name+".bin");
+        cerr << "done." << endl;
         
     }
     else
-        this->load_from_binary(in_filename);
+        this->load(in_filename);
 }
 
 Graph::Graph(const Graph &g) {
@@ -123,61 +125,53 @@ Graph::Graph(const Graph &g) {
 
 
 /* Reading from binary */
-void Graph::load_from_binary(string filename) {
+void Graph::load(string filename) {
     ifstream finput;
     finput.open(filename, fstream:: in | fstream::binary);
     weights.resize(0);
     weights_in.resize(0);
 
     cerr << "number of nodes: ";
-    // Read number of nodes on 4 bytes
     finput.read((char * ) & nb_nodes, sizeof(unsigned int));
     assert(finput.rdstate() == ios::goodbit);
     cerr << nb_nodes << endl;
 
-    // Read cumulative out degree sequence: 8 bytes for each node
     cerr << "total degrees out: ";
     degrees_out.resize(nb_nodes);
     finput.read((char * ) & degrees_out[0], nb_nodes * sizeof(unsigned long));
     cerr << degrees_out[nb_nodes - 1] << endl;
 
-    /* FIXME: really the same thing? */
-    this->total_weight = degrees_out[nb_nodes-1];
-
-    // Read links: 4 bytes for each link
     nb_links_out = degrees_out[nb_nodes - 1];
     links.resize(nb_links_out);
     finput.read((char * )( & links[0]), (long) nb_links_out * sizeof(unsigned int));
 
     if (this->type == WEIGHTED) {
         weights.resize(nb_links_out);
-        finput.read((char * ) & weights[0], nb_links_out * sizeof(float));
+        finput.read((char * ) & weights[0], nb_links_out * sizeof(double));
     }
 
-    // Read cumulative in degree sequence: 8 bytes for each node
     cerr << "total degrees in: ";
     degrees_in.resize(nb_nodes);
     finput.read((char * ) & degrees_in[0], nb_nodes * sizeof(unsigned long));
     cerr << degrees_in[nb_nodes - 1] << endl;
 
-    // Read links_in: 4 bytes for each link
     nb_links_in = degrees_in[nb_nodes - 1];
     links_in.resize(nb_links_in);
     finput.read((char * )( & links_in[0]), (long) nb_links_in * sizeof(unsigned int));
 
     if (type == WEIGHTED) {
         weights_in.resize(nb_links_in);
-        finput.read((char * ) & weights_in[0], nb_links_in * sizeof(float));
+        finput.read((char * ) & weights_in[0], nb_links_in * sizeof(double));
     }
 
-    // Read correspondance of labels
     correspondance.resize(nb_nodes);
     finput.read((char * )( & correspondance[0]), nb_nodes * sizeof(ULI));
 
-    /* FIXME: why do we compute once again the total weighted out degree? 
+    this->total_weight = 0.f;
     for (unsigned int i = 0; i < nb_nodes; ++i) {
-        total_weight += out_weighted_degree(i);
-    }*/
+        this->total_weight += out_weighted_degree(i);
+    }
+    finput.close();
 }
 
 void
@@ -197,8 +191,9 @@ Graph::display() const {
     }
 }
 
+/* FIXME: do not use vector if reproducibility, but instead write _on the fly_ and then read */
 void
-Graph::display_binary(string outfile) {
+Graph::write(string outfile) {
     ofstream foutput;
     foutput.open(outfile, fstream::out | fstream::binary);
 
@@ -206,11 +201,11 @@ Graph::display_binary(string outfile) {
     foutput.write((char * )( & degrees_out[0]), sizeof(unsigned long) * nb_nodes);
     foutput.write((char * )( & links[0]), sizeof(unsigned int) * nb_links_out);
     if(this->type==WEIGHTED)
-        foutput.write((char * )( & weights[0]), sizeof(float) * nb_links_out);
+        foutput.write((char * )( & weights[0]), sizeof(double) * nb_links_out);
     foutput.write((char * )( & degrees_in[0]), sizeof(unsigned long) * nb_nodes);
     foutput.write((char * )( & links_in[0]), sizeof(unsigned int) * nb_links_in);
     if(this->type==WEIGHTED)
-        foutput.write((char * )( & weights_in[0]), sizeof(float) * nb_links_in);
+        foutput.write((char * )( & weights_in[0]), sizeof(double) * nb_links_in);
     
     for (auto c : this->correspondance) {
         foutput.write((char * )( & c), sizeof(ULI));
@@ -226,7 +221,7 @@ static unsigned int build_map(string filename, vector<ULI> &correspondance, vect
     ifstream finput;
     finput.open(filename, fstream:: in );
     unsigned int cpt = 0;
-    float weight = 1.f;
+    double weight = 1.f;
     if (finput) {
         unsigned int src, dest;
 
@@ -277,7 +272,10 @@ static unsigned int build_map(string filename, vector<ULI> &correspondance, vect
     return cpt;
 }
 
-void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT, vector<vector<pair<unsigned int,float> > > &LIN) {
+/* FIXME: is this really faster than writing into/reading from a binary file?
+ * FIXME: if this is not the case, then remove the reproducibility attribute !
+ */
+void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN) {
     cerr << "number of nodes: " << g.nb_nodes << endl;
 
     cerr << "degrees out: ";
@@ -291,12 +289,10 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT,
     g.links.resize(g.nb_links_out);
     cerr << g.nb_links_out << endl;
 
-    if(g.type==WEIGHTED) {
+    if(g.type==WEIGHTED) 
         g.weights.resize(g.nb_links_out);
-    }
-    else {
+    else 
         g.weights.resize(0);
-    }
 
     unsigned long int total_LOUT = 0;
     for (size_t i = 0; i < g.nb_nodes; ++i) {
@@ -311,11 +307,11 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT,
     // Release memory
     for (size_t i = 0; i < LOUT.size(); ++i) {
         LOUT[i].clear();
-        vector < pair < unsigned int, float > > ().swap(LOUT[i]);
+        vector < pair < unsigned int, double > > ().swap(LOUT[i]);
     }
 
     LOUT.clear();
-    vector < vector < pair < unsigned int, float > > > ().swap(LOUT);
+    vector < vector < pair < unsigned int, double > > > ().swap(LOUT);
 
     cerr << "degrees in: ";
     g.degrees_in.resize(g.nb_nodes);
@@ -328,12 +324,10 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT,
     g.links_in.resize(g.nb_links_in);
     cerr << g.nb_links_in << endl;
 
-    if(g.type==WEIGHTED) {
+    if(g.type==WEIGHTED) 
         g.weights_in.resize(g.nb_links_in);
-    }
-    else {
+    else 
         g.weights_in.resize(0);
-    }
 
     unsigned long int total_LIN = 0;
     for (size_t i = 0; i < g.nb_nodes; ++i) {
@@ -346,7 +340,10 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,float> > > &LOUT,
     }
 
     // Compute total weight
-    g.total_weight = g.degrees_out[g.nb_nodes-1];
+    g.total_weight = 0.;
+    for (unsigned int i = 0; i < g.nb_nodes; ++i) {
+        g.total_weight += g.out_weighted_degree(i);
+    }
     cerr << "total weight: " << g.total_weight << endl;
 }
 
