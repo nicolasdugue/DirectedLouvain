@@ -62,25 +62,25 @@ class Community {
         // display the community of each node
         void display();
 
-        // remove the node from its current community with which it has dnodecomm links
+        // remove the node from its current community with which it has dnodecomm arcs
         inline void remove(unsigned int node, unsigned int comm, double dnodecomm);
 
-        // insert the node in comm with which it shares dnodecomm links
+        // insert the node in comm with which it shares dnodecomm arcs
         inline void insert(unsigned int node, unsigned int comm, double dnodecomm);
 
         // compute the gain of modularity if node where inserted in comm
-        // given that node has dnodecomm links to comm.  The formula is:
+        // given that node has dnodecomm arcs to comm.  The formula is:
         // [(In(comm)+2d(node,comm))/2m - ((tot(comm)+deg(node))/2m)^2]-
         // [In(comm)/2m - (tot(comm)/2m)^2 - (deg(node)/2m)^2]
-        // where In(comm)    = number of half-links strictly inside comm
-        //       Tot(comm)   = number of half-links inside or outside comm (sum(degrees))
-        //       d(node,com) = number of links from node to comm
+        // where In(comm)    = number of half-arcs strictly inside comm
+        //       Tot(comm)   = number of half-arcs inside or outside comm (sum(degrees))
+        //       d(node,com) = number of arcs from node to comm
         //       deg(node)   = node degree
-        //       m           = number of links
+        //       m           = number of arcs
         inline double modularity_gain(unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in);
 
         // compute the set of neighboring communities of node
-        // for each community, gives the number of links from node to comm
+        // for each community, gives the number of arcs from node to comm
         void neigh_comm(unsigned int node);
 
         // compute the modularity of the current partition
@@ -103,9 +103,10 @@ inline void
 Community::remove(unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<size);
 
-    tot_out[comm]   -= (*g).out_weighted_degree(node);
-    tot_in[comm]    -= (*g).in_weighted_degree(node);
-    tot[comm]       -= (*g).weighted_degree(node);
+    tot_out[comm]   -= (*g).weighted_out_degree(node);
+    tot_in[comm]    -= (*g).weighted_in_degree(node);
+    /* FIXME: using the above calculation */
+    tot[comm]       -= (tot_out[comm] + tot_in[comm]);
     in[comm]        -= dnodecomm + (*g).nb_selfloops(node);
     n2c[node]       = -1;
 }
@@ -114,9 +115,9 @@ inline void
 Community::insert(unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<size);
 
-    tot_out[comm]   += (*g).out_weighted_degree(node);
-    tot_in[comm]    += (*g).in_weighted_degree(node);
-    tot[comm]       += (*g).weighted_degree(node);
+    tot_out[comm]   += (*g).weighted_out_degree(node);
+    tot_in[comm]    += (*g).weighted_in_degree(node);
+    tot[comm]       += (tot_out[comm] + tot_in[comm]);
     in[comm]        += dnodecomm + (*g).nb_selfloops(node);
     n2c[node]       = comm;
 }
@@ -129,10 +130,10 @@ Community::modularity_gain(unsigned int node, unsigned int comm, double dnodecom
     double totc_in      = tot_in[comm];
     double degc_out     = w_degree_out;
     double degc_in      = w_degree_in;
-    double m2           = g->get_total_weight();
+    double m           = g->get_total_weight();
     double dnc          = dnodecomm;
 
-    return (dnc/m2 - ((degc_out*totc_in + degc_in*totc_out)/(m2*m2)));
+    return (dnc/m - ((degc_out*totc_in + degc_in*totc_out)/(m*m)));
 }
 
 #endif // COMMUNITY_HPP

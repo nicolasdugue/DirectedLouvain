@@ -7,9 +7,8 @@
 //
 // This program must not be distributed without agreement of the above mentionned authors.
 //-----------------------------------------------------------------------------
-// Author   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
+// Authors   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
 //-----------------------------------------------------------------------------
-// see readme.txt for more details
 
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
@@ -39,17 +38,15 @@ class Graph {
         friend class Community;
         short type; 
 
-        unsigned int nb_nodes;
-        unsigned int nb_links_out;
-        unsigned int nb_links_in;
-        /* FIXME: is this normal that this corresponds to total _out_ weight? */
+        unsigned int nodes;
+        unsigned int arcs;
         double total_weight;  
 
-        vector<unsigned long> degrees_out;
-        vector<unsigned long> degrees_in;
-        vector<unsigned int> links;
-        vector<unsigned int> links_in;
-        vector<double> weights, weights_in;
+        vector<unsigned long> outdegrees;
+        vector<unsigned long> indegrees;
+        vector<unsigned int> outcoming_arcs;
+        vector<unsigned int> incoming_arcs;
+        vector<double> outcoming_weights, incoming_weights;
 
         vector<ULI> correspondance;
 
@@ -58,13 +55,10 @@ class Graph {
         Graph(string in_filename, short type, bool reproducibility, bool renumbering); 
         Graph (const Graph& );
 
-        unsigned int get_nb_nodes() const { return this->nb_nodes; }
-        unsigned int get_nb_links_out() const { return this->nb_links_out; }
-        unsigned int get_nb_links_in() const { return this->nb_links_in; }
+        unsigned int get_nodes() const { return this->nodes; }
+        unsigned int get_arcs() const { return this->arcs; }
 
         double get_total_weight() const { return this->total_weight; }
-        double get_total_weight_out() { return this->weights.size(); }
-        double get_total_weight_in() { return this->weights_in.size(); }
 
         vector<ULI> get_correspondance() { return this->correspondance; }
 
@@ -79,15 +73,15 @@ class Graph {
         void writeFile(string outNeighbors, string inNeighbors);
 
         // return the number of out neighbors (degree) of the node
-        inline unsigned int nb_neighbors_out(unsigned int node) const;
+        inline unsigned int out_degree(unsigned int node) const;
         // return the number of out neighbors (degree) of the node
-        inline unsigned int nb_neighbors_in(unsigned int node);
+        inline unsigned int in_degree(unsigned int node);
         // return the number of self loops of the node
         inline double nb_selfloops(unsigned int node);
         // return the weighted degree of the node
-        inline double out_weighted_degree(unsigned int node);
+        inline double weighted_out_degree(unsigned int node);
         // return the weighted in-degree of the node
-        inline double in_weighted_degree(unsigned int node);
+        inline double weighted_in_degree(unsigned int node);
         // return the total degree
         inline double weighted_degree(unsigned int node);
         // return positions of the first out-neighbor and first weight of the node
@@ -98,17 +92,17 @@ class Graph {
 
 
 inline unsigned int
-Graph::nb_neighbors_out(unsigned int node) const {
-    assert(node<nb_nodes);
+Graph::out_degree(unsigned int node) const {
+    assert(node<nodes);
 
-    return (node==0 ? degrees_out[0] : degrees_out[node]-degrees_out[node-1]);
+    return (node==0 ? outdegrees[0] : outdegrees[node]-outdegrees[node-1]);
 }
 
 inline unsigned int
-Graph::nb_neighbors_in(unsigned int node) {
-    assert(node<nb_nodes);
+Graph::in_degree(unsigned int node) {
+    assert(node<nodes);
 
-    return (node==0 ? degrees_in[0] : degrees_in[node]-degrees_in[node-1]);
+    return (node==0 ? indegrees[0] : indegrees[node]-indegrees[node-1]);
 }
 
 /* Out-neighbors 
@@ -116,15 +110,15 @@ Graph::nb_neighbors_in(unsigned int node) {
  */
 inline pair<size_t, size_t>
 Graph::neighbors(unsigned int node) const {
-    assert(node<nb_nodes);
+    assert(node<nodes);
 
     if (node==0)
         return make_pair(0,0);
-    else if (weights.size()!=0)
-        return make_pair(degrees_out[node-1], degrees_out[node-1]);
+    else if (outcoming_weights.size()!=0)
+        return make_pair(outdegrees[node-1], outdegrees[node-1]);
     /* FIXME: maybe useless? */
     else
-        return make_pair(degrees_out[node-1], 0);
+        return make_pair(outdegrees[node-1], 0);
 }
 
 /* In-neighbors 
@@ -132,26 +126,26 @@ Graph::neighbors(unsigned int node) const {
  */
 inline pair<size_t, size_t>
 Graph::in_neighbors(unsigned int node) {
-    assert(node<nb_nodes);
+    assert(node<nodes);
 
     if (node==0)
         return make_pair(0,0);
-    else if (weights_in.size()!=0)
-        return make_pair(degrees_in[node-1], degrees_in[node-1]);
+    else if (incoming_weights.size()!=0)
+        return make_pair(indegrees[node-1], indegrees[node-1]);
     /* FIXME: maybe useless? */
     else 
-        return make_pair(degrees_in[node-1], 0);
+        return make_pair(indegrees[node-1], 0);
 }
 
 inline double
 Graph::nb_selfloops(unsigned int node) {
-    assert(node<nb_nodes);
+    assert(node<nodes);
 
     pair<size_t, size_t > p = neighbors(node);
-    for (double i=0 ; i<nb_neighbors_out(node) ; ++i) {
-        if (links[p.first+i]==node) {
-            if (weights.size()!=0)
-                return (double)weights[p.second+i];
+    for (double i=0 ; i<out_degree(node) ; ++i) {
+        if (outcoming_arcs[p.first+i]==node) {
+            if (outcoming_weights.size()!=0)
+                return (double)outcoming_weights[p.second+i];
             else 
                 return 1.;
         }
@@ -161,37 +155,37 @@ Graph::nb_selfloops(unsigned int node) {
 }
 
 inline double
-Graph::out_weighted_degree(unsigned int node) {
-    assert(node<nb_nodes);
-    if (weights.size()==0)
-        return (double)nb_neighbors_out(node);
+Graph::weighted_out_degree(unsigned int node) {
+    assert(node<nodes);
+    if (outcoming_weights.size()==0)
+        return (double)out_degree(node);
     else {
         pair<size_t, size_t > p = neighbors(node);
         double res = 0;
-        for (unsigned int i=0 ; i<nb_neighbors_out(node) ; ++i) 
-            res += (double)weights[p.second+i];
+        for (unsigned int i=0 ; i<out_degree(node) ; ++i) 
+            res += (double)outcoming_weights[p.second+i];
         return res;
     }
 }
 
 inline double
-Graph::in_weighted_degree(unsigned int node) {
-    assert(node<nb_nodes);
-    if (weights.size()==0)
-        return (double)nb_neighbors_in(node);
+Graph::weighted_in_degree(unsigned int node) {
+    assert(node<nodes);
+    if (outcoming_weights.size()==0)
+        return (double)in_degree(node);
     else {
         pair<size_t, size_t> p = in_neighbors(node);
         double res = 0;
-        for (unsigned int i=0 ; i<nb_neighbors_in(node) ; ++i) 
-            res += (double)weights_in[p.second+i];
+        for (unsigned int i=0 ; i<in_degree(node) ; ++i) 
+            res += (double)incoming_weights[p.second+i];
         return res;
     }
 }
 
 inline double
 Graph::weighted_degree(unsigned int node) {
-    assert(node<nb_nodes);
-    return out_weighted_degree(node) + in_weighted_degree(node);
+    assert(node<nodes);
+    return weighted_out_degree(node) + weighted_in_degree(node);
 
 }
 

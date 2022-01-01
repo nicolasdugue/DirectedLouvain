@@ -137,8 +137,8 @@ main(int argc, char ** argv) {
             cerr << "level " << level << ":\n";
             display_time("  start computation");
             cerr << "  network size: " <<
-                community_graph->get_nb_nodes() << " nodes, " <<
-                community_graph->get_nb_links_out() << " links, " <<
+                community_graph->get_nodes() << " nodes, " <<
+                community_graph->get_arcs() << " arcs, " <<
                 community_graph->get_total_weight() << " weight." << endl;
         }
 
