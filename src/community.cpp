@@ -16,31 +16,28 @@
 #include <random>       // std::default_random_engine
 #include <chrono>       // std::chrono::system_clock
 
-Community::Community(string in_filename, int type, int nbp, double minm, bool reproducibility, bool renumbering) {
-    g = new Graph(in_filename, type, reproducibility, renumbering);
-    cerr << g->outcoming_weights.size() << endl;
+static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
+
+Community::Community(string in_filename, int weighted, int nbp, double minm, bool reproducibility, bool renumbering) {
+    g = new Graph(in_filename, weighted, reproducibility, renumbering);
     size = g->nodes;
     neigh_weight.resize(size, -1);
     neigh_pos.resize(size);
     neigh_last = 0;
 
-    n2c.resize(size); 
-    in.resize(size);
-    tot.resize(size);
-    tot_out.resize(size);
-    tot_in.resize(size);
+    node_to_community.resize(size); 
+    communities_arcs.resize(size);
 
     for (unsigned int i = 0; i < size; ++i) {
         // i belongs to its own community
-        n2c[i]      = i;
-        // computing weighted directed degree of i
-        tot_out[i]  = g->weighted_out_degree(i);
-        tot_in[i]   = g->weighted_in_degree(i);
-        tot[i]      = tot_out[i] + tot_in[i];
+        node_to_community[i]      = i;
         /* the total number of edges inside the community corresponds to 
          * the number of self-loops after contraction
          */
-        in [i]      = g->nb_selfloops(i);
+        communities_arcs[i].in       = g->count_selfloops(i);
+        communities_arcs[i].tot_out  = g->weighted_out_degree(i);
+        communities_arcs[i].tot_in   = g->weighted_in_degree(i);
+        communities_arcs[i].tot   = communities_arcs[i].tot_out + communities_arcs[i].tot_in;
     }
 
     nb_pass = nbp;
@@ -55,24 +52,22 @@ Community::Community(Graph * gc, int nbp, double minm) {
     neigh_pos.resize(size);
     neigh_last = 0;
 
-    n2c.resize(size); 
-    in.resize(size);
-    tot_out.resize(size);
-    tot_in.resize(size);
-    tot.resize(size);
+    node_to_community.resize(size); 
+    communities_arcs.resize(size);
 
     for (unsigned int i = 0; i < size; ++i) {
-        n2c[i]      = i; 
-        in[i]       = g->nb_selfloops(i);
-        tot_out[i]  = g->weighted_out_degree(i);
-        tot_in[i]   = g->weighted_in_degree(i);
-        tot[i]      = tot_out[i] + tot_in[i];
+        node_to_community[i]      = i; 
+        communities_arcs[i].in       = g->count_selfloops(i);
+        communities_arcs[i].tot_out  = g->weighted_out_degree(i);
+        communities_arcs[i].tot_in   = g->weighted_in_degree(i);
+        communities_arcs[i].tot   = communities_arcs[i].tot_out + communities_arcs[i].tot_in;
     }
 
     nb_pass = nbp;
     min_modularity = minm;
 }
 
+/* FIXME: this needs to be tested! */
 void Community::init_partition(string filename) {
     ifstream finput;
     finput.open(filename, fstream:: in );
@@ -83,7 +78,7 @@ void Community::init_partition(string filename) {
         finput >> node >> comm;
 
         if (finput) {
-            int old_comm = n2c[node];
+            int old_comm = node_to_community[node];
             neigh_comm(node);
 
             remove(node, old_comm, neigh_weight[old_comm]);
@@ -106,18 +101,19 @@ void Community::init_partition(string filename) {
 
 void Community::display() {
     for (unsigned int i = 0; i < size; ++i)
-        cerr << " " << g->correspondance[i] << "/" << n2c[i] << "/" << in [i] << "/" << tot[i];
+        cerr << " " << g->correspondance[i] << "/" << node_to_community[i] << "/" 
+             << communities_arcs[i].in << "/" << communities_arcs[i].tot;
     cerr << endl;
 }
 
 double Community::modularity() {
     double q = 0.;
-    double m = (double)g->total_weight;
+    double m = g->total_weight;
     for (unsigned int i = 0; i < size; ++i) {
-        if (tot_in[i] > 0 || tot_out[i] > 0) {
-            double tot_out_var = (double) tot_out[i] / m;
-            double tot_in_var = (double) tot_in[i] / m;
-            q += (double) in [i] / m - (tot_out_var * tot_in_var);
+        if (communities_arcs[i].tot_in > 0 || communities_arcs[i].tot_out > 0) {
+            double tot_out_var = communities_arcs[i].tot_out / m;
+            double tot_in_var = communities_arcs[i].tot_in / m;
+            q += communities_arcs[i].in / m - (tot_out_var * tot_in_var);
         }
     }
 
@@ -130,20 +126,18 @@ void Community::neigh_comm(unsigned int node) {
 
     // at this stage no neighboring community has to be visited
     neigh_last = 0;
-
-    pair < size_t, size_t > p = g->neighbors(node);
-
+    pair < size_t, size_t > p = g->out_neighbors(node);
     unsigned int deg = g->out_degree(node);
 
     // the first neighboring community of each node is its own
-    neigh_pos[0] = n2c[node];
+    neigh_pos[0] = node_to_community[node];
     neigh_weight[neigh_pos[0]] = 0;
     neigh_last = 1;
 
     for (unsigned int i = 0; i < deg; ++i) {
         // fetching neighbors of i, their community and the corresponding degrees
         unsigned int neigh = g->outcoming_arcs[p.first + i];
-        int neigh_comm = n2c[neigh];
+        int neigh_comm = node_to_community[neigh];
         double neigh_w = (g->outcoming_weights.size() == 0) ? 1. : g->outcoming_weights[p.second + i];
 
         if (neigh != node) {
@@ -164,7 +158,7 @@ void Community::neigh_comm(unsigned int node) {
     for (unsigned int i = 0; i < deg_in; ++i) {
 
         unsigned int neigh_in = g->incoming_arcs[p_in.first + i];
-        int neigh_comm_in = n2c[neigh_in];
+        int neigh_comm_in = node_to_community[neigh_in];
         double neigh_w_in = (g->incoming_weights.size() == 0) ? 1. : g->incoming_weights[p_in.second + i];
 
         if (neigh_in != node) {
@@ -177,43 +171,30 @@ void Community::neigh_comm(unsigned int node) {
     }
 }
 
-static unsigned int renumber_communities(const Community &c, vector< int > &renumber) {
-    for (unsigned int node = 0; node < c.get_size(); ++node) 
-        renumber[c.get_n2c()[node]]++;
-    
-
-    unsigned int f = 0;
-    for (unsigned int i = 0; i < c.get_size(); ++i)
-        if (renumber[i] != -1)
-            renumber[i] = f++;
-
-    return f;
-}
-
-void Community::partition2graph() {
+/*void Community::partition_to_graph() {
     vector < int > renumber(size, -1);
     renumber_communities(*this, renumber);
 
     for (unsigned int i = 0; i < size; ++i) {
-        pair < size_t, size_t > p = g->neighbors(i);
+        pair < size_t, size_t > p = g->out_neighbors(i);
 
         unsigned int deg = g->out_degree(i);
         for (unsigned int j = 0; j < deg; ++j) {
             unsigned int neigh = g->outcoming_arcs[p.first + j];
-            cout << renumber[n2c[i]] << " " << renumber[n2c[neigh]] << endl;
+            cout << renumber[node_to_community[i]] << " " << renumber[node_to_community[neigh]] << endl;
         }
     }
-}
+}*/
 
 void Community::display_partition() {
     vector < int > renumber(size, -1);
     renumber_communities(*this, renumber);
 
     for (unsigned int i = 0; i < size; ++i)
-        cout << g->correspondance[i] << " " << renumber[n2c[i]] << endl;
+        cout << g->correspondance[i] << " " << renumber[node_to_community[i]] << endl;
 }
 
-Graph *Community::partition2graph_binary() {
+Graph *Community::partition_to_graph() {
     // renumber communities
     vector < int > renumber(size, -1);
     unsigned int f = renumber_communities(*this, renumber);
@@ -221,16 +202,18 @@ Graph *Community::partition2graph_binary() {
     // compute communities
     vector < vector < int > > comm_nodes(f);
     for (unsigned int node = 0; node < size; ++node) 
-        comm_nodes[renumber[n2c[node]]].push_back(node);
+        comm_nodes[renumber[node_to_community[node]]].push_back(node);
 
     // compute weighted graph
     Graph *g2 = new Graph();
-    (*g2).nodes = comm_nodes.size();
+    g2->nodes = comm_nodes.size();
+    /* FIXME: replaces the ugly trick size() != 0 to check whether the graph is weighted! */
+    g2->weighted = true;
     for(unsigned int i = 0; i < g2->nodes; ++i)
         g2->correspondance.push_back(i);
 
-    (*g2).outdegrees.resize(comm_nodes.size());
-    (*g2).indegrees.resize(comm_nodes.size());
+    g2->outdegrees.resize(comm_nodes.size());
+    g2->indegrees.resize(comm_nodes.size());
 
     double neigh_weight;
 
@@ -241,11 +224,11 @@ Graph *Community::partition2graph_binary() {
         size_t comm_size = comm_nodes[comm].size();
         for (unsigned int node = 0; node < comm_size; ++node) {
             // we first deal with out-neighbors communities
-            pair < size_t, size_t > p = g->neighbors(comm_nodes[comm][node]);
+            pair < size_t, size_t > p = g->out_neighbors(comm_nodes[comm][node]);
             unsigned int deg = g->out_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
                 unsigned int neigh = g->outcoming_arcs[p.first + i];
-                unsigned int neigh_comm = renumber[n2c[neigh]];
+                unsigned int neigh_comm = renumber[node_to_community[neigh]];
                 neigh_weight = (g->outcoming_weights.size() == 0) ? 1. : g->outcoming_weights[p.second + i];
 
                 auto it_out = m_out.find(neigh_comm);
@@ -260,7 +243,7 @@ Graph *Community::partition2graph_binary() {
             deg = g->in_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
                 unsigned int neigh = g->incoming_arcs[p_in.first + i];
-                unsigned int nc = renumber[n2c[neigh]];
+                unsigned int nc = renumber[node_to_community[neigh]];
                 neigh_weight = (g->incoming_weights.size() == 0) ? 1.f : g->incoming_weights[p_in.second + i];
 
                 auto it_in = m_in.find(nc);
@@ -295,7 +278,7 @@ Graph *Community::partition2graph_binary() {
 bool
 Community::one_level() {
     bool improvement = false;
-    int nb_moves;
+    int nb_moves = 0;
     int nb_pass_done = 0;
     double new_mod = modularity();
     double cur_mod = new_mod;
@@ -319,7 +302,7 @@ Community::one_level() {
         // for each node: remove the node from its community and insert it in the best community
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
             int node = random_order[node_tmp];
-            int node_comm = n2c[node];
+            int node_comm = node_to_community[node];
             double w_degree_out = g->weighted_out_degree(node);
             double w_degree_in = g->weighted_in_degree(node);
 
@@ -358,3 +341,16 @@ Community::one_level() {
 
     return improvement;
 }
+
+static unsigned int renumber_communities(const Community &c, vector< int > &renumber) {
+    for (unsigned int node = 0; node < c.get_size(); ++node) 
+        renumber[c.get_node_to_community()[node]]++;
+    
+    unsigned int f = 0;
+    for (unsigned int i = 0; i < c.get_size(); ++i)
+        if (renumber[i] != -1)
+            renumber[i] = f++;
+
+    return f;
+}
+

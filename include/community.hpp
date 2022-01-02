@@ -14,26 +14,30 @@
 #ifndef COMMUNITY_HPP
 #define COMMUNITY_HPP
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <vector>
-#include <map>
-
 #include "graph.hpp"
+
+typedef struct count count;
 
 class Community {
     private:
+        Graph* g; // network to compute communities for
+        unsigned int size; // nummber of nodes in the network and size of all vectors
+
+        /* FIXME: are those really attributes of the Community class? WHAT THE HELL ARE THOSE? */
         vector<double> neigh_weight;
         vector<unsigned int> neigh_pos;
         unsigned int neigh_last;
 
-        Graph* g; // network to compute communities for
-        unsigned int size; // nummber of nodes in the network and size of all vectors
-        vector<int> n2c; // community to which each node belongs
-        vector<double> in, tot_in, tot_out, tot; // used to compute the modularity participation of each community
+        vector<int> node_to_community; // community to which each node belongs
+
+        struct count { 
+            double in; /* number of arcs (i.e. self-loops) within the community */
+            double tot_in; /* number of outcoming arcs of the community */
+            double tot_out; /* number of incoming arcs of the community */
+            double tot; /* number of arcs of the community */
+        };
+
+        vector<count> communities_arcs;
 
         // number of pass for one level computation
         // if -1, compute as many pass as needed to increase modularity
@@ -53,7 +57,7 @@ class Community {
         ~Community() { delete g; }
 
         const Graph *get_graph() { return this->g; }
-        const vector<int>& get_n2c() const { return this->n2c; }
+        const vector<int>& get_node_to_community() const { return this->node_to_community; }
         unsigned int get_size() const { return this->size; }
 
         // initiliazes the partition with something else than all nodes alone
@@ -86,13 +90,14 @@ class Community {
         // compute the modularity of the current partition
         double modularity();
 
+        /* FIXME: commented for the moment: is it useful??? */
         // displays the graph of communities as computed by one_level
-        void partition2graph();
+        //void partition_to_graph();
         // displays the current partition (with communities renumbered from 0 to k-1)
         void display_partition();
 
         // generates the binary graph of communities as computed by one_level
-        Graph* partition2graph_binary();
+        Graph* partition_to_graph();
 
         // compute communities of the graph for one level
         // return true if some nodes have been moved
@@ -102,35 +107,31 @@ class Community {
 inline void
 Community::remove(unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<size);
-
-    tot_out[comm]   -= (*g).weighted_out_degree(node);
-    tot_in[comm]    -= (*g).weighted_in_degree(node);
-    /* FIXME: using the above calculation */
-    tot[comm]       -= (tot_out[comm] + tot_in[comm]);
-    in[comm]        -= dnodecomm + (*g).nb_selfloops(node);
-    n2c[node]       = -1;
+    communities_arcs[comm].tot_out  -= (*g).weighted_out_degree(node);
+    communities_arcs[comm].tot_in   -= (*g).weighted_in_degree(node);
+    communities_arcs[comm].tot      -= (communities_arcs[comm].tot_out + communities_arcs[comm].tot_in);
+    communities_arcs[comm].in       -= dnodecomm + (*g).count_selfloops(node);
+    node_to_community[node]         = -1;
 }
 
 inline void
 Community::insert(unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<size);
-
-    tot_out[comm]   += (*g).weighted_out_degree(node);
-    tot_in[comm]    += (*g).weighted_in_degree(node);
-    tot[comm]       += (tot_out[comm] + tot_in[comm]);
-    in[comm]        += dnodecomm + (*g).nb_selfloops(node);
-    n2c[node]       = comm;
+    communities_arcs[comm].tot_out  += (*g).weighted_out_degree(node);
+    communities_arcs[comm].tot_in   += (*g).weighted_in_degree(node);
+    communities_arcs[comm].tot      += (communities_arcs[comm].tot_out + communities_arcs[comm].tot_in);
+    communities_arcs[comm].in       += dnodecomm + (*g).count_selfloops(node);
+    node_to_community[node]         = comm;
 }
 
 inline double
 Community::modularity_gain(unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in) {
     assert(node<size);
-
-    double totc_out     = tot_out[comm];
-    double totc_in      = tot_in[comm];
+    double totc_out     = communities_arcs[comm].tot_out;
+    double totc_in      = communities_arcs[comm].tot_in;
     double degc_out     = w_degree_out;
     double degc_in      = w_degree_in;
-    double m           = g->get_total_weight();
+    double m            = g->get_total_weight();
     double dnc          = dnodecomm;
 
     return (dnc/m - ((degc_out*totc_in + degc_in*totc_out)/(m*m)));

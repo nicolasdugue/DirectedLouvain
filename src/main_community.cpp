@@ -11,21 +11,13 @@
 //-----------------------------------------------------------------------------
 // see readme.txt for more details
 
-#include <stdlib.h>
-#include <math.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <algorithm>
 #include "../include/community.hpp"
 
 using namespace std;
 
 string filename = "";
 string filename_part = "";
-short type = UNWEIGHTED;
+bool weighted = false;
 int nb_pass = 0;
 double precision = 0.000001;
 int display_level = -2;
@@ -66,7 +58,7 @@ parse_args(int argc, char ** argv) {
                     reproducibility=true;
                     break;
                 case 'w':
-                    type = WEIGHTED;
+                    weighted = true;
                     break;
                 case 'n':
                     renumbering=false;
@@ -119,7 +111,7 @@ main(int argc, char ** argv) {
     parse_args(argc, argv);
     if (verbose)
         display_time("Begin");
-    Community *c = new Community(filename, type, -1, precision, reproducibility, renumbering);
+    Community *c = new Community(filename, weighted, -1, precision, reproducibility, renumbering);
     if (filename_part != "")
         c->init_partition(filename_part);
     Graph * g = NULL;
@@ -148,7 +140,7 @@ main(int argc, char ** argv) {
             community_graph->display();
         if (display_level == -1)
             c->display_partition();
-        g = c->partition2graph_binary();
+        g = c->partition_to_graph();
         delete c;
         c = new Community(g, -1, precision);
         delete g;
