@@ -70,6 +70,7 @@ class Graph {
         double weighted_in_degree(unsigned int node);
 
         // return positions of the first out-neighbor and first weight of the node
+        /* FIXME: this takes much more time with iterators than positions */
         pair<size_t, size_t > out_neighbors(unsigned int node) const; 
         // return the number of out neighbors (degree) of the node
         unsigned int out_degree(unsigned int node) const;

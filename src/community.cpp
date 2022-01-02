@@ -126,7 +126,7 @@ void Community::neigh_comm(unsigned int node) {
 
     // at this stage no neighboring community has to be visited
     neigh_last = 0;
-    pair < size_t, size_t > p = g->out_neighbors(node);
+    auto p = g->out_neighbors(node);
     unsigned int deg = g->out_degree(node);
 
     // the first neighboring community of each node is its own
@@ -152,7 +152,7 @@ void Community::neigh_comm(unsigned int node) {
     }
 
     // we proceed similarly on in-neighbors
-    pair < size_t, size_t > p_in = g->in_neighbors(node);
+    auto p_in = g->in_neighbors(node);
     unsigned int deg_in = g->in_degree(node);
 
     for (unsigned int i = 0; i < deg_in; ++i) {
@@ -224,7 +224,7 @@ Graph *Community::partition_to_graph() {
         size_t comm_size = comm_nodes[comm].size();
         for (unsigned int node = 0; node < comm_size; ++node) {
             // we first deal with out-neighbors communities
-            pair < size_t, size_t > p = g->out_neighbors(comm_nodes[comm][node]);
+            auto p = g->out_neighbors(comm_nodes[comm][node]);
             unsigned int deg = g->out_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
                 unsigned int neigh = g->outcoming_arcs[p.first + i];
@@ -239,7 +239,7 @@ Graph *Community::partition_to_graph() {
             }
 
             // same thing for in-neighbors communities
-            pair < size_t, size_t > p_in = g->in_neighbors(comm_nodes[comm][node]);
+            auto p_in = g->in_neighbors(comm_nodes[comm][node]);
             deg = g->in_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
                 unsigned int neigh = g->incoming_arcs[p_in.first + i];

@@ -196,7 +196,7 @@ void Graph::load(string filename) {
 
 void Graph::display() const {
     for (unsigned int node = 0; node < this->nodes; ++node) {
-        pair < size_t, size_t > p = this->out_neighbors(node);
+        auto p = this->out_neighbors(node);
         cout << this->correspondance[node] << ":";
         for (unsigned int i = 0; i < out_degree(node); ++i) {
             if (this->weighted)
@@ -247,64 +247,6 @@ double Graph::weighted_in_degree(unsigned int node) {
             res += this->incoming_weights[p.second+i];
         return res;
     }
-}
-
-static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool weighted, bool renumbering) {
-
-    if(renumbering)
-        cerr << "renumbering graph..." << endl;
-    ifstream finput;
-    finput.open(filename, fstream:: in );
-    unsigned int cpt = 0;
-    double weight = 1.f;
-    if (finput) {
-        unsigned int src, dest;
-
-        while (finput >> src >> dest) {
-
-            if (weighted)
-                finput >> weight;
-
-            if (src < MAP_LIMIT) {
-                if (corres[src] == -1) {
-                    corres[src] = cpt++;
-                    if(renumbering)
-                        correspondance.push_back(src);
-                }
-            } else {
-                if(corres_big_ids.find(src) == corres_big_ids.end()) {
-                    corres_big_ids[src] = cpt++;
-                    if(renumbering)
-                        correspondance.push_back(src);
-                }
-            }
-
-            if (dest < MAP_LIMIT) {
-                if (corres[dest] == -1) {
-                    corres[dest] = cpt++;
-                    if(renumbering)
-                        correspondance.push_back(dest);
-                }
-            } else {
-                if(corres_big_ids.find(dest) == corres_big_ids.end()) {
-                    corres_big_ids[dest] = cpt++;
-                    if(renumbering)
-                        correspondance.push_back(dest);
-                }
-            }
-        }
-    }
-
-    /* If the graph is already renumbered the correspondance must be identity */
-    if(!renumbering) {
-        for(unsigned int i = 0; i < cpt; ++i)
-            correspondance.push_back(i);
-    }
-    else 
-        cerr << "done." << endl;
-
-    finput.close();
-    return cpt;
 }
 
 void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN) {
@@ -376,5 +318,53 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     }
 
     cerr << "total weight: " << g.total_weight << endl;
+}
+
+static void add_to_map(unsigned int node, unsigned int &cpt, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool renumbering) {
+    if (node < MAP_LIMIT) {
+        if (corres[node] == -1) {
+            corres[node] = cpt++;
+            if(renumbering)
+                correspondance.push_back(node);
+        }
+    } else {
+        if(corres_big_ids.find(node) == corres_big_ids.end()) {
+            corres_big_ids[node] = cpt++;
+            if(renumbering)
+                correspondance.push_back(node);
+        }
+    }
+}
+
+static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool weighted, bool renumbering) {
+
+    if(renumbering)
+        cerr << "renumbering graph..." << endl;
+    ifstream finput;
+    finput.open(filename, fstream:: in );
+    unsigned int cpt = 0;
+    double weight = 1.f;
+    if (finput) {
+        unsigned int src, dest;
+
+        while (finput >> src >> dest) {
+            if (weighted)
+                finput >> weight;
+
+            add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
+            add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
+        }
+    }
+
+    /* If the graph is already renumbered the correspondance must be identity */
+    if(!renumbering) {
+        for(unsigned int i = 0; i < cpt; ++i)
+            correspondance.push_back(i);
+    }
+    else 
+        cerr << "done." << endl;
+
+    finput.close();
+    return cpt;
 }
 
