@@ -26,13 +26,14 @@ The option `-n` indicates that the graph is already numbered from `0` to `n-1` a
 
 The standard command is:
 
-    ./bin/community graph/graph.txt -l -1 -v > graph.tree
+    ./bin/community -f graph/graph.txt -l -1 -v > graph.tree
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
 This file **must** be generated using the `-r` option, see below. In this case, the 
 only mandatory option is `-w` to indicate whether the graph is weighted. 
 
 Several options are available, among which:
++ `-f` path to the input graph (edgelist or binary format (`.bin`))
 + `-w` to indicate that the input graph is weighted
 + `-n` to indicate that the input graph is correctly numbered (from `0` to `n-1`)
 + `-r` for reproducibility purposes: the renumbered and binary graphs are stored on 
@@ -43,17 +44,17 @@ More options and information are provided using `./bin/community`
 ## Examples 
 Using `graph/graph.txt` one obtains: 
 
-    ./bin/community graph/graph.txt -l -1 -v -w -r > graph/graph.tree
+    ./bin/community -f graph/graph.txt -l -1 -v -w -r > graph/graph.tree
 
 to compute hierarchical community structure (using **original** label nodes) 
 by first renumbering the graph, and 
 then writing files for reproducibility. The next runs would thus be: 
 
-    ./bin/community graph/graph.bin -w -l -1 > graph/graph.tree
+    ./bin/community -f graph/graph.bin -w -l -1 > graph/graph.tree
 
 Finally, using an already renumbered graph one gets: 
 
-    ./bin/community graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
+    ./bin/community -f graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
 
 The program can also start with any given partition using -p option
 
