@@ -13,7 +13,6 @@ EXEC=community hierarchy
 
 SRC= $(wildcard $(SRCDIR)/*.cpp)
 OBJ1= $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
-OBJ3 = $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/graph.o) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/community.o)
 
 all: $(EXEC)
 Debug: CFLAGS += -DDEBUG -g
@@ -21,6 +20,7 @@ Debug: LDFLAGS += -DDEBUG -g
 Debug: $(EXEC)
 
 community : $(OBJ1) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_community.o)
+	[ -d $(BINDIR) ] || mkdir -p $(BINDIR)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/hierarchy.o)
@@ -30,13 +30,13 @@ hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/hierarchy.o)
 # Generic rules
 ##########################################
 
-$(LIBDIR)/%.o: $(SRCDIR)/%%.cpp $(HEADDIR)/%.h
+$(LIBDIR)/%.o: $(SRCDIR)/%%.cpp $(HEADDIR)/%.hpp
+	[ -d $(LIBDIR) ] || mkdir -p $(LIBDIR)
 	$(CC)  -o $@ -c $< $(CFLAGS)
 
 $(LIBDIR)/%.o: $(SRCDIR)/%.cpp
+	[ -d $(LIBDIR) ] || mkdir -p $(LIBDIR)
 	$(CC)  -o $@ -c $< $(CFLAGS)
 
-cleanDebug:
-	rm -f $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~
 clean:
 	rm -f $(BINDIR)/* $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~
