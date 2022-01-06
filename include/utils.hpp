@@ -110,7 +110,7 @@ void parse_args(int argc, char **argv) {
                 }
             case 'l':
                 /* FIXME: hack to handle flag recognized as argument, needs a better solution */
-                if(optarg[0]=='-') {
+                if(!isdigit(optarg[1])) {
                     cerr << "Option -l|--level requires an argument (level to display)" << endl;
                     exit(1);
                 }
