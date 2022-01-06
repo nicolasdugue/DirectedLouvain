@@ -146,10 +146,4 @@ void parse_args(int argc, char **argv) {
     }
 }
 
-void display_time(const char * str) {
-    time_t rawtime;
-    time( & rawtime);
-    cerr << str << ": " << ctime( & rawtime);
-}
-
 #endif // UTILS_HPP

@@ -15,12 +15,15 @@
 #include "../include/utils.hpp" 
 
 int main(int argc, char ** argv) {
+    auto start = chrono::high_resolution_clock::now();
+  
+    // unsync the I/O of C and C++.
+    ios_base::sync_with_stdio(false);
+
     parse_args(argc, argv);
     ofstream foutput;
     foutput.open("modularity_values_directed_louvain.txt", fstream::app | fstream::binary);
 
-    if (verbose)
-        display_time("Begin");
     Community *c = new Community(filename, weighted, -1, precision, reproducibility, renumbering);
     if (filename_part != "")
         c->init_partition(filename_part);
@@ -29,14 +32,11 @@ int main(int argc, char ** argv) {
     Graph * g = NULL;
     int level = 0;
 
-    time_t time_begin, time_end;
-    time( & time_begin);
     do {
         const Graph *community_graph = c->get_graph();
         ++nb_pass;
         if (verbose) {
             cerr << "level " << level << ":\n";
-            display_time("  start computation");
             cerr << "  network size: " <<
                 community_graph->get_nodes() << " nodes, " <<
                 community_graph->get_arcs() << " arcs, " <<
@@ -57,20 +57,20 @@ int main(int argc, char ** argv) {
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 
         mod = new_mod;
-        if (verbose)
-            display_time("  end computation");
         if (filename_part != "" && level == 1) // do at least one more computation if partition is provided
             improvement = true;
     } while (improvement);
 
     delete c;
-    time(&time_end);
-    if (verbose) {
-        display_time("End");
-        cerr << "Total duration: " << (time_end - time_begin) << " sec." << endl;
-    }
-
     cerr << "modularity: " << new_mod << endl;
     foutput << new_mod << endl;
     foutput.close();
+
+    auto end = chrono::high_resolution_clock::now();
+    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+    time_taken *= 1e-9;
+
+    cerr << "computation time: " << fixed << time_taken << setprecision(9) << " seconds" << endl;
+
 }

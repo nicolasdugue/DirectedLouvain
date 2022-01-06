@@ -191,6 +191,8 @@ void Graph::load(string filename) {
     for (unsigned int i = 0; i < this->nodes; ++i) {
         this->total_weight += this->weighted_out_degree(i);
     }
+
+    cerr << "total weight: " << this->total_weight << endl;
     finput.close();
 }
 
