@@ -62,6 +62,7 @@ void parse_args(int argc, char **argv) {
     /* Parsing arguments using getopt */
     int arg;
     int option_index = 0;
+    bool isnumber=true;
     /* The first colon allows to separate error messages for missing argument and unknown options */
     while ((arg = getopt_long(argc, argv, ":f:rwnp:q:l:vh", long_options, &option_index)) != -1) {
         switch (arg) {
@@ -110,8 +111,10 @@ void parse_args(int argc, char **argv) {
                 }
             case 'l':
                 /* FIXME: hack to handle flag recognized as argument, needs a better solution */
-                if(!isdigit(optarg[1])) {
-                    cerr << "Option -l|--level requires an argument (level to display)" << endl;
+                isnumber = (string(optarg).find_first_not_of("0123456789") == string::npos);
+                cerr << isnumber << endl;
+                if(!isnumber && string(optarg)!="-1") {
+                    cerr << "Option -l|--level expects a number as argument" << endl; 
                     exit(1);
                 }
                 else {

@@ -31,7 +31,6 @@ hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/hierarchy.o)
 ##########################################
 
 $(LIBDIR)/%.o: $(SRCDIR)/%%.cpp $(HEADDIR)/%.hpp
-	[ -d $(LIBDIR) ] || mkdir -p $(LIBDIR)
 	$(CC)  -o $@ -c $< $(CFLAGS)
 
 $(LIBDIR)/%.o: $(SRCDIR)/%.cpp
