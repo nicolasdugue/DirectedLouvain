@@ -112,7 +112,6 @@ void parse_args(int argc, char **argv) {
             case 'l':
                 /* FIXME: hack to handle flag recognized as argument, needs a better solution */
                 isnumber = (string(optarg).find_first_not_of("0123456789") == string::npos);
-                cerr << isnumber << endl;
                 if(!isnumber && string(optarg)!="-1") {
                     cerr << "Option -l|--level expects a number as argument" << endl; 
                     exit(1);

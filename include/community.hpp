@@ -25,7 +25,9 @@ class Community {
         Graph* g; // network to compute communities for
         unsigned int size; // nummber of nodes in the network and size of all vectors
 
-        /* FIXME: are those really attributes of the Community class? */
+        /* FIXME: are those really attributes of the Community class? 
+         * They seem to indicate, for each community, the best neighbor they have, right? 
+         */
         vector<double> neigh_weight;
         vector<unsigned int> neigh_pos;
         unsigned int neigh_last;
