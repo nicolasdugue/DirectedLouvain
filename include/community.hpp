@@ -28,7 +28,7 @@ class Community {
         /* FIXME: are those really attributes of the Community class? 
          * They seem to indicate, for each community, the best neighbor they have, right? 
          */
-        vector<double> neigh_weight;
+        vector<double> neighbor_weight;
         vector<unsigned int> neigh_pos;
         unsigned int neigh_last;
 
@@ -126,7 +126,7 @@ class Community {
         //       d(node,com) = number of arcs from node to comm
         //       deg(node)   = node degree
         //       m           = number of arcs
-        friend double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in);
+        friend double modularity_gain(const Community &c, unsigned int node, unsigned int comm);
 };
 
 /*inline double Community::modularity_gain(unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in) {
