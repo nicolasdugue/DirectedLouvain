@@ -15,8 +15,9 @@
 #define COMMUNITY_HPP
 
 #include "graph.hpp"
+#include <memory>
 
-typedef struct count count;
+typedef struct count Count;
 
 class Community {
     private:
@@ -25,14 +26,7 @@ class Community {
 
         vector<int> node_to_community; // community to which each node belongs
 
-        struct count { 
-            double in; /* number of arcs (i.e. self-loops) within the community */
-            double tot_in; /* number of outcoming arcs of the community */
-            double tot_out; /* number of incoming arcs of the community */
-            double tot; /* number of arcs of the community */
-        };
-
-        vector<count> communities_arcs;
+        vector< unique_ptr<Count> > communities_arcs;
 
         // number of pass for one level computation
         // if -1, compute as many pass as needed to increase modularity

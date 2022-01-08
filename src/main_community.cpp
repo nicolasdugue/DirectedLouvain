@@ -51,9 +51,6 @@ int main(int argc, char ** argv) {
         if (display_level == -1)
             c->display_partition();
         c->partition_to_graph();
-        /*delete c;
-        c = new Community(g, -1, precision);
-        delete g;*/
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 
