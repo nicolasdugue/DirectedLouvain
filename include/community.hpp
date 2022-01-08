@@ -14,8 +14,6 @@
 #ifndef COMMUNITY_HPP
 #define COMMUNITY_HPP
 
-#include <random>       // std::default_random_engine
-#include <chrono>       // std::chrono::system_clock
 #include "graph.hpp"
 
 typedef struct count count;
@@ -24,13 +22,6 @@ class Community {
     private:
         Graph* g; // network to compute communities for
         unsigned int size; // nummber of nodes in the network and size of all vectors
-
-        /* FIXME: are those really attributes of the Community class? 
-         * They seem to indicate, for each community, the best neighbor they have, right? 
-         */
-        vector<double> neighbor_weight;
-        vector<unsigned int> neigh_pos;
-        unsigned int neigh_last;
 
         vector<int> node_to_community; // community to which each node belongs
 
@@ -45,6 +36,7 @@ class Community {
 
         // number of pass for one level computation
         // if -1, compute as many pass as needed to increase modularity
+        /* FIXME: this is _never_ used, must we keep it? */
         int nb_pass;
 
         // a new pass is computed if the last one has generated an increase 
@@ -68,7 +60,7 @@ class Community {
 
         // compute the set of neighboring communities of node
         // for each community, gives the number of arcs from node to comm
-        void neigh_comm(unsigned int node);
+        //void list_neighboring_communities(unsigned int node);
 
         // compute the modularity of the current partition
         double modularity();
@@ -80,11 +72,12 @@ class Community {
         void display_partition();
 
         // generates the binary graph of communities as computed by one_level
-        Graph* partition_to_graph();
+        void partition_to_graph();
 
         // compute communities of the graph for one level
         // return true if some nodes have been moved
         bool one_level();
+
         inline const Graph *get_graph() {
             return this->g; 
         }
@@ -94,28 +87,15 @@ class Community {
         inline unsigned int get_size() const {
             return this->size; 
         }
-
-        /*inline void remove(unsigned int node, unsigned int comm, double dnodecomm);
-
-        // insert the node in comm with which it shares dnodecomm arcs
-        inline void insert(unsigned int node, unsigned int comm, double dnodecomm);
-
-        // compute the gain of modularity if node where inserted in comm
-        // given that node has dnodecomm arcs to comm.  The formula is:
-        // [(In(comm)+2d(node,comm))/2m - ((tot(comm)+deg(node))/2m)^2]-
-        // [In(comm)/2m - (tot(comm)/2m)^2 - (deg(node)/2m)^2]
-        // where In(comm)    = number of half-arcs strictly inside comm
-        //       Tot(comm)   = number of half-arcs inside or outside comm (sum(degrees))
-        //       d(node,com) = number of arcs from node to comm
-        //       deg(node)   = node degree
-        //       m           = number of arcs
-        inline double modularity_gain(unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in);*/
+        inline unsigned int get_community(unsigned int node) const {
+            return this->node_to_community[node];
+        }
 
         // remove the node from its current community with which it has dnodecomm arcs
-        friend void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
+        friend void remove(Community&, unsigned int, unsigned int, double);
 
         // insert the node in comm with which it shares dnodecomm arcs
-        friend void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
+        friend void insert(Community&, unsigned int, unsigned int, double);
 
         // compute the gain of modularity if node where inserted in comm
         // given that node has dnodecomm arcs to comm.  The formula is:
@@ -126,33 +106,8 @@ class Community {
         //       d(node,com) = number of arcs from node to comm
         //       deg(node)   = node degree
         //       m           = number of arcs
-        friend double modularity_gain(const Community &c, unsigned int node, unsigned int comm);
+        friend double modularity_gain(const Community&, unsigned int, unsigned int, double);
+        friend void list_neighboring_communities(const Community&, vector<double>&, vector<unsigned int>&, unsigned int, unsigned int&);
 };
 
-/*inline double Community::modularity_gain(unsigned int node, unsigned int comm, double dnodecomm, double w_degree_out, double w_degree_in) {
-    assert(node<size);
-    double totc_out                 = communities_arcs[comm].tot_out;
-    double totc_in                  = communities_arcs[comm].tot_in;
-    double m                        = (g)->get_total_weight();
-
-    return (dnodecomm / m - ((w_degree_out * totc_in + w_degree_in * totc_out) / (m*m)));
-}
-
-inline void Community::remove(unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<size);
-    communities_arcs[comm].tot_out  -= (g)->weighted_out_degree(node);
-    communities_arcs[comm].tot_in   -= (g)->weighted_in_degree(node);
-    communities_arcs[comm].tot      -= (communities_arcs[comm].tot_out + communities_arcs[comm].tot_in);
-    communities_arcs[comm].in       -= dnodecomm + (g)->count_selfloops(node);
-    node_to_community[node]         = -1;
-}
-
-inline void Community::insert(unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<size);
-    communities_arcs[comm].tot_out  += (g)->weighted_out_degree(node);
-    communities_arcs[comm].tot_in   += (g)->weighted_in_degree(node);
-    communities_arcs[comm].tot      += (communities_arcs[comm].tot_out + communities_arcs[comm].tot_in);
-    communities_arcs[comm].in       += dnodecomm + (g)->count_selfloops(node);
-    node_to_community[node]         = comm;
-}*/
 #endif // COMMUNITY_HPP

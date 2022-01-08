@@ -13,12 +13,14 @@
 
 #include "../include/community.hpp"
 #include "../include/utils.hpp" 
+#include <chrono>
 
 int main(int argc, char ** argv) {
     auto start = chrono::high_resolution_clock::now();
   
     // unsync the I/O of C and C++.
-    ios_base::sync_with_stdio(false);
+    /* FIXME: this generates a valgrind error: is this mandatory? */
+    //ios_base::sync_with_stdio(false);
 
     parse_args(argc, argv);
     ofstream foutput;
@@ -29,7 +31,6 @@ int main(int argc, char ** argv) {
         c->init_partition(filename_part);
 
     double mod = c->modularity(), new_mod;
-    Graph * g = NULL;
     int level = 0;
 
     do {
@@ -49,10 +50,10 @@ int main(int argc, char ** argv) {
             community_graph->display();
         if (display_level == -1)
             c->display_partition();
-        g = c->partition_to_graph();
-        delete c;
+        c->partition_to_graph();
+        /*delete c;
         c = new Community(g, -1, precision);
-        delete g;
+        delete g;*/
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 

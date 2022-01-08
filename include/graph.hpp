@@ -81,6 +81,30 @@ class Graph {
         // return the total degree
         double weighted_degree(unsigned int node);
 
+        unsigned int get_out_neighbor(size_t index) {
+            assert(index < this->arcs);
+            return this->outcoming_arcs[index];
+        }
+
+        unsigned int get_in_neighbor(size_t index) {
+            assert(index < this->arcs);
+            return this->incoming_arcs[index];
+        }
+
+        unsigned int get_weighted_out_neighbor(size_t index) {
+            assert(index < this->arcs);
+            return this->outcoming_weights[index];
+        }
+
+        unsigned int get_weighted_in_neighbor(size_t index) {
+            assert(index < this->arcs);
+            return this->incoming_weights[index];
+        }
+
+        bool is_weighted() {
+            return this->weighted;
+        }
+
 };
 
 // return positions of the first out-neighbor and first weight of the node
