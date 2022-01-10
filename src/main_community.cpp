@@ -24,7 +24,6 @@ int main(int argc, char ** argv) {
 
     parse_args(argc, argv);
     ofstream foutput;
-    foutput.open("modularity_values_directed_louvain.txt", fstream::app | fstream::binary);
 
     Community *c = new Community(filename, weighted, -1, precision, reproducibility, renumbering);
     if (filename_part != "")
@@ -66,8 +65,6 @@ int main(int argc, char ** argv) {
 
     delete c;
     cerr << "modularity: " << new_mod << endl;
-    foutput << new_mod << endl;
-    foutput.close();
 
     end = chrono::high_resolution_clock::now();
     time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
