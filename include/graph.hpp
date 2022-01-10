@@ -10,7 +10,7 @@
 // Authors   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
 //-----------------------------------------------------------------------------
 
-#pragma GCC optimize("O2")
+#pragma GCC optimize("O3")
 
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
@@ -24,8 +24,6 @@
 #include <algorithm>
 
 using namespace std;
-
-typedef unsigned int ULI;
 
 class Graph {
     private:
@@ -43,7 +41,7 @@ class Graph {
         vector<double> outcoming_weights; 
         vector<double> incoming_weights;
 
-        vector<ULI> correspondance;
+        vector<unsigned long> correspondance;
 
     public:
         Graph();
@@ -55,7 +53,7 @@ class Graph {
         unsigned int get_arcs() const { return this->arcs; }
         double get_total_weight() const { return this->total_weight; }
 
-        const vector<ULI> &get_correspondance() { return this->correspondance; }
+        const vector<unsigned long> &get_correspondance() { return this->correspondance; }
 
         void display() const;
         void display_reverse();

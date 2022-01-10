@@ -12,10 +12,16 @@
 // see readme.txt for more details
 
 #include <string>
+#include <cstring>
+
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <sys/mman.h>
 #include "../include/graph.hpp"
 
-const unsigned int MAP_LIMIT = 10000000;
-static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool weighted, bool renumbering);
+const unsigned int MAP_LIMIT = 5000000;
+static unsigned int build_map(string, vector<unsigned long>&, vector<vector<pair<unsigned int,double> > >&, vector<vector<pair<unsigned int,double> > >&, bool, bool, bool);
 
 Graph::Graph() {
     this->nodes         = 0;
@@ -36,72 +42,19 @@ Graph::Graph(string in_filename, bool weighted, bool reproducibility, bool renum
     vector<vector<pair<unsigned int,double> > > LIN;
 
     this->weighted = weighted;
-    double weight = 1.f;
-
     string extension = in_filename.substr(in_filename.size()-4,in_filename.size());
 
     /* FIXME: handle wrong filename: add exceptions! */
     if(extension!=".bin") {
         this->correspondance.resize(0);
+        this->nodes = build_map(in_filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility);
 
-        //Creates the correspondance table
-        vector<int> corres(MAP_LIMIT,-1);
-        //Creates the specific table for huge ints that have to be stored as long long int
-        map < ULI, unsigned int > corres_big_ids;
-        this->nodes = build_map(in_filename, this->correspondance, corres, corres_big_ids, this->weighted, renumbering);
-
-        LOUT.resize(this->correspondance.size());
-        LIN.resize(this->correspondance.size());
-
-        ifstream finput;
-        finput.open(in_filename, fstream:: in );
-        ofstream foutput;
-        string name = in_filename.substr(0,in_filename.size()-4);
-        unsigned int src, dest, map_src, map_dest;
-        /* FIXME: move into build_map to avoid double reading */
-        if(reproducibility) {
-            string tmp=name+"_renum";
-            tmp+=extension;
-            foutput.open(tmp, fstream::out | fstream::binary);
-        }
         cerr << "initializing graph..." << endl;
-        while (finput >> src >> dest) {
-            weight = 1.f;
-            if (this->weighted)
-                finput >> weight;
-
-            if (src < MAP_LIMIT) 
-                map_src = corres[src];
-            else 
-                map_src = corres_big_ids[src];
-
-            if (dest < MAP_LIMIT) 
-                map_dest = corres[dest];
-            else 
-                map_dest = corres_big_ids[dest];
-
-            LOUT[map_src].push_back(make_pair(map_dest, weight));
-            LIN[map_dest].push_back(make_pair(map_src, weight));
-
-            if(reproducibility) {
-                foutput << map_src << " " << map_dest;
-                if (this->weighted)
-                    foutput << " " << weight;
-                foutput << endl;
-            }
-        }
-
-        if(reproducibility) 
-            foutput.close();
-
-        finput.close();
-        /* FIXME: actually writing directly into file then reading from it seems faster */
         init_attributes(*this, LOUT, LIN);
-
-        if(reproducibility) 
-            this->write(name+".bin");
         cerr << "done." << endl;
-        
+        string name = in_filename.substr(0,in_filename.size()-4);
+        /* TODO: modify README to take into account that this is now done in every case */
+        this->write(name+".bin");
     }
     else
         this->load(in_filename);
@@ -138,11 +91,7 @@ Graph::write(string outfile) {
     foutput.write((char*)( & this->incoming_arcs[0]), sizeof(unsigned int) * this->arcs);
     if(this->weighted)
         foutput.write((char*)( & this->incoming_weights[0]), sizeof(double) * this->arcs);
-    
-    for (auto c : this->correspondance) {
-        foutput.write((char*)( & c), sizeof(ULI));
-    }
-
+    foutput.write((char*)( & this->correspondance[0]), sizeof(unsigned long) * this->nodes);
     foutput.close();
 }
 
@@ -185,7 +134,7 @@ void Graph::load(string filename) {
     }
 
     this->correspondance.resize(this->nodes);
-    finput.read((char*)( & this->correspondance[0]), this->nodes * sizeof(ULI));
+    finput.read((char*)( & this->correspondance[0]), this->nodes * sizeof(unsigned long));
 
     this->total_weight = 0.f;
     for (unsigned int i = 0; i < this->nodes; ++i) {
@@ -310,63 +259,208 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
         }
     }
 
+    // Release memory
+    for (size_t i = 0; i < LIN.size(); ++i) {
+        LIN[i].clear();
+        vector < pair < unsigned int, double > > ().swap(LIN[i]);
+    }
+
+    LIN.clear();
+    vector < vector < pair < unsigned int, double > > > ().swap(LIN);
+
     cerr << "number of arcs: ";
     cerr << g.arcs << endl;
 
     // Compute total weight
     g.total_weight = 0.;
+
+    double &total_weight = g.total_weight;
     for (unsigned int i = 0; i < g.nodes; ++i) {
-        g.total_weight += g.weighted_out_degree(i);
+        total_weight += g.weighted_out_degree(i);
     }
 
     cerr << "total weight: " << g.total_weight << endl;
 }
 
-static void add_to_map(unsigned int node, unsigned int &cpt, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool renumbering) {
-    if (node < MAP_LIMIT) {
-        if (corres[node] == -1) {
-            corres[node] = cpt++;
-            if(renumbering)
-                correspondance.push_back(node);
-        }
-    } else {
-        if(corres_big_ids.find(node) == corres_big_ids.end()) {
-            corres_big_ids[node] = cpt++;
-            if(renumbering)
-                correspondance.push_back(node);
+static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned long> &correspondance, vector<int> &corres, map<unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
+    if(renumbering) {
+        if (node < MAP_LIMIT) {
+            if (corres[node] == -1) {
+                corres[node] = cpt++;
+                    correspondance.push_back(node);
+            }
+        } else {
+            if(corres_big_ids.find(node) == corres_big_ids.end()) {
+                corres_big_ids[node] = cpt++;
+                    correspondance.push_back(node);
+            }
         }
     }
+    else if (cpt < node)
+        cpt = node;
 }
 
-static unsigned int build_map(string filename, vector<ULI> &correspondance, vector<int> &corres, map<ULI, unsigned int> &corres_big_ids, bool weighted, bool renumbering) {
+static inline unsigned int get_mapped_node(unsigned long int node, const vector<int>& corres, const map< unsigned long, unsigned int> &corres_big_ids) {
+    unsigned int mapped_node;
+    if (node < MAP_LIMIT)
+        mapped_node = corres[node];
+    else
+        mapped_node = corres_big_ids.at(node);
+    return mapped_node;
+}
 
+static unsigned int build_map(string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool weighted, bool renumbering, bool reproducibility) {
+
+    //Creates the correspondance table
+    vector<int> corres(MAP_LIMIT,-1);
+    //Creates the specific table for huge ints that have to be stored as long long int
+    map < unsigned long, unsigned int > corres_big_ids;
     if(renumbering)
         cerr << "renumbering graph..." << endl;
-    ifstream finput;
-    finput.open(filename, fstream:: in );
+    ofstream foutput;
+    if(reproducibility) {
+        size_t name_size = filename.size();
+        string name = filename.substr(0,name_size-4);
+        string extension = filename.substr(name_size-4,name_size);
+        string tmp=name+"_renum";
+        tmp+=extension;
+        foutput.open(tmp, fstream::out | fstream::binary);
+    }
+
+    /* Based on https://stackoverflow.com/questions/15115943/what-is-the-best-efficient-way-to-read-millions-of-integers-separated-by-lines-f */
+    int f = open(filename.c_str(), O_RDONLY);
+    off_t size = lseek(f, 0, SEEK_END);
+    char *buffer = (char *)mmap(NULL, size, PROT_READ, MAP_PRIVATE, f, 0);
+
     unsigned int cpt = 0;
-    double weight = 1.f;
-    if (finput) {
-        unsigned int src, dest;
-
-        while (finput >> src >> dest) {
-            if (weighted)
-                finput >> weight;
-
-            add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
-            add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
+    int hasnum = 0;
+    int num = 0;
+    off_t bytes = size;
+    char *p = buffer;
+    while(bytes > 0) {
+        if (*p >= '0' &&  *p <= '9') {
+            hasnum = 1;
+            num *= 10;
+            num += *p-'0';
+            ++p;
+            --bytes;
+        }
+        else if (*p == ' ') {
+            if (hasnum) 
+                add_to_map(num, cpt, correspondance, corres, corres_big_ids, renumbering);
+            num = 0;
+            ++p;
+            --bytes;
+            hasnum = 0;
+        }
+        else if (*p == '\n') {
+            /* skipping weight for now */
+            if(!weighted)
+                if (hasnum) 
+                    add_to_map(num, cpt, correspondance, corres, corres_big_ids, renumbering);
+            num = 0;
+            ++p;
+            --bytes;
+            hasnum = 0;
+            /* FIXME: try inserting here in LOUT and LIN using insert and iterator */
+        }
+        else {
+            cerr << "Error reading graph." << endl;
+            exit(1);
         }
     }
+    close(f);
+    munmap(buffer,size);
 
     /* If the graph is already renumbered the correspondance must be identity */
     if(!renumbering) {
+        /* Number of nodes is cpt+1 */
+        ++cpt;
         for(unsigned int i = 0; i < cpt; ++i)
             correspondance.push_back(i);
     }
-    else 
-        cerr << "done." << endl;
 
-    finput.close();
+    /* Reading the file again to avoid too many resize for LOUT and LIN */
+    f = open(filename.c_str(), O_RDONLY);
+    size = lseek(f, 0, SEEK_END);
+    buffer = (char *)mmap(NULL, size, PROT_READ, MAP_PRIVATE, f, 0);
+
+    LOUT.resize(cpt);
+    LIN.resize(cpt);
+
+    double weight = 1.f;
+    unsigned int map_src, map_dest;
+
+    size_t i = 0;
+    bytes = size;
+    hasnum = 0;
+    num = 0;
+    unsigned long arc[2];
+    p = buffer;
+    while(bytes > 0) {
+        /* FIXME: deal with double weights */
+        if (*p >= '0' &&  *p <= '9') {
+            hasnum = 1;
+            num *= 10;
+            num += *p-'0';
+            ++p;
+            --bytes;
+        }
+        else if (*p == ' ') {
+            if (hasnum) 
+                arc[i++] = num;
+            num = 0;
+            ++p;
+            --bytes;
+            hasnum = 0;
+        }
+        else if(*p == '\n') {
+            /* FIXME: need to deal with double weights */
+            /* src and dest have been read */
+            if(weighted) 
+                weight = num;
+            /* otherwise we need to read dest */
+            else {
+                if (hasnum) 
+                    arc[i++] = num;
+            }
+            num = 0;
+            i = 0;
+            ++p;
+            --bytes;
+            hasnum = 0;
+            if(renumbering) {
+                map_src = get_mapped_node(arc[0], corres, corres_big_ids);
+                map_dest = get_mapped_node(arc[1], corres, corres_big_ids);
+            }
+            else {
+                map_src = arc[0];
+                map_dest = arc[1];
+            }
+
+            LOUT[map_src].push_back(make_pair(map_dest, weight));
+            if(map_src!=map_dest) 
+                LIN[map_dest].push_back(make_pair(map_src, weight));
+
+            /* FIXME: find a faster way */
+            if(reproducibility) {
+                foutput << map_src << " " << map_dest;
+                if (weighted)
+                    foutput << " " << weight;
+                foutput << endl;
+            }
+        }
+        else {
+            cout << "Error..." << endl;
+            exit(1);
+        }
+    }
+    close(f);
+    munmap(buffer,size);
+
+    if(reproducibility)
+        foutput.close();
+
     return cpt;
 }
 

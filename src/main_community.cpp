@@ -29,10 +29,15 @@ int main(int argc, char ** argv) {
     Community *c = new Community(filename, weighted, -1, precision, reproducibility, renumbering);
     if (filename_part != "")
         c->init_partition(filename_part);
-
-    double mod = c->modularity(), new_mod;
     int level = 0;
+    double mod = c->modularity(), new_mod;
 
+    auto end = chrono::high_resolution_clock::now();
+    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    time_taken *= 1e-9;
+    cerr << "loading graph in: " << fixed << time_taken << " seconds" << endl;
+    
+    start = chrono::high_resolution_clock::now();
     do {
         const Graph *community_graph = c->get_graph();
         ++nb_pass;
@@ -64,11 +69,11 @@ int main(int argc, char ** argv) {
     foutput << new_mod << endl;
     foutput.close();
 
-    auto end = chrono::high_resolution_clock::now();
-    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    end = chrono::high_resolution_clock::now();
+    time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
     time_taken *= 1e-9;
 
-    cerr << "computation time: " << fixed << time_taken << setprecision(9) << " seconds" << endl;
+    cerr << "computing communities in: " << fixed << time_taken << setprecision(9) << " seconds" << endl;
 
 }

@@ -42,6 +42,8 @@ Community::Community(string in_filename, int weighted, int nbp, double minm, boo
          * the number of self-loops after contraction
          */
         this->communities_arcs[i]->in      = g->count_selfloops(i);
+        /*if(this->communities_arcs[i]->in > 0)
+            cerr << i << "\t";*/
         this->communities_arcs[i]->tot_out = g->weighted_out_degree(i);
         this->communities_arcs[i]->tot_in  = g->weighted_in_degree(i);
         this->communities_arcs[i]->tot     = this->communities_arcs[i]->tot_out + this->communities_arcs[i]->tot_in;
@@ -161,6 +163,7 @@ void Community::partition_to_graph() {
 
     // compute communities
     vector < vector < int > > comm_nodes(f);
+
     for (unsigned int node = 0; node < size; ++node) 
         comm_nodes[renumber[this->node_to_community[node]]].push_back(node);
 
@@ -168,6 +171,7 @@ void Community::partition_to_graph() {
     Graph *g2 = new Graph();
     g2->nodes = comm_nodes.size();
     g2->weighted = true;
+
     for(unsigned int i = 0; i < g2->nodes; ++i)
         g2->correspondance.push_back(i);
 
@@ -360,6 +364,7 @@ void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm
 
 void list_neighboring_communities(const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int node, unsigned int &neighboring_communities) {
     for(unsigned int i = 0; i < neighboring_communities; ++i)
+        /* FIXME: clear then resize? */
         neighbor_weight[neigh_pos[i]] = -1.f;
 
     pair< size_t, size_t > p = (c.g)->out_neighbors(node);
