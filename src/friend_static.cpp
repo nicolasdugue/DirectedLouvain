@@ -43,145 +43,53 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
         foutput.open(tmp, fstream::out | fstream::binary);
     }
 
-    /* Based on https://stackoverflow.com/questions/15115943/what-is-the-best-efficient-way-to-read-millions-of-integers-separated-by-lines-f */
-    FILE *f = fopen(filename.c_str(), "r");
-
+    ifstream finput;
+    finput.open(filename, fstream:: in );
     unsigned int cpt = 0;
-    int hasnum = 0;
-    int num = 0;
-    int bytes = 0;
-    char buffer[8192];
-    int eof = 0;
-    char *p = NULL;
-    while(!eof) {
-        fread(buffer, 1, sizeof(buffer), f);
-        p = buffer;
-        bytes = 8192;
-        while(bytes > 0) {
-            if (*p == 26) {
-                eof = 1;
-                break;
-            }
-            if (*p >= '0' &&  *p <= '9') {
-                hasnum = 1;
-                num *= 10;
-                num += *p-'0';
-                ++p;
-                --bytes;
-            }
-            else if (*p == ' ') {
-                if (hasnum) 
-                    add_to_map(num, cpt, correspondance, corres, corres_big_ids, renumbering);
-                num = 0;
-                ++p;
-                --bytes;
-                hasnum = 0;
-            }
-            else if (*p == '\n') {
-                /* skipping weight for now */
-                if(!weighted)
-                    if (hasnum) 
-                        add_to_map(num, cpt, correspondance, corres, corres_big_ids, renumbering);
-                num = 0;
-                ++p;
-                --bytes;
-                hasnum = 0;
-            }
-            else {
-                cerr << "Error reading graph." << endl;
-                exit(1);
-            }
-        }
-        memset(buffer, 26, sizeof(buffer));  // To detect end of files. 
-    }
-    p = NULL;
-    fclose(f);
+    double weight = 1.f;
+    if (finput) {
+        unsigned int src, dest;
 
-    /* Reading the file again to avoid too many resize for LOUT and LIN */
-    f = fopen(filename.c_str(), "r");
+        while (finput >> src >> dest) {
+            if (weighted)
+                finput >> weight;
+
+            add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
+            add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
+        }
+    }
 
     LOUT.resize(cpt);
     LIN.resize(cpt);
 
-    double weight = 1.f;
-    unsigned int map_src, map_dest;
+    weight = 1.f;
+    unsigned int src, dest, map_src, map_dest;
 
-    size_t i = 0;
-    bytes = 0;
-    hasnum = 0;
-    num = 0;
-    unsigned long arc[2];
-    eof = 0;
-    while(!eof) {
-        fread(buffer, 1, sizeof(buffer), f);
-        p = buffer;
-        bytes = 8192;
-        while(bytes > 0) {
-            if (*p == 26) {
-                eof = 1;
-                break;
-            }
-            /* FIXME: deal with double weights */
-            if (*p >= '0' &&  *p <= '9') {
-                hasnum = 1;
-                num *= 10;
-                num += *p-'0';
-                ++p;
-                --bytes;
-            }
-            else if (*p == ' ') {
-                if (hasnum) 
-                    arc[i++] = num;
-                num = 0;
-                ++p;
-                --bytes;
-                hasnum = 0;
-            }
-            else if(*p == '\n') {
-                /* FIXME: need to deal with double weights */
-                /* src and dest have been read */
-                if(weighted) 
-                    weight = num;
-                /* otherwise we need to read dest */
-                else {
-                    if (hasnum) 
-                        arc[i++] = num;
-                }
-                num = 0;
-                i = 0;
-                ++p;
-                --bytes;
-                hasnum = 0;
-                if(renumbering) {
-                    map_src = get_mapped_node(arc[0], corres, corres_big_ids);
-                    map_dest = get_mapped_node(arc[1], corres, corres_big_ids);
-                }
-                else {
-                    map_src = arc[0];
-                    map_dest = arc[1];
-                }
+    finput.clear();
+    finput.seekg(0);
+    
+    while (finput >> src >> dest) {
+            weight = 1.f;
+            if (weighted)
+                finput >> weight;
 
-                LOUT[map_src].push_back(make_pair(map_dest, weight));
-                if(map_src!=map_dest) 
-                    LIN[map_dest].push_back(make_pair(map_src, weight));
+            map_src = get_mapped_node(src, corres, corres_big_ids);
+            map_dest = get_mapped_node(dest, corres, corres_big_ids);
 
-                /* FIXME: find a faster way */
-                if(reproducibility) {
-                    foutput << map_src << " " << map_dest;
-                    if (weighted)
-                        foutput << " " << weight;
-                    foutput << endl;
-                }
-            }
-            else {
-                cout << "Error..." << endl;
-                exit(1);
+            LOUT[map_src].push_back(make_pair(map_dest, weight));
+            if(map_src!=map_dest)
+                LIN[map_dest].push_back(make_pair(map_src, weight));
+
+            if(reproducibility) {
+                foutput << map_src << " " << map_dest;
+                if (weighted)
+                    foutput << " " << weight;
+                foutput << endl;
             }
         }
-        memset(buffer, 26, sizeof(buffer));  // To detect end of files. 
-    }
-    p = NULL;
-    fclose(f);
+
+        if(reproducibility)
+            foutput.close();
 
     /* If the graph is already renumbered the correspondance must be identity */
     if(!renumbering) {
