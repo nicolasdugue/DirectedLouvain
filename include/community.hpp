@@ -19,12 +19,14 @@
 
 #include "graph.hpp"
 
+/** 
+ * A structure containing information regarding the arcs within all communities 
+ */
 struct count { 
-    double in;      //<! Number of arcs (i.e. self-loops) within the community */
-    double tot_in;  //!< Number of outcoming arcs from the community */
-    double tot_out; //!< Number of incoming arcs to the community */
-    double tot;     //!< Total number of arcs around the community */
-    count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
+    double total_arcs_inside;       //<! Number of arcs (i.e. self-loops) within the community */
+    double total_incoming_arcs;     //!< Number of outcoming arcs from the community */
+    double total_outcoming_arcs;    //!< Number of incoming arcs to the community */
+    count() : total_arcs_inside(0.), total_incoming_arcs(0.), total_outcoming_arcs(0.) { }
 };
 typedef struct count Count;
 
@@ -40,15 +42,6 @@ class Community {
 
         vector<int> node_to_community;      /*!< Community to which each node belongs */
 
-        /** 
-         * A structure containing information regarding the arcs within all communities 
-         */
-        struct count { 
-            double total_arcs_inside;       //<! Number of arcs (i.e. self-loops) within the community */
-            double total_incoming_arcs;     //!< Number of outcoming arcs from the community */
-            double total_outcoming_arcs;    //!< Number of incoming arcs to the community */
-            count() : in(0.), total_incoming_arcs(0.), total_outcoming_arcs(0.), tot(0.) { }
-        };
         vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
 
         double precision;                   /*!< A real number describing the minimum improvement on modularity to carry on computation */

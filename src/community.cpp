@@ -70,7 +70,7 @@ void Community::init_partition(string filename) {
 void Community::display() {
     for (unsigned int i = 0; i < size; ++i)
         cerr << " " << g->correspondance[i] << "/" << node_to_community[i] << "/" 
-             << this->communities_arcs[i].total_arcs_inside << "/" << this->communities_arcs[i].tot;
+             << this->communities_arcs[i].total_arcs_inside << "/" << this->communities_arcs[i].total_outcoming_arcs << "/" << this->communities_arcs[i].total_incoming_arcs;
     cerr << endl;
 }
 

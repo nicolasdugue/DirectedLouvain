@@ -13,17 +13,17 @@ static unsigned int renumber_communities(const Community &c, vector< int > &renu
 
 void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm].total_outcoming_arcs  -= (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].total_incoming_arcs   -= (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].total_arcs_inside       -= dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].total_outcoming_arcs   -= (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].total_incoming_arcs    -= (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].total_arcs_inside      -= dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = -1;
 }
 
 void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm].total_outcoming_arcs  += (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].total_incoming_arcs   += (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].total_arcs_inside       += dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].total_outcoming_arcs   += (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].total_incoming_arcs    += (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].total_arcs_inside      += dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = comm;
 }
 
