@@ -37,11 +37,10 @@ class Community {
          * A structure containing information regarding the arcs within all communities 
          */
         struct count { 
-            double in;      //<! Number of arcs (i.e. self-loops) within the community */
-            double tot_in;  //!< Number of outcoming arcs from the community */
-            double tot_out; //!< Number of incoming arcs to the community */
-            double tot;     //!< Total number of arcs around the community */
-            count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
+            double total_arcs_inside;       //<! Number of arcs (i.e. self-loops) within the community */
+            double total_incoming_arcs;     //!< Number of outcoming arcs from the community */
+            double total_outcoming_arcs;    //!< Number of incoming arcs to the community */
+            count() : in(0.), total_incoming_arcs(0.), total_outcoming_arcs(0.), tot(0.) { }
         };
         vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
 
@@ -109,15 +108,14 @@ class Community {
 
         // Friend method computing the gain of modularity if node is inserted into comm
         /*! 
-         * Given that node has dnodecomm arcs to comm.  The formula is:
-         * [(In(comm)+2d(node,comm))/2m - ((tot(comm)+deg(node))/2m)^2]-
-         * [In(comm)/2m - (tot(comm)/2m)^2 - (deg(node)/2m)^2]
-         * where In(comm)    = number of half-arcs strictly inside comm
-         *       Tot(comm)   = number of half-arcs inside or outside comm (sum(degrees))
-         *       d(node,com) = weights of arcs from node to comm
-         *       deg(node)   = node degree
-         *       m           = number of arcs
-         *       
+         * The formula is:
+         * d(node,comm)/m - [(dout(node)*In(comm) + din(node)*Out(comm)) / (m*m)]
+         * where In(comm)       = number of incoming arcs to comm
+         *       Out(comm)      = number of outcoming arcs from comm
+         *       dout(node)     = weighted out-degree of node in whole graph
+         *       din(node)      = weighted in-degree of node in whole graph
+         *       d(node,comm)   = weights of arcs from node to comm
+         *       m              = number of arcs
          * \param c the Community object
          * \param node the node to consider
          * \param comm the community to consider 

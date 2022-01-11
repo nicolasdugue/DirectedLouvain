@@ -11,38 +11,35 @@ static unsigned int renumber_communities(const Community &c, vector< int > &renu
     return f;
 }
 
-double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<c.size);
-    double weighted_out_degree  = (c.g)->weighted_out_degree(node);
-    double weighted_in_degree   = (c.g)->weighted_in_degree(node);
-    double totc_out             = c.communities_arcs[comm].tot_out;
-    double totc_in              = c.communities_arcs[comm].tot_in;
-    double m                    = (c.g)->get_total_weight();
-
-    return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
-}
-
 void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm].tot_out  -= (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].tot_in   -= (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].tot      -= (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
-    c.communities_arcs[comm].in       -= dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].total_outcoming_arcs  -= (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].total_incoming_arcs   -= (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].total_arcs_inside       -= dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = -1;
 }
 
 void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm].tot_out  += (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].tot_in   += (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].tot      += (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
-    c.communities_arcs[comm].in       += dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].total_outcoming_arcs  += (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].total_incoming_arcs   += (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].total_arcs_inside       += dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = comm;
+}
+
+double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
+    assert(node<c.size);
+    double weighted_out_degree  = (c.g)->weighted_out_degree(node);
+    double weighted_in_degree   = (c.g)->weighted_in_degree(node);
+    double totc_out             = c.communities_arcs[comm].total_outcoming_arcs;
+    double totc_in              = c.communities_arcs[comm].total_incoming_arcs;
+    double m                    = (c.g)->get_total_weight();
+
+    return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
 }
 
 unsigned int list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos) {
     for(unsigned int i = 0; i < neighboring_communities; ++i)
-        /* FIXME: clear then resize? */
         neighbor_weight[neigh_pos[i]] = -1.f;
 
     size_t p = (c.g)->out_neighbors(node);
@@ -71,11 +68,6 @@ unsigned int list_neighboring_communities(unsigned int node, const Community &c,
     }
 
     // we proceed similarly on in-neighbors
-    /* FIXME: don't we count twice the same thing ?! 
-     * or do we really need to know w_out+w_in ?*
-     * FIXME: same question for neigh_pos: encompasses the weights 
-     * of out-comm then in-comm?
-     */
     size_t p_in = (c.g)->in_neighbors(node);
     unsigned int deg_in = (c.g)->in_degree(node);
 
