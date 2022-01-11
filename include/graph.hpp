@@ -146,8 +146,8 @@ class Graph {
         bool is_weighted() {
             return this->weighted;
         }
-
-        unsigned int get_nodes() const //<! getter for the number of nodes
+        //! Getter for the number of nodes
+        unsigned int get_nodes() const 
             { return this->nodes; } 
         unsigned int get_arcs() const { return this->arcs; } //<! getter for the number of arcs
         double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
