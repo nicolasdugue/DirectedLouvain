@@ -23,7 +23,7 @@ directories:
 	[ -d $(BINDIR) ] || mkdir -p $(BINDIR)
 	[ -d $(LIBDIR) ] || mkdir -p $(LIBDIR)
 
-community : $(OBJ1) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main_community.o)
+community : $(OBJ1) $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/main.o)
 	$(CC)  -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 hierarchy : $(SRC:$(SRCDIR)/%.cpp=$(LIBDIR)/hierarchy.o)

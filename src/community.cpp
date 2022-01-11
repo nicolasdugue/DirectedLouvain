@@ -1,28 +1,7 @@
-// File: community.h
-// -- community detection source file
-//-----------------------------------------------------------------------------
-// Community detection
-// Based on the article "Fast unfolding of community hierarchies in large networks"
-// Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
-//
-// This program must not be distributed without agreement of the above mentionned authors.
-//-----------------------------------------------------------------------------
-// Author   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
-//-----------------------------------------------------------------------------
-// see readme.txt for more details
-
 #include "../include/community.hpp"
 #include <climits>
 #include <random>       // std::default_random_engine
 #include <chrono>       // std::chrono::system_clock
-
-struct count { 
-    double in; /* number of arcs (i.e. self-loops) within the community */
-    double tot_in; /* number of outcoming arcs of the community */
-    double tot_out; /* number of incoming arcs of the community */
-    double tot; /* number of arcs of the community */
-    count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
-};
 
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
@@ -130,21 +109,6 @@ double Community::modularity() {
 
     return q;
 }
-
-/*void Community::partition_to_graph() {
-    vector < int > renumber(size, -1);
-    renumber_communities(*this, renumber);
-
-    for (unsigned int i = 0; i < size; ++i) {
-        pair < size_t, size_t > p = g->out_neighbors(i);
-
-        unsigned int deg = g->out_degree(i);
-        for (unsigned int j = 0; j < deg; ++j) {
-            unsigned int neigh = g->outcoming_arcs[p + j];
-            cout << renumber[node_to_community[i]] << " " << renumber[node_to_community[neigh]] << endl;
-        }
-    }
-}*/
 
 void Community::display_partition() {
     vector < int > renumber(size, -1);

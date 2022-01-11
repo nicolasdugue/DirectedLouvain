@@ -6,7 +6,6 @@
 
 using namespace std;
 
-/* Arguments variables */
 string filename = "";
 string filename_part = "";
 bool weighted = false;
@@ -69,7 +68,7 @@ void parse_args(int argc, char **argv) {
             case 0:
                 break;
             case 'f':
-                /* FIXME: hack to handle flag recognized as argument, needs a better solution 
+                /* TODO: hack to handle flag recognized as argument, needs a better solution 
                  * for instance ./bin/community -f -a will assume that filename is "-a"
                  */
                 if(optarg[0]=='-') {
@@ -90,7 +89,6 @@ void parse_args(int argc, char **argv) {
                 renumbering = false;
                 break;
             case 'p':
-                /* FIXME: hack to handle flag recognized as argument, needs a better solution */
                 if(optarg[0]=='-') {
                     cerr << "Option -p|--partition requires an argument (partition file name)" << endl;
                     exit(1);
@@ -100,7 +98,6 @@ void parse_args(int argc, char **argv) {
                     break;
                 }
             case 'q':
-                /* FIXME: hack to handle flag recognized as argument, needs a better solution */
                 if(optarg[0]=='-') {
                     cerr << "Option -q|--precision requires an argument (modularity gain threshold)" << endl;
                     exit(1);
@@ -110,7 +107,6 @@ void parse_args(int argc, char **argv) {
                     break;
                 }
             case 'l':
-                /* FIXME: hack to handle flag recognized as argument, needs a better solution */
                 isnumber = (string(optarg).find_first_not_of("0123456789") == string::npos);
                 if(!isnumber && string(optarg)!="-1") {
                     cerr << "Option -l|--level expects a number as argument" << endl; 

@@ -1,15 +1,17 @@
-// File: community.hpp
-// -- community detection header file
-//-----------------------------------------------------------------------------
-// Community detection
-// Based on the article "Fast unfolding of community hierarchies in large networks"
-// Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
-//
-// This program must not be distributed without agreement of the above mentionned authors.
-//-----------------------------------------------------------------------------
-// Author   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
-//-----------------------------------------------------------------------------
-// see readme.txt for more details
+/*! \file community.hpp
+ *  \brief Header for class Community 
+ *         Greedy algorithm optimizing directed modularity
+ * 
+ * Based on the articles ["Fast unfolding of community hierarchies in large networks"](https://arxiv.org/abs/0803.0476)
+ * Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
+ * and ["Directed Louvain: maximizing modularity in directed networks"](https://hal.archives-ouvertes.fr/hal-01231784) 
+ * N. Dugué, A.Perez 
+ * This program must not be distributed without agreement of the above mentionned authors.
+ * -----------------------------------------------------------------------------
+ * Authors   : E. Lefebvre, adapted by J.-L. Guillaume 
+ * Adapted by: Anthony Perez and Nicolas Dugué for handling directed graphs and modularity
+ * -----------------------------------------------------------------------------
+ */
 
 #ifndef COMMUNITY_HPP
 #define COMMUNITY_HPP
@@ -26,6 +28,13 @@ class Community {
 
         vector<int> node_to_community; // community to which each node belongs
 
+        struct count { 
+            double in; /* number of arcs (i.e. self-loops) within the community */
+            double tot_in; /* number of outcoming arcs of the community */
+            double tot_out; /* number of incoming arcs of the community */
+            double tot; /* number of arcs of the community */
+            count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
+        };
         vector< Count > communities_arcs;
 
         // number of pass for one level computation
@@ -59,9 +68,6 @@ class Community {
         // compute the modularity of the current partition
         double modularity();
 
-        /* FIXME: commented for the moment: is it useful??? */
-        // displays the graph of communities as computed by one_level
-        //void partition_to_graph();
         // displays the current partition (with communities renumbered from 0 to k-1)
         void display_partition();
 
@@ -71,19 +77,6 @@ class Community {
         // compute communities of the graph for one level
         // return true if some nodes have been moved
         bool one_level();
-
-        inline const Graph *get_graph() {
-            return this->g; 
-        }
-        inline const vector<int>& get_node_to_community() const {
-            return this->node_to_community; 
-        }
-        inline unsigned int get_size() const {
-            return this->size; 
-        }
-        inline unsigned int get_community(unsigned int node) const {
-            return this->node_to_community[node];
-        }
 
         // remove the node from its current community with which it has dnodecomm arcs
         friend void remove(Community&, unsigned int, unsigned int, double);
@@ -102,6 +95,20 @@ class Community {
         //       m           = number of arcs
         friend double modularity_gain(const Community&, unsigned int, unsigned int, double);
         friend void list_neighboring_communities(const Community&, vector<double>&, vector<unsigned int>&, unsigned int, unsigned int&);
+
+        inline const Graph *get_graph() {
+            return this->g; 
+        }
+        inline const vector<int>& get_node_to_community() const {
+            return this->node_to_community; 
+        }
+        inline unsigned int get_size() const {
+            return this->size; 
+        }
+        inline unsigned int get_community(unsigned int node) const {
+            return this->node_to_community[node];
+        }
+
 };
 
 #endif // COMMUNITY_HPP

@@ -1,14 +1,17 @@
-// File: graph.hpp
-// -- graph handling header file
-//-----------------------------------------------------------------------------
-// Community detection 
-// Based on the article "Fast unfolding of community hierarchies in large networks"
-// Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
-//
-// This program must not be distributed without agreement of the above mentionned authors.
-//-----------------------------------------------------------------------------
-// Authors   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
-//-----------------------------------------------------------------------------
+/*! \file graph.hpp
+ *  \brief Header for class Graph (under [CSR](linktogithub) format)
+ *         Base of the Directed Louvain community detection algorithm
+ * 
+ * Based on the articles ["Fast unfolding of community hierarchies in large networks"](https://arxiv.org/abs/0803.0476)
+ * Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
+ * and ["Directed Louvain: maximizing modularity in directed networks"](https://hal.archives-ouvertes.fr/hal-01231784) 
+ * N. Dugué, A.Perez 
+ * This program must not be distributed without agreement of the above mentionned authors.
+ * -----------------------------------------------------------------------------
+ * Authors   : E. Lefebvre, adapted by J.-L. Guillaume 
+ * Adapted by: Anthony Perez and Nicolas Dugué for handling directed graphs and modularity
+ * -----------------------------------------------------------------------------
+ */
 
 #pragma GCC optimize("O3")
 
