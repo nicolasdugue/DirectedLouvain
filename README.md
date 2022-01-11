@@ -1,4 +1,4 @@
-# Directed Louvain algorithm
+# Directed Louvain algorithm        {#mainpage}
 
 The algorithm used in this package is based on the Louvain algorithm developed by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded on the [Louvain algorithm webpage] (https://sites.google.com/site/findcommunities/) (**[2]**).
 The algorithm was then adjusted to handle directed graphs and to optimize the directed modularity of Leich and Newman instead of the classic modularity.
@@ -6,9 +6,7 @@ These modifications were mostly made by [Anthony perez] (https://www.univ-orlean
 
 The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks] (https://hal.archives-ouvertes.fr/hal-01231784) (**[3]**) and was also succesfully used in [A community role approach to assess social capitalists visibility in the Twitter network] (https://hal.archives-ouvertes.fr/hal-01163741) with Vincent Labatut and Anthony Perez (**[1]**).
 
-**The README below is adapted from the Louvain algorithm: our package works in a similar way.**
-
------------------------------------------------------------------------------
+---
 ## How to use
 
 The algorithm works in two steps, namely computing communities and then displaying hierarchical tree. 
@@ -29,15 +27,14 @@ The standard command is:
     ./bin/community -f graph/graph.txt -l -1 -v > graph.tree
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
-This file **must** be generated using the `-r` option, see below. In this case, the 
-only mandatory option is `-w` to indicate whether the graph is weighted. 
+This file **must** be generated using the our program in a first place, or follows the CSR format (see below). 
+In this case, the only mandatory option is `-w` to indicate whether the graph is weighted. 
 
 Several options are available, among which:
 + `-f` path to the input graph (edgelist or binary format (`.bin`))
 + `-w` to indicate that the input graph is weighted
 + `-n` to indicate that the input graph is correctly numbered (from `0` to `n-1`)
-+ `-r` for reproducibility purposes: the renumbered and binary graphs are stored on 
-files and can be reused. 
++ `-r` for reproducibility purposes: the renumbered graph is stored on hard drive. 
 
 More options and information are provided using `./bin/community`
 

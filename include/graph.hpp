@@ -1,16 +1,18 @@
 /*! \file graph.hpp
- *  \brief Header for class Graph (under [CSR](linktogithub) format)
+ *  \brief Header for class Graph (under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format)
  *         Base of the Directed Louvain community detection algorithm
  * 
- * Based on the articles ["Fast unfolding of community hierarchies in large networks"](https://arxiv.org/abs/0803.0476)
+ * ### Based on the articles:
+ * + ["Fast unfolding of community hierarchies in large networks"](https://arxiv.org/abs/0803.0476)
  * Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
- * and ["Directed Louvain: maximizing modularity in directed networks"](https://hal.archives-ouvertes.fr/hal-01231784) 
+ * + ["Directed Louvain: maximizing modularity in directed networks"](https://hal.archives-ouvertes.fr/hal-01231784) 
  * N. Dugué, A.Perez 
  * This program must not be distributed without agreement of the above mentionned authors.
- * -----------------------------------------------------------------------------
- * Authors   : E. Lefebvre, adapted by J.-L. Guillaume 
- * Adapted by: Anthony Perez and Nicolas Dugué for handling directed graphs and modularity
- * -----------------------------------------------------------------------------
+ *
+ * ### Authors : 
+ * + E. Lefebvre, adapted by J.-L. Guillaume 
+ * + Adapted by Anthony Perez and Nicolas Dugué for handling directed graphs and modularity
+ *
  */
 
 #pragma GCC optimize("O3")
@@ -29,12 +31,12 @@
 using namespace std;
 
 /*! \class Graph 
- * \brief Class handling directed graphs. 
- *         Graphs are read from edgelist or binary formats and stored using [CSR](linktogithub) format.
+ * \brief   Class handling directed graphs. 
+ *          Graphs are read from edgelist or binary formats and stored using [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format.
  *
- *         Nodes are renumbered unless stated otherwise, and the resulting correspondance is built. 
- *         Outcoming and incoming arcs are represented using cumulative degree sequences and a list of 
- *         both out- and in-neighbors and the corresponding weights
+ *          Nodes are renumbered unless stated otherwise, and the resulting correspondance is built.    
+ *          Outcoming and incoming arcs are represented using cumulative degree sequences and a list of 
+ *          both out- and in-neighbors and the corresponding weights.
  */
 class Graph {
     private:
@@ -46,11 +48,11 @@ class Graph {
         double total_weight;                    //!< Total weight on the arcs of the graph
 
         vector<unsigned long> outdegrees;       /*!< A vector containing cumulative out-degrees for nodes 0 to nodes-1 */
-        vector<unsigned int> outcoming_arcs;    /*!< A vector containing the out-neighbors of every node according to [CSR](linktogithub) format */
+        vector<unsigned int> outcoming_arcs;    /*!< A vector containing the out-neighbors of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format */
         vector<double> outcoming_weights;       /*!< A vector containing the weights of outgoing arcs of every node according to [CSR](linktoguthub) format */ 
         vector<unsigned long> indegrees;        /*!< A vector containing cumulative in-degrees for nodes 0 to nodes-1 */
-        vector<unsigned int> incoming_arcs;     /*!< A vector containing the in-neighbors of every node according to <a href="linktogithub" target="_blank">CSR</a> format */
-        vector<double> incoming_weights;        /*!< A vector containing the weights of ingoing arcs of every node according to [CSR](linktogithub) format */
+        vector<unsigned int> incoming_arcs;     /*!< A vector containing the in-neighbors of every node according to <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain" target="_blank">CSR</a> format */
+        vector<double> incoming_weights;        /*!< A vector containing the weights of ingoing arcs of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format */
 
         vector<unsigned long> correspondance;   /*!< A vector containing the original label of the input graph (if the graph is not renumbered this is identity) */
 
@@ -79,12 +81,12 @@ class Graph {
          */ 
         Graph (const Graph &g);
 
-        //! Member function loading and initializing Graph object from binary file under [CSR](linktogithub) format
+        //! Member function loading and initializing Graph object from binary file under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format
         /*!
          * \param filename path (absolute or relative) to the ".bin" file
          */
         void load(string filename); 
-        //! Member function writing Graph object into binary file ".bin" under [CSR](linktogithub) format
+        //! Member function writing Graph object into binary file ".bin" under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format
         /*! 
          * \param filename path (absolute or relative) to the ".bin" file
          */
