@@ -140,7 +140,7 @@ double Community::modularity() {
 
         unsigned int deg = g->out_degree(i);
         for (unsigned int j = 0; j < deg; ++j) {
-            unsigned int neigh = g->outcoming_arcs[p.first + j];
+            unsigned int neigh = g->outcoming_arcs[p + j];
             cout << renumber[node_to_community[i]] << " " << renumber[node_to_community[neigh]] << endl;
         }
     }
@@ -184,12 +184,12 @@ void Community::partition_to_graph() {
         size_t comm_size = comm_nodes[comm].size();
         for (unsigned int node = 0; node < comm_size; ++node) {
             // we first deal with out-neighbors communities
-            pair< size_t, size_t > p = (this->g)->out_neighbors(comm_nodes[comm][node]);
+            size_t p = (this->g)->out_neighbors(comm_nodes[comm][node]);
             unsigned int deg = (this->g)->out_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
-                neigh = (this->g)->outcoming_arcs[p.first + i];
+                neigh = (this->g)->outcoming_arcs[p + i];
                 neigh_comm = renumber[this->node_to_community[neigh]];
-                neigh_weight = ((this->g)->weighted) ? (this->g)->outcoming_weights[p.second + i] : 1.f;
+                neigh_weight = ((this->g)->weighted) ? (this->g)->outcoming_weights[p + i] : 1.f;
 
                 auto it_out = m_out.find(neigh_comm);
                 if (it_out == m_out.end())
@@ -199,12 +199,12 @@ void Community::partition_to_graph() {
             }
 
             // same thing for in-neighbors communities
-            pair< size_t, size_t > p_in = (this->g)->in_neighbors(comm_nodes[comm][node]);
+            size_t p_in = (this->g)->in_neighbors(comm_nodes[comm][node]);
             deg = (this->g)->in_degree(comm_nodes[comm][node]);
             for (unsigned int i = 0; i < deg; ++i) {
-                neigh = (this->g)->incoming_arcs[p_in.first + i];
+                neigh = (this->g)->incoming_arcs[p_in + i];
                 neigh_comm = renumber[this->node_to_community[neigh]];
-                neigh_weight = ((this->g)->weighted) ? (this->g)->incoming_weights[p_in.second + i] : 1.f;
+                neigh_weight = ((this->g)->weighted) ? (this->g)->incoming_weights[p_in + i] : 1.f;
 
                 auto it_in = m_in.find(neigh_comm);
                 if (it_in == m_in.end())
@@ -365,7 +365,7 @@ void list_neighboring_communities(const Community &c, vector<double> &neighbor_w
         /* FIXME: clear then resize? */
         neighbor_weight[neigh_pos[i]] = -1.f;
 
-    pair< size_t, size_t > p = (c.g)->out_neighbors(node);
+    size_t p = (c.g)->out_neighbors(node);
     unsigned int deg = (c.g)->out_degree(node);
 
     // the first neighboring community of each node is its own
@@ -375,9 +375,9 @@ void list_neighboring_communities(const Community &c, vector<double> &neighbor_w
 
     for (unsigned int i = 0; i < deg; ++i) {
         // fetching neighbors of i, their community and the corresponding degrees
-        unsigned int neigh = (c.g)->get_out_neighbor(p.first + i);
+        unsigned int neigh = (c.g)->get_out_neighbor(p + i);
         int neigh_comm = c.get_community(neigh);
-        double neigh_w = ((c.g)->is_weighted()) ? (c.g)->get_weighted_out_neighbor(p.second + i) : 1.f;
+        double neigh_w = ((c.g)->is_weighted()) ? (c.g)->get_weighted_out_neighbor(p + i) : 1.f;
 
         if (neigh != node) {
             // if the community is discovered for the first time
@@ -396,13 +396,13 @@ void list_neighboring_communities(const Community &c, vector<double> &neighbor_w
      * FIXME: same question for neigh_pos: encompasses the weights 
      * of out-comm then in-comm?
      */
-    pair< size_t, size_t > p_in = (c.g)->in_neighbors(node);
+    size_t p_in = (c.g)->in_neighbors(node);
     unsigned int deg_in = (c.g)->in_degree(node);
 
     for (unsigned int i = 0; i < deg_in; ++i) {
-        unsigned int neigh_in = (c.g)->get_in_neighbor(p_in.first + i);
+        unsigned int neigh_in = (c.g)->get_in_neighbor(p_in + i);
         int neigh_comm_in = c.get_community(neigh_in);
-        double neigh_w_in = ((c.g)->is_weighted()) ? (c.g)->get_weighted_in_neighbor(p_in.second + i) : 1.f;
+        double neigh_w_in = ((c.g)->is_weighted()) ? (c.g)->get_weighted_in_neighbor(p_in + i) : 1.f;
 
         if (neigh_in != node) {
             if (neighbor_weight[neigh_comm_in] == -1) {

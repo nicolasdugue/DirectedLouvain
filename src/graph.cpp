@@ -147,13 +147,13 @@ void Graph::load(string filename) {
 
 void Graph::display() const {
     for (unsigned int node = 0; node < this->nodes; ++node) {
-        auto p = this->out_neighbors(node);
+        size_t p = this->out_neighbors(node);
         cout << this->correspondance[node] << ":";
         for (unsigned int i = 0; i < out_degree(node); ++i) {
             if (this->weighted)
-                cout << " (" << this->outcoming_arcs[p.first + i] << " " << p.second + i << ")";
+                cout << " (" << this->outcoming_arcs[p + i] << " " << this->outcoming_weights[p + i] << ")";
             else
-                cout << " " << this->outcoming_arcs[p.first+i];
+                cout << " " << this->outcoming_arcs[p+i];
         }
         cout << endl;
     }
@@ -161,11 +161,11 @@ void Graph::display() const {
 
 double Graph::count_selfloops(unsigned int node) {
     assert(node<this->nodes);
-    auto p = this->out_neighbors(node);
+    size_t p = this->out_neighbors(node);
     for (unsigned int i=0 ; i < this->out_degree(node) ; ++i) {
-        if (this->outcoming_arcs[p.first+i]==node) {
+        if (this->outcoming_arcs[p+i]==node) {
             if (this->weighted)
-                return this->outcoming_weights[p.second+i];
+                return this->outcoming_weights[p+i];
             else 
                 return 1.;
         }
@@ -179,10 +179,10 @@ double Graph::weighted_out_degree(unsigned int node) {
     if (!this->weighted)
         return this->out_degree(node);
     else {
-        auto p = this->out_neighbors(node);
+        size_t p = this->out_neighbors(node);
         double res = 0;
         for (unsigned int i=0 ; i < this->out_degree(node) ; ++i) 
-            res += this->outcoming_weights[p.second+i];
+            res += this->outcoming_weights[p+i];
         return res;
     }
 }
@@ -192,10 +192,10 @@ double Graph::weighted_in_degree(unsigned int node) {
     if (!this->weighted)
         return this->in_degree(node);
     else {
-        auto p = this->in_neighbors(node);
+        size_t p = this->in_neighbors(node);
         double res = 0;
         for (unsigned int i=0 ; i < this->in_degree(node) ; ++i) 
-            res += this->incoming_weights[p.second+i];
+            res += this->incoming_weights[p+i];
         return res;
     }
 }
