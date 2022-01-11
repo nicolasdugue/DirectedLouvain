@@ -36,3 +36,4 @@ modularity_values_directed_louvain.txt
 *.tree
 *renum*
 snap/
+config-doxygen
