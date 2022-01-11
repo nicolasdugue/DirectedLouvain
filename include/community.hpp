@@ -19,6 +19,13 @@
 
 #include "graph.hpp"
 
+struct count { 
+    double in;      //<! Number of arcs (i.e. self-loops) within the community */
+    double tot_in;  //!< Number of outcoming arcs from the community */
+    double tot_out; //!< Number of incoming arcs to the community */
+    double tot;     //!< Total number of arcs around the community */
+    count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
+};
 typedef struct count Count;
 
 /*! \class Community 
@@ -36,13 +43,6 @@ class Community {
         /** 
          * A structure containing information regarding the arcs within all communities 
          */
-        struct count { 
-            double in;      //<! Number of arcs (i.e. self-loops) within the community */
-            double tot_in;  //!< Number of outcoming arcs from the community */
-            double tot_out; //!< Number of incoming arcs to the community */
-            double tot;     //!< Total number of arcs around the community */
-            count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
-        };
         vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
 
         double precision;                   /*!< A real number describing the minimum improvement on modularity to carry on computation */
@@ -132,9 +132,9 @@ class Community {
          * \param neighbor_weigh a vector containing, for each community, the total weight of arcs between node and comm 
          * \param neigh_pos a vector representing the communities that are neighbors from node (including its own)
          * \param node the node to consider
-         * \return the number of communities neighboring node
+         * \param neighboring_communities a reference to the number of communities neighboring node 
          */ 
-        friend unsigned int list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos):
+        friend void list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int &neighboring_communities);
 
         //! Getter for the graph to compute communities for
         inline const Graph *get_graph() {
