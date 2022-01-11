@@ -81,8 +81,17 @@ class Graph {
         double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
         const vector<unsigned long> &get_correspondance() { return this->correspondance; } //<! getter for the renumbering correspondance
 
+        //! Member function loading and initializing Graph object from binary file under [CSR](linktogithub) format
+        /*!
+         * \param filename path (absolute or relative) to the ".bin" file
+         */
         void load(string filename); 
-        void write(string outfile);
+        //! Member function writing Graph object into binary file ".bin" under [CSR](linktogithub) format
+        /*! 
+         * \param filename path (absolute or relative) to the ".bin" file
+         */
+        void write(string filename);
+        //! Member function printing the Graph object in edgelist format on standard output
         void display() const;
 
         //! Member function returning the weight (if weighted) or number (else) of self loops of the node
@@ -104,12 +113,16 @@ class Graph {
          */ 
         double weighted_in_degree(unsigned int node);
 
-        // return positions of the first out-neighbor and first weight of the node
-        pair<size_t, size_t > out_neighbors(unsigned int node) const; 
+        // Member function returning positions of the first out-neighbor of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the position of its out-neighbors and weights, according to cumulative out-degree sequence.
+         */
+        size_t out_neighbors(unsigned int node) const; 
         // return the number of out neighbors (degree) of the node
         unsigned int out_degree(unsigned int node) const;
         // return pointers to the first in-neighbor and first weight of the node
-        pair<size_t, size_t> in_neighbors(unsigned int node);
+        size_t in_neighbors(unsigned int node);
         // return the number of out neighbors (degree) of the node
         unsigned int in_degree(unsigned int node);
         // return the total degree
@@ -140,37 +153,31 @@ class Graph {
         }
 };
 
-// return positions of the first out-neighbor and first weight of the node
-inline pair<size_t, size_t > Graph::out_neighbors(unsigned int node) const {
+// Implementation of inline functions 
+inline size_t Graph::out_neighbors(unsigned int node) const {
     assert(node<this->nodes);
     if (node==0)
-        return make_pair(0,0);
-    else if (this->weighted)
-        return make_pair(this->outdegrees[node-1], this->outdegrees[node-1]);
+        return 0;
+    return this->outdegrees[node-1];
 }
 
-// return the number of out neighbors (degree) of the node
 inline unsigned int Graph::out_degree(unsigned int node) const {
     assert(node<this->nodes);
     return (node==0 ? this->outdegrees[0] : this->outdegrees[node]-this->outdegrees[node-1]);
 }
 
-// return pointers to the first in-neighbor and first weight of the node
-inline pair<size_t, size_t> Graph::in_neighbors(unsigned int node) {
+inline size_t Graph::in_neighbors(unsigned int node) {
     assert(node<this->nodes);
     if (node==0)
-        return make_pair(0,0);
-    else if (this->weighted)
-        return make_pair(this->indegrees[node-1], this->indegrees[node-1]);
+        return 0;
+    return this->indegrees[node-1];
 }
 
-// return the number of out neighbors (degree) of the node
 inline unsigned int Graph::in_degree(unsigned int node) {
     assert(node<this->nodes);
     return (node==0 ? this->indegrees[0] : this->indegrees[node]-this->indegrees[node-1]);
 }
 
-// return the total degree
 inline double Graph::weighted_degree(unsigned int node) {
     assert(node<this->nodes);
     return this->weighted_out_degree(node) + this->weighted_in_degree(node);
