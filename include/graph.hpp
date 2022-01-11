@@ -76,11 +76,6 @@ class Graph {
          */ 
         Graph (const Graph &g);
 
-        unsigned int get_nodes() const { return this->nodes; } //<! getter for the number of nodes
-        unsigned int get_arcs() const { return this->arcs; } //<! getter for the number of arcs
-        double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
-        const vector<unsigned long> &get_correspondance() { return this->correspondance; } //<! getter for the renumbering correspondance
-
         //! Member function loading and initializing Graph object from binary file under [CSR](linktogithub) format
         /*!
          * \param filename path (absolute or relative) to the ".bin" file
@@ -151,6 +146,13 @@ class Graph {
         bool is_weighted() {
             return this->weighted;
         }
+
+        unsigned int get_nodes() const //<! getter for the number of nodes
+            { return this->nodes; } 
+        unsigned int get_arcs() const { return this->arcs; } //<! getter for the number of arcs
+        double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
+        const vector<unsigned long> &get_correspondance() { return this->correspondance; } //<! getter for the renumbering correspondance
+
 };
 
 // Implementation of inline functions 
