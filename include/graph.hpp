@@ -25,50 +25,86 @@
 
 using namespace std;
 
+/*! \class Graph 
+ * \brief Class handling directed graphs. 
+ *         Graphs are read from edgelist or binary formats and stored using [CSR](linktogithub) format.
+ *
+ *         Nodes are renumbered unless stated otherwise, and the resulting correspondance is built. 
+ *         Outcoming and incoming arcs are represented using cumulative degree sequences and a list of 
+ *         both out- and in-neighbors and the corresponding weights
+ */
 class Graph {
     private:
-        friend class Community;
-        bool weighted; 
+        friend class Community;                 /*!< */
+        bool weighted;                          /*!< A boolean value indicating whether the graph is weighted */
 
-        unsigned int nodes;
-        unsigned int arcs;
-        double total_weight;  
+        unsigned int nodes;                     //!< Number of nodes of the graph
+        unsigned int arcs;                      //!< Number of arcs of the graph
+        double total_weight;                    //!< Total weight on the arcs of the graph
 
-        vector<unsigned long> outdegrees;
-        vector<unsigned long> indegrees;
-        vector<unsigned int> outcoming_arcs;
-        vector<unsigned int> incoming_arcs;
-        vector<double> outcoming_weights; 
-        vector<double> incoming_weights;
+        vector<unsigned long> outdegrees;       /*!< A vector containing cumulative out-degrees for nodes 0 to nodes-1 */
+        vector<unsigned int> outcoming_arcs;    /*!< A vector containing the out-neighbors of every node according to [CSR](linktogithub) format */
+        vector<double> outcoming_weights;       /*!< A vector containing the weights of outgoing arcs of every node according to [CSR](linktoguthub) format */ 
+        vector<unsigned long> indegrees;        /*!< A vector containing cumulative in-degrees for nodes 0 to nodes-1 */
+        vector<unsigned int> incoming_arcs;     /*!< A vector containing the in-neighbors of every node according to <a href="linktogithub" target="_blank">CSR</a> format */
+        vector<double> incoming_weights;        /*!< A vector containing the weights of ingoing arcs of every node according to [CSR](linktogithub) format */
 
-        vector<unsigned long> correspondance;
+        vector<unsigned long> correspondance;   /*!< A vector containing the original label of the input graph (if the graph is not renumbered this is identity) */
 
     public:
+        //! Default constructor
         Graph();
-        Graph(string in_filename, bool weighted, bool reproducibility, bool renumbering); 
-        Graph (const Graph& );
+        //! Constructor with arguments
+        /*! 
+         * \param filename          the file to read the graph from 
+         * \param weighted          boolean value indicating whether the graph is weighted
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         */
+        Graph(string filename, bool weighted, bool reproducibility, bool renumbering); 
+        //! Friend method to initialize all attributes 
+        /*!
+         * \param g the Graph object to initialize
+         * \param LOUT adjacency list for outcoming arcs
+         * \param LIN adjacency list for incoming arcs
+         * \sa Graph()
+         */
         friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN);
+        //! Copy constructor
+        /*! 
+         * \param g the Graph object to be copied
+         */ 
+        Graph (const Graph &g);
 
-        unsigned int get_nodes() const { return this->nodes; }
-        unsigned int get_arcs() const { return this->arcs; }
-        double get_total_weight() const { return this->total_weight; }
+        unsigned int get_nodes() const { return this->nodes; } //<! getter for the number of nodes
+        unsigned int get_arcs() const { return this->arcs; } //<! getter for the number of arcs
+        double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
+        const vector<unsigned long> &get_correspondance() { return this->correspondance; } //<! getter for the renumbering correspondance
 
-        const vector<unsigned long> &get_correspondance() { return this->correspondance; }
-
-        void display() const;
-        void display_reverse();
         void load(string filename); 
         void write(string outfile);
+        void display() const;
 
-        // return the number of self loops of the node
+        //! Member function returning the weight (if weighted) or number (else) of self loops of the node
+        /*!
+         * \param node the node to consider
+         * \return the weight or number of self loops of node
+         */
         double count_selfloops(unsigned int node);
-        // return the weighted degree of the node
+        //! Member function returning the weighted out-degree of the node
+        /*!
+         * \param node the node to compute weighted out-degree for
+         * \result weighted out-degree of node
+         */ 
         double weighted_out_degree(unsigned int node);
-        // return the weighted in-degree of the node
+        //! Member function returnin the weighted in-degree of the node
+        /*!
+         * \param node the node to compute weighted in-degree for
+         * \result weighted in-degree of node
+         */ 
         double weighted_in_degree(unsigned int node);
 
         // return positions of the first out-neighbor and first weight of the node
-        /* FIXME: this takes much more time with iterators than positions */
         pair<size_t, size_t > out_neighbors(unsigned int node) const; 
         // return the number of out neighbors (degree) of the node
         unsigned int out_degree(unsigned int node) const;
@@ -102,7 +138,6 @@ class Graph {
         bool is_weighted() {
             return this->weighted;
         }
-
 };
 
 // return positions of the first out-neighbor and first weight of the node
@@ -112,9 +147,6 @@ inline pair<size_t, size_t > Graph::out_neighbors(unsigned int node) const {
         return make_pair(0,0);
     else if (this->weighted)
         return make_pair(this->outdegrees[node-1], this->outdegrees[node-1]);
-    /* FIXME: maybe useless? second member is probably used only if weighted==WEIGHTED*/
-    else
-        return make_pair(this->outdegrees[node-1], 0);
 }
 
 // return the number of out neighbors (degree) of the node
@@ -130,9 +162,6 @@ inline pair<size_t, size_t> Graph::in_neighbors(unsigned int node) {
         return make_pair(0,0);
     else if (this->weighted)
         return make_pair(this->indegrees[node-1], this->indegrees[node-1]);
-    /* FIXME: maybe useless? */
-    else 
-        return make_pair(this->indegrees[node-1], 0);
 }
 
 // return the number of out neighbors (degree) of the node

@@ -151,9 +151,9 @@ void Graph::display() const {
         cout << this->correspondance[node] << ":";
         for (unsigned int i = 0; i < out_degree(node); ++i) {
             if (this->weighted)
-                cout << " (" << this->correspondance[this->outcoming_arcs[p.first + i]] << " " << this->outcoming_weights[p.second + i] << ")";
+                cout << " (" << this->outcoming_arcs[p.first + i] << " " << p.second + i << ")";
             else
-                cout << " " << this->correspondance[this->outcoming_arcs[p.first+i]];
+                cout << " " << this->outcoming_arcs[p.first+i];
         }
         cout << endl;
     }
@@ -200,4 +200,5 @@ double Graph::weighted_in_degree(unsigned int node) {
     }
 }
 
+/* Friend and static functions are defered to a different file for readability */
 #include "friend_static.cpp"
