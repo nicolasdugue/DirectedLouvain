@@ -1,3 +1,5 @@
+// This method adds node to the small or large int correspondance "map"
+// A reference to a counter is given, which will be the number of nodes in the end
 static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned long> &correspondance, vector<int> &corres, map<unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
     if(renumbering) {
         if (node < MAP_LIMIT) {
@@ -16,6 +18,7 @@ static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned lon
         cpt = node;
 }
 
+// This function returns the renumbered identifier of a given node
 static inline unsigned int get_mapped_node(unsigned long int node, const vector<int>& corres, const map< unsigned long, unsigned int> &corres_big_ids) {
     unsigned int mapped_node;
     if (node < MAP_LIMIT)
@@ -25,11 +28,11 @@ static inline unsigned int get_mapped_node(unsigned long int node, const vector<
     return mapped_node;
 }
 
+// This function builds the map for renumbering the input graph and returns cpt (the number of nodes)
+// If reproducibility is set to true, the renumbered graph is written into a file under edgelist format: src dest (weight)
 static unsigned int build_map(string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool weighted, bool renumbering, bool reproducibility) {
 
-    //Creates the correspondance table
     vector<int> corres(MAP_LIMIT,-1);
-    //Creates the specific table for huge ints that have to be stored as long long int
     map < unsigned long, unsigned int > corres_big_ids;
     if(renumbering)
         cerr << "renumbering graph..." << endl;
@@ -45,6 +48,8 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
 
     ifstream finput;
     finput.open(filename, fstream:: in );
+    assert(finput.rdstate() == ios::goodbit);
+
     unsigned int cpt = 0;
     double weight = 1.f;
     if (finput) {
@@ -62,14 +67,12 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
     LOUT.resize(cpt);
     LIN.resize(cpt);
 
-    weight = 1.f;
     unsigned int src, dest, map_src, map_dest;
 
     finput.clear();
     finput.seekg(0);
     
     while (finput >> src >> dest) {
-            weight = 1.f;
             if (weighted)
                 finput >> weight;
 
@@ -88,27 +91,25 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
             }
         }
 
-        if(reproducibility)
-            foutput.close();
+    if(reproducibility)
+        foutput.close();
 
-    /* If the graph is already renumbered the correspondance must be identity */
+    // If the graph is already renumbered the correspondance must be identity 
     if(!renumbering) {
-        /* Number of nodes is cpt+1 */
+        // Number of nodes in that case is cpt+1 
         ++cpt;
         for(unsigned int i = 0; i < cpt; ++i)
             correspondance.push_back(i);
     }
 
-    if(reproducibility)
-        foutput.close();
-
     return cpt;
 }
 
-
+// This method initializes all attributs of Graph object g from out- and in- adjacency lists LOUT and LIN
 void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN) {
     cerr << "number of nodes: " << g.nodes << endl;
 
+    // Building cumulative out-degree sequence
     g.outdegrees.resize(g.nodes);
     unsigned long int tot = 0;
     for (size_t i = 0; i < g.nodes; ++i) {
@@ -123,6 +124,7 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     else 
         g.outcoming_weights.resize(0);
 
+    // Stocking out-neighbors and weights (if any)
     unsigned long int total_LOUT = 0;
     for (size_t i = 0; i < g.nodes; ++i) {
         for (auto edge : LOUT[i]) {
@@ -133,15 +135,16 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
         }
     }
 
-    // Release memory
-    /*for (size_t i = 0; i < LOUT.size(); ++i) {
+    // Releasing memory for efficiency purposes
+    for (size_t i = 0; i < LOUT.size(); ++i) {
         LOUT[i].clear();
         vector < pair < unsigned int, double > > ().swap(LOUT[i]);
     }
 
     LOUT.clear();
-    vector < vector < pair < unsigned int, double > > > ().swap(LOUT);*/
+    vector < vector < pair < unsigned int, double > > > ().swap(LOUT);
 
+    // Building cumulative in-degree sequence
     g.indegrees.resize(g.nodes);
     tot = 0;
     for (size_t i = 0; i < g.nodes; ++i) {
@@ -155,6 +158,7 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     else 
         g.incoming_weights.resize(0);
 
+    // Stocking in-neighbors and weights (if any)
     unsigned long int total_LIN = 0;
     for (size_t i = 0; i < g.nodes; ++i) {
         for (auto edge : LIN[i]) {
@@ -165,19 +169,19 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
         }
     }
 
-    // Release memory
-    /*for (size_t i = 0; i < LIN.size(); ++i) {
+    // Releasing memory for efficiency purposes
+    for (size_t i = 0; i < LIN.size(); ++i) {
         LIN[i].clear();
         vector < pair < unsigned int, double > > ().swap(LIN[i]);
     }
 
     LIN.clear();
-    vector < vector < pair < unsigned int, double > > > ().swap(LIN);*/
+    vector < vector < pair < unsigned int, double > > > ().swap(LIN);
 
     cerr << "number of arcs: ";
     cerr << g.arcs << endl;
 
-    // Compute total weight
+    // Computing the total weight of the graph
     g.total_weight = 0.;
 
     double &total_weight = g.total_weight;

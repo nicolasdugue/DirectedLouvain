@@ -1,16 +1,3 @@
-// File: graph.cpp
-// -- graph handling source
-//-----------------------------------------------------------------------------
-// Community detection
-// Based on the article "Fast unfolding of community hierarchies in large networks"
-// Copyright (C) 2008 V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre
-//
-// This program must not be distributed without agreement of the above mentionned authors.
-//-----------------------------------------------------------------------------
-// Author   : E. Lefebvre, adapted by J.-L. Guillaume and then Anthony Perez and Nicolas Dugué for directed modularity
-//-----------------------------------------------------------------------------
-// see readme.txt for more details
-
 #include <string>
 #include <cstring>
 
@@ -37,27 +24,25 @@ Graph::Graph() {
     this->indegrees.resize(0);
 }
 
-Graph::Graph(string in_filename, bool weighted, bool reproducibility, bool renumbering) {
+Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumbering) {
     vector<vector<pair<unsigned int,double> > > LOUT;
     vector<vector<pair<unsigned int,double> > > LIN;
 
     this->weighted = weighted;
-    string extension = in_filename.substr(in_filename.size()-4,in_filename.size());
+    string extension = filename.substr(filename.size()-4,filename.size());
 
-    /* FIXME: handle wrong filename: add exceptions! */
     if(extension!=".bin") {
         this->correspondance.resize(0);
-        this->nodes = build_map(in_filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility);
+        this->nodes = build_map(filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility);
 
         cerr << "initializing graph..." << endl;
         init_attributes(*this, LOUT, LIN);
         cerr << "done." << endl;
-        string name = in_filename.substr(0,in_filename.size()-4);
-        /* TODO: modify README to take into account that this is now done in every case */
+        string name = filename.substr(0,filename.size()-4);
         this->write(name+".bin");
     }
     else
-        this->load(in_filename);
+        this->load(filename);
 }
 
 Graph::Graph(const Graph &g) {
@@ -76,12 +61,13 @@ Graph::Graph(const Graph &g) {
     this->correspondance    = g.correspondance;
 }
 
-/* FIXME: do not use vector if reproducibility, but instead write _on the fly_ and then read */
 void
 Graph::write(string outfile) {
     ofstream foutput;
     foutput.open(outfile, fstream::out | fstream::binary);
+    assert(foutput.rdstate() == ios::goodbit);
 
+    // Writing all attributes of the graph in binary file, out- first then in-
     foutput.write((char*)( & this->nodes), sizeof(unsigned int));
     foutput.write((char*)( & this->outdegrees[0]), sizeof(unsigned long) * this->nodes);
     foutput.write((char*)( & this->outcoming_arcs[0]), sizeof(unsigned int) * this->arcs);
@@ -95,16 +81,16 @@ Graph::write(string outfile) {
     foutput.close();
 }
 
-/* Reading from binary */
 void Graph::load(string filename) {
     ifstream finput;
     finput.open(filename, fstream:: in | fstream::binary);
+    assert(finput.rdstate() == ios::goodbit);
     this->outcoming_weights.resize(0);
     this->incoming_weights.resize(0);
 
+    // Loading attributes from binary file and displaying information
     cerr << "number of nodes: ";
     finput.read((char*) & this->nodes, sizeof(unsigned int));
-    assert(finput.rdstate() == ios::goodbit);
     cerr << this->nodes << endl;
 
     this->outdegrees.resize(this->nodes);

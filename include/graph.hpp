@@ -108,19 +108,35 @@ class Graph {
          */ 
         double weighted_in_degree(unsigned int node);
 
-        // Member function returning positions of the first out-neighbor of a given node 
+        //! Member function returning positions of the first out-neighbor of a given node 
         /*! 
          * \param node the node to consider
          * \result the position of its out-neighbors and weights, according to cumulative out-degree sequence.
          */
         size_t out_neighbors(unsigned int node) const; 
-        // return the number of out neighbors (degree) of the node
+        //! Member function returning the out-degree of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the out-degree of the node according to cumulative out-degree sequence.
+         */
         unsigned int out_degree(unsigned int node) const;
-        // return pointers to the first in-neighbor and first weight of the node
+        //! Member function returning positions of the first in-neighbor of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the position of its in-neighbors and weights, according to cumulative in-degree sequence.
+         */
         size_t in_neighbors(unsigned int node);
-        // return the number of out neighbors (degree) of the node
+        //! Member function returning the in-degree of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the in-degree of the node according to cumulative in-degree sequence.
+         */
         unsigned int in_degree(unsigned int node);
-        // return the total degree
+        //! Member function returning the total degree of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the sum of out- and in-degrees of the node according to cumulative in-degree sequence.
+         */
         double weighted_degree(unsigned int node);
 
         unsigned int get_out_neighbor(size_t index) {
@@ -146,16 +162,26 @@ class Graph {
         bool is_weighted() {
             return this->weighted;
         }
+
         //! Getter for the number of nodes
-        unsigned int get_nodes() const 
-            { return this->nodes; } 
-        unsigned int get_arcs() const { return this->arcs; } //<! getter for the number of arcs
-        double get_total_weight() const { return this->total_weight; } //<! getter for the total weight 
-        const vector<unsigned long> &get_correspondance() { return this->correspondance; } //<! getter for the renumbering correspondance
+        unsigned int get_nodes() const {
+            return this->nodes; 
+        } 
+        //! Getter for the number of arcs
+        unsigned int get_arcs() const { 
+            return this->arcs; 
+        }
+        //! Getter for the total_weight of the graph
+        double get_total_weight() const { 
+            return this->total_weight; 
+        }
+        //! Getter for renumbering correspondance 
+        const vector<unsigned long> &get_correspondance() { 
+            return this->correspondance; 
+        }
 
 };
 
-// Implementation of inline functions 
 inline size_t Graph::out_neighbors(unsigned int node) const {
     assert(node<this->nodes);
     if (node==0)
