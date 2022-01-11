@@ -26,7 +26,7 @@ class Community {
 
         vector<int> node_to_community; // community to which each node belongs
 
-        vector< unique_ptr<Count> > communities_arcs;
+        vector< Count > communities_arcs;
 
         // number of pass for one level computation
         // if -1, compute as many pass as needed to increase modularity

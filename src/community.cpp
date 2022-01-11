@@ -34,19 +34,17 @@ Community::Community(string in_filename, int weighted, int nbp, double minm, boo
 
     this->node_to_community.resize(this->size); 
     this->communities_arcs.resize(this->size);
-    for(size_t i = 0; i < this->size; ++i)
-        this->communities_arcs[i] = unique_ptr<Count>(new Count());
 
     for (unsigned int i = 0; i < this->size; ++i) {
         /* the total number of edges inside the community corresponds to 
          * the number of self-loops after contraction
          */
-        this->communities_arcs[i]->in      = g->count_selfloops(i);
+        this->communities_arcs[i].in      = g->count_selfloops(i);
         /*if(this->communities_arcs[i]->in > 0)
             cerr << i << "\t";*/
-        this->communities_arcs[i]->tot_out = g->weighted_out_degree(i);
-        this->communities_arcs[i]->tot_in  = g->weighted_in_degree(i);
-        this->communities_arcs[i]->tot     = this->communities_arcs[i]->tot_out + this->communities_arcs[i]->tot_in;
+        this->communities_arcs[i].tot_out = g->weighted_out_degree(i);
+        this->communities_arcs[i].tot_in  = g->weighted_in_degree(i);
+        this->communities_arcs[i].tot     = this->communities_arcs[i].tot_out + this->communities_arcs[i].tot_in;
         // i belongs to its own community
         this->node_to_community[i]        = i;
     }
@@ -62,10 +60,10 @@ Community::Community(Graph * gc, int nbp, double minm) {
     this->communities_arcs.resize(this->size);
 
     for (unsigned int i = 0; i < size; ++i) {
-        this->communities_arcs[i]->in      = g->count_selfloops(i);
-        this->communities_arcs[i]->tot_out = g->weighted_out_degree(i);
-        this->communities_arcs[i]->tot_in  = g->weighted_in_degree(i);
-        this->communities_arcs[i]->tot     = this->communities_arcs[i]->tot_out + this->communities_arcs[i]->tot_in;
+        this->communities_arcs[i].in      = g->count_selfloops(i);
+        this->communities_arcs[i].tot_out = g->weighted_out_degree(i);
+        this->communities_arcs[i].tot_in  = g->weighted_in_degree(i);
+        this->communities_arcs[i].tot     = this->communities_arcs[i].tot_out + this->communities_arcs[i].tot_in;
         this->node_to_community[i]        = i; 
     }
 }
@@ -115,7 +113,7 @@ void Community::init_partition(string filename) {
 void Community::display() {
     for (unsigned int i = 0; i < size; ++i)
         cerr << " " << g->correspondance[i] << "/" << node_to_community[i] << "/" 
-             << this->communities_arcs[i]->in << "/" << this->communities_arcs[i]->tot;
+             << this->communities_arcs[i].in << "/" << this->communities_arcs[i].tot;
     cerr << endl;
 }
 
@@ -123,10 +121,10 @@ double Community::modularity() {
     double q = 0.;
     double m = g->get_total_weight();
     for (unsigned int i = 0; i < size; ++i) {
-        if (this->communities_arcs[i]->tot_in > 0 || this->communities_arcs[i]->tot_out > 0) {
-            double tot_out_var = this->communities_arcs[i]->tot_out / m;
-            double tot_in_var = this->communities_arcs[i]->tot_in / m;
-            q += this->communities_arcs[i]->in / m - (tot_out_var * tot_in_var);
+        if (this->communities_arcs[i].tot_in > 0 || this->communities_arcs[i].tot_out > 0) {
+            double tot_out_var  = this->communities_arcs[i].tot_out / m;
+            double tot_in_var   = this->communities_arcs[i].tot_in / m;
+            q                   += this->communities_arcs[i].in / m - (tot_out_var * tot_in_var);
         }
     }
 
@@ -241,10 +239,10 @@ void Community::partition_to_graph() {
     this->node_to_community.resize(this->size); 
 
     for (unsigned int i = 0; i < size; ++i) {
-        this->communities_arcs[i]->in      = g->count_selfloops(i);
-        this->communities_arcs[i]->tot_out = g->weighted_out_degree(i);
-        this->communities_arcs[i]->tot_in  = g->weighted_in_degree(i);
-        this->communities_arcs[i]->tot     = this->communities_arcs[i]->tot_out + this->communities_arcs[i]->tot_in;
+        this->communities_arcs[i].in      = g->count_selfloops(i);
+        this->communities_arcs[i].tot_out = g->weighted_out_degree(i);
+        this->communities_arcs[i].tot_in  = g->weighted_in_degree(i);
+        this->communities_arcs[i].tot     = this->communities_arcs[i].tot_out + this->communities_arcs[i].tot_in;
         this->node_to_community[i]        = i; 
     }
 }
@@ -337,8 +335,8 @@ double modularity_gain(const Community &c, unsigned int node, unsigned int comm,
     assert(node<c.size);
     double weighted_out_degree  = (c.g)->weighted_out_degree(node);
     double weighted_in_degree   = (c.g)->weighted_in_degree(node);
-    double totc_out             = c.communities_arcs[comm]->tot_out;
-    double totc_in              = c.communities_arcs[comm]->tot_in;
+    double totc_out             = c.communities_arcs[comm].tot_out;
+    double totc_in              = c.communities_arcs[comm].tot_in;
     double m                    = (c.g)->get_total_weight();
 
     return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
@@ -346,19 +344,19 @@ double modularity_gain(const Community &c, unsigned int node, unsigned int comm,
 
 void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm]->tot_out  -= (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm]->tot_in   -= (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm]->tot      -= (c.communities_arcs[comm]->tot_out + c.communities_arcs[comm]->tot_in);
-    c.communities_arcs[comm]->in       -= dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].tot_out  -= (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].tot_in   -= (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].tot      -= (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
+    c.communities_arcs[comm].in       -= dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = -1;
 }
 
 void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
     assert(node<c.size);
-    c.communities_arcs[comm]->tot_out  += (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm]->tot_in   += (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm]->tot      += (c.communities_arcs[comm]->tot_out + c.communities_arcs[comm]->tot_in);
-    c.communities_arcs[comm]->in       += dnodecomm + (c.g)->count_selfloops(node);
+    c.communities_arcs[comm].tot_out  += (c.g)->weighted_out_degree(node);
+    c.communities_arcs[comm].tot_in   += (c.g)->weighted_in_degree(node);
+    c.communities_arcs[comm].tot      += (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
+    c.communities_arcs[comm].in       += dnodecomm + (c.g)->count_selfloops(node);
     c.node_to_community[node]         = comm;
 }
 
