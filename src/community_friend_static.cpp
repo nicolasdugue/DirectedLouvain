@@ -38,7 +38,7 @@ double modularity_gain(const Community &c, unsigned int node, unsigned int comm,
     return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
 }
 
-unsigned int list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos) {
+void list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int &neighboring_communities) {
     for(unsigned int i = 0; i < neighboring_communities; ++i)
         neighbor_weight[neigh_pos[i]] = -1.f;
 
@@ -48,7 +48,7 @@ unsigned int list_neighboring_communities(unsigned int node, const Community &c,
     // the first neighboring community of each node is its own
     neigh_pos[0] = c.get_community(node);
     neighbor_weight[neigh_pos[0]] = 0;
-    unsigned int neighboring_communities = 1;
+    neighboring_communities = 1;
 
     for (unsigned int i = 0; i < deg; ++i) {
         // fetching neighbors of i, their community and the corresponding degrees
@@ -84,6 +84,5 @@ unsigned int list_neighboring_communities(unsigned int node, const Community &c,
             neighbor_weight[neigh_comm_in] += neigh_w_in;
         }
     }
-    return neighboring_communities;
 }
 

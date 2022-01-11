@@ -5,7 +5,7 @@
 
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
-Community::Community(string in_filename, int weighted, double minm, bool reproducibility, bool renumbering) {
+Community::Community(string in_filename, bool weighted, double minm, bool reproducibility, bool renumbering) {
     this->g              = new Graph(in_filename, weighted, reproducibility, renumbering);
     this->size           = g->nodes;
     this->precision = minm;
@@ -44,7 +44,7 @@ void Community::init_partition(string filename) {
 
         int old_comm = this->node_to_community[node];
         unsigned int neighboring_communities = 0;
-        neighboring_communities = list_neighboring_communities(node, *this, neighbor_weight, neigh_pos);
+        list_neighboring_communities(node, *this, neighbor_weight, neigh_pos, neighboring_communities);
 
         remove(*this, node, old_comm, neighbor_weight[old_comm]);
 
@@ -220,7 +220,7 @@ bool Community::one_level() {
             int node_comm = node_to_community[node];
 
             // computation of all neighboring communities of current node
-            neighboring_communities = list_neighboring_communities(node, *this, neighbor_weight, neigh_pos);
+            list_neighboring_communities(node, *this, neighbor_weight, neigh_pos, neighboring_communities);
 
             // remove node from its current community
             remove(*this, node, node_comm, neighbor_weight[node_comm]);
