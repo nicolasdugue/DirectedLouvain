@@ -186,5 +186,5 @@ double Graph::weighted_in_degree(unsigned int node) {
     }
 }
 
-/* Friend and static functions are defered to a different file for readability */
-#include "friend_static.cpp"
+// Friend and static functions are defered to a different file for readability 
+#include "graph_friend_static.cpp"

@@ -40,7 +40,7 @@ using namespace std;
  */
 class Graph {
     private:
-        friend class Community;                 /*!< */
+        friend class Community;                 /*!< Community is the main class of the algorithm, and is declared friend for convenience */
         bool weighted;                          /*!< A boolean value indicating whether the graph is weighted */
 
         unsigned int nodes;                     //!< Number of nodes of the graph

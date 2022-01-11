@@ -5,11 +5,10 @@
 
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
-Community::Community(string in_filename, int weighted, int nbp, double minm, bool reproducibility, bool renumbering) {
+Community::Community(string in_filename, int weighted, double minm, bool reproducibility, bool renumbering) {
     this->g              = new Graph(in_filename, weighted, reproducibility, renumbering);
     this->size           = g->nodes;
-    this->nb_pass        = nbp;
-    this->min_modularity = minm;
+    this->precision = minm;
 
     this->node_to_community.resize(this->size); 
     this->communities_arcs.resize(this->size);
@@ -26,24 +25,6 @@ Community::Community(string in_filename, int weighted, int nbp, double minm, boo
         this->communities_arcs[i].tot     = this->communities_arcs[i].tot_out + this->communities_arcs[i].tot_in;
         // i belongs to its own community
         this->node_to_community[i]        = i;
-    }
-}
-
-Community::Community(Graph * gc, int nbp, double minm) {
-    this->g              = new Graph(*gc);
-    this->size           = g->nodes;
-    this->nb_pass        = nbp;
-    this->min_modularity = minm;
-
-    this->node_to_community.resize(this->size); 
-    this->communities_arcs.resize(this->size);
-
-    for (unsigned int i = 0; i < size; ++i) {
-        this->communities_arcs[i].in      = g->count_selfloops(i);
-        this->communities_arcs[i].tot_out = g->weighted_out_degree(i);
-        this->communities_arcs[i].tot_in  = g->weighted_in_degree(i);
-        this->communities_arcs[i].tot     = this->communities_arcs[i].tot_out + this->communities_arcs[i].tot_in;
-        this->node_to_community[i]        = i; 
     }
 }
 
@@ -66,7 +47,7 @@ void Community::init_partition(string filename) {
 
         int old_comm = this->node_to_community[node];
         unsigned int neighboring_communities = 0;
-        list_neighboring_communities(*this, neighbor_weight, neigh_pos, node, neighboring_communities);
+        neighboring_communities = list_neighboring_communities(node, *this, neighbor_weight, neigh_pos);
 
         remove(*this, node, old_comm, neighbor_weight[old_comm]);
 
@@ -214,7 +195,6 @@ void Community::partition_to_graph() {
 bool Community::one_level() {
     bool improvement = false;
     int nb_moves = 0;
-    int nb_pass_done = 0;
     double new_mod = modularity();
     double cur_mod = new_mod;
 
@@ -237,7 +217,6 @@ bool Community::one_level() {
     do {
         cur_mod = new_mod;
         nb_moves = 0;
-        nb_pass_done++;
 
         // for each node: remove the node from its community and insert it in the best community
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
@@ -245,7 +224,7 @@ bool Community::one_level() {
             int node_comm = node_to_community[node];
 
             // computation of all neighboring communities of current node
-            list_neighboring_communities(*this, neighbor_weight, neigh_pos, node, neighboring_communities);
+            neighboring_communities = list_neighboring_communities(node, *this, neighbor_weight, neigh_pos);
 
             // remove node from its current community
             remove(*this, node, node_comm, neighbor_weight[node_comm]);
@@ -277,104 +256,10 @@ bool Community::one_level() {
         if (nb_moves > 0)
             improvement = true;
 
-    } while (nb_moves > 0 && new_mod - cur_mod > min_modularity);
+    } while (nb_moves > 0 && new_mod - cur_mod > precision);
 
     return improvement;
 }
 
-static unsigned int renumber_communities(const Community &c, vector< int > &renumber) {
-    size_t size = c.get_size();
-    for (unsigned int node = 0; node < size; ++node) 
-        renumber[c.get_node_to_community()[node]]++;
-    
-    unsigned int f = 0;
-    for (unsigned int i = 0; i < size; ++i)
-        if (renumber[i] != -1)
-            renumber[i] = f++;
-
-    return f;
-}
-
-double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<c.size);
-    double weighted_out_degree  = (c.g)->weighted_out_degree(node);
-    double weighted_in_degree   = (c.g)->weighted_in_degree(node);
-    double totc_out             = c.communities_arcs[comm].tot_out;
-    double totc_in              = c.communities_arcs[comm].tot_in;
-    double m                    = (c.g)->get_total_weight();
-
-    return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
-}
-
-void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<c.size);
-    c.communities_arcs[comm].tot_out  -= (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].tot_in   -= (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].tot      -= (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
-    c.communities_arcs[comm].in       -= dnodecomm + (c.g)->count_selfloops(node);
-    c.node_to_community[node]         = -1;
-}
-
-void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
-    assert(node<c.size);
-    c.communities_arcs[comm].tot_out  += (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].tot_in   += (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].tot      += (c.communities_arcs[comm].tot_out + c.communities_arcs[comm].tot_in);
-    c.communities_arcs[comm].in       += dnodecomm + (c.g)->count_selfloops(node);
-    c.node_to_community[node]         = comm;
-}
-
-void list_neighboring_communities(const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int node, unsigned int &neighboring_communities) {
-    for(unsigned int i = 0; i < neighboring_communities; ++i)
-        /* FIXME: clear then resize? */
-        neighbor_weight[neigh_pos[i]] = -1.f;
-
-    size_t p = (c.g)->out_neighbors(node);
-    unsigned int deg = (c.g)->out_degree(node);
-
-    // the first neighboring community of each node is its own
-    neigh_pos[0] = c.get_community(node);
-    neighbor_weight[neigh_pos[0]] = 0;
-    neighboring_communities = 1;
-
-    for (unsigned int i = 0; i < deg; ++i) {
-        // fetching neighbors of i, their community and the corresponding degrees
-        unsigned int neigh = (c.g)->get_out_neighbor(p + i);
-        int neigh_comm = c.get_community(neigh);
-        double neigh_w = ((c.g)->is_weighted()) ? (c.g)->get_weighted_out_neighbor(p + i) : 1.f;
-
-        if (neigh != node) {
-            // if the community is discovered for the first time
-            if (neighbor_weight[neigh_comm] == -1.f) {
-                neighbor_weight[neigh_comm] = 0.f;
-                neigh_pos[neighboring_communities++] = neigh_comm;
-            }
-            // the degree of i towards this community is updated
-            neighbor_weight[neigh_comm] += neigh_w;
-        }
-    }
-
-    // we proceed similarly on in-neighbors
-    /* FIXME: don't we count twice the same thing ?! 
-     * or do we really need to know w_out+w_in ?*
-     * FIXME: same question for neigh_pos: encompasses the weights 
-     * of out-comm then in-comm?
-     */
-    size_t p_in = (c.g)->in_neighbors(node);
-    unsigned int deg_in = (c.g)->in_degree(node);
-
-    for (unsigned int i = 0; i < deg_in; ++i) {
-        unsigned int neigh_in = (c.g)->get_in_neighbor(p_in + i);
-        int neigh_comm_in = c.get_community(neigh_in);
-        double neigh_w_in = ((c.g)->is_weighted()) ? (c.g)->get_weighted_in_neighbor(p_in + i) : 1.f;
-
-        if (neigh_in != node) {
-            if (neighbor_weight[neigh_comm_in] == -1) {
-                neighbor_weight[neigh_comm_in] = 0.;
-                neigh_pos[neighboring_communities++] = neigh_comm_in;
-            }
-            neighbor_weight[neigh_comm_in] += neigh_w_in;
-        }
-    }
-}
-
+// Friend and static functions are defered to a different file for readability 
+#include "community_friend_static.cpp"

@@ -9,7 +9,6 @@ using namespace std;
 string filename = "";
 string filename_part = "";
 bool weighted = false;
-int nb_pass = 0;
 double precision = 0.000001;
 int display_level = -2;
 bool verbose = false;

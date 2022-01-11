@@ -24,7 +24,7 @@ int main(int argc, char ** argv) {
     parse_args(argc, argv);
     ofstream foutput;
 
-    Community *c = new Community(filename, weighted, -1, precision, reproducibility, renumbering);
+    Community *c = new Community(filename, weighted, precision, reproducibility, renumbering);
     if (filename_part != "")
         c->init_partition(filename_part);
     int level = 0;
@@ -38,7 +38,6 @@ int main(int argc, char ** argv) {
     start = chrono::high_resolution_clock::now();
     do {
         const Graph *community_graph = c->get_graph();
-        ++nb_pass;
         if (verbose) {
             cerr << "level " << level << ":\n";
             cerr << "  network size: " <<

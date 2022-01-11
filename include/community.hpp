@@ -18,94 +18,141 @@
 #define COMMUNITY_HPP
 
 #include "graph.hpp"
-#include <memory>
 
 typedef struct count Count;
 
+/*! \class Community 
+ * \brief   Class implementing the Directed Louvain algorithm. 
+ *          Stores information regarding partial graphs that are computed during the algorithm  
+ *          that can be displayed if needed (hierarchical community detection)
+ */
 class Community {
     private:
-        Graph* g; // network to compute communities for
-        unsigned int size; // nummber of nodes in the network and size of all vectors
+        Graph* g;                           /*!< A graph object to compute communities for */
+        unsigned int size;                  /*!< Number of nodes in the graph */
 
-        vector<int> node_to_community; // community to which each node belongs
+        vector<int> node_to_community;      /*!< Community to which each node belongs */
 
+        /** 
+         * A structure containing information regarding the arcs within all communities 
+         */
         struct count { 
-            double in; /* number of arcs (i.e. self-loops) within the community */
-            double tot_in; /* number of outcoming arcs of the community */
-            double tot_out; /* number of incoming arcs of the community */
-            double tot; /* number of arcs of the community */
+            double in;      //<! Number of arcs (i.e. self-loops) within the community */
+            double tot_in;  //!< Number of outcoming arcs from the community */
+            double tot_out; //!< Number of incoming arcs to the community */
+            double tot;     //!< Total number of arcs around the community */
             count() : in(0.), tot_in(0.), tot_out(0.), tot(0.) { }
         };
-        vector< Count > communities_arcs;
+        vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
 
-        // number of pass for one level computation
-        // if -1, compute as many pass as needed to increase modularity
-        /* FIXME: this is _never_ used, must we keep it? */
-        int nb_pass;
-
-        // a new pass is computed if the last one has generated an increase 
-        // greater than min_modularity
-        // if 0. even a minor increase is enough to go for one more pass
-        double min_modularity;
+        double precision;                   /*!< A real number describing the minimum improvement on modularity to carry on computation */
 
     public:
-        // constructors:
-        // reads graph from file using graph constructor
-        // type defined the weighted/unweighted status of the graph file
-        Community (string in_filename, int type, int nb_pass, double min_modularity, bool reproducibility, bool renumbering);
-        Community (Graph* g, int nb_pass, double min_modularity);
+        //! Constructor from edgelist format (initializes Graph object)
+        /*! 
+         * \param filename          the graph (edgelist format) needed for initializing Graph object attribute
+         * \param weighted          boolean value indicating whether the graph is weighted
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \sa Graph()
+         */
+        Community (string filename, bool weighted, double precision, bool reproducibility, bool renumbering);
+        //! Destructor
         ~Community(); 
 
-        // initiliazes the partition with something else than all nodes alone
-        void init_partition(string filename_part);
+        //! Member function initiliazing first partition with something different than identity
+        /*!
+         * \param filename the partition to be read
+         */
+        void init_partition(string filename);
 
-        // display the community of each node
+        //! Member function displaying the community of each node
         void display();
 
-        // compute the set of neighboring communities of node
-        // for each community, gives the number of arcs from node to comm
-        //void list_neighboring_communities(unsigned int node);
-
-        // compute the modularity of the current partition
+        // Member function computing the directed modularity of the current partition
+        /*!
+         * \return the value of directed modularity for the current partition
+         */
         double modularity();
 
-        // displays the current partition (with communities renumbered from 0 to k-1)
+        //! Member function displaying the current partition (with communities renumbered from 0 to k-1) on standard output
         void display_partition();
 
-        // generates the binary graph of communities as computed by one_level
+        //! Member function updating the graph to compute communities for 
+        /*!
+         * \sa one_level()
+         */
         void partition_to_graph();
 
-        // compute communities of the graph for one level
-        // return true if some nodes have been moved
+        //! Member function computing communities of the Graph attribute for one level
+        /*!
+         * \return true if some nodes have been moved 
+         * \sa modularity_gain()
+         */
         bool one_level();
 
-        // remove the node from its current community with which it has dnodecomm arcs
-        friend void remove(Community&, unsigned int, unsigned int, double);
+        //! Friend method removing a node from its current community with which it has dnodecomm arcs
+        /*! 
+         * \param c the Community object 
+         * \param node the node to remove from a community
+         * \param comm the community to remove node from
+         * \param dnodecomm the weighted degree of node within its community */
+        friend void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
 
-        // insert the node in comm with which it shares dnodecomm arcs
-        friend void insert(Community&, unsigned int, unsigned int, double);
+        //! Friend method inserting a node to a new community with which it has dnodecomm arcs
+        /*! 
+         * \param c the Community object 
+         * \param node the node to insert within a community
+         * \param comm the community to insert node in
+         * \param dnodecomm the weighted degree of node within the community */
+        friend void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
 
-        // compute the gain of modularity if node where inserted in comm
-        // given that node has dnodecomm arcs to comm.  The formula is:
-        // [(In(comm)+2d(node,comm))/2m - ((tot(comm)+deg(node))/2m)^2]-
-        // [In(comm)/2m - (tot(comm)/2m)^2 - (deg(node)/2m)^2]
-        // where In(comm)    = number of half-arcs strictly inside comm
-        //       Tot(comm)   = number of half-arcs inside or outside comm (sum(degrees))
-        //       d(node,com) = number of arcs from node to comm
-        //       deg(node)   = node degree
-        //       m           = number of arcs
-        friend double modularity_gain(const Community&, unsigned int, unsigned int, double);
-        friend void list_neighboring_communities(const Community&, vector<double>&, vector<unsigned int>&, unsigned int, unsigned int&);
+        // Friend method computing the gain of modularity if node is inserted into comm
+        /*! 
+         * Given that node has dnodecomm arcs to comm.  The formula is:
+         * [(In(comm)+2d(node,comm))/2m - ((tot(comm)+deg(node))/2m)^2]-
+         * [In(comm)/2m - (tot(comm)/2m)^2 - (deg(node)/2m)^2]
+         * where In(comm)    = number of half-arcs strictly inside comm
+         *       Tot(comm)   = number of half-arcs inside or outside comm (sum(degrees))
+         *       d(node,com) = weights of arcs from node to comm
+         *       deg(node)   = node degree
+         *       m           = number of arcs
+         *       
+         * \param c the Community object
+         * \param node the node to consider
+         * \param comm the community to consider 
+         * \param dnodecomm the weight of arcs from node to comm
+         * \return the modularity gained from inserting node into comm (can be a negative value)
+         */
+        friend double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm);
 
+        //! Friend method computing the set of neighboring communities of a given node
+        /*!
+         * \param c the Community object
+         * \param neighbor_weigh a vector containing, for each community, the total weight of arcs between node and comm 
+         * \param neigh_pos a vector representing the communities that are neighbors from node (including its own)
+         * \param node the node to consider
+         * \return the number of communities neighboring node
+         */ 
+        friend unsigned int list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos):
+
+        //! Getter for the graph to compute communities for
         inline const Graph *get_graph() {
             return this->g; 
         }
+        //! Getter for the vector associating nodes to communities
         inline const vector<int>& get_node_to_community() const {
             return this->node_to_community; 
         }
+        //! Getter for the size (i.e. number of communities)
         inline unsigned int get_size() const {
             return this->size; 
         }
+        //! Getter for the community of a given node
+        /*!
+         * \param node the node considered
+         * \return An integer between 0 and k-1 representing the community to which node belongs
+         */
         inline unsigned int get_community(unsigned int node) const {
             return this->node_to_community[node];
         }
