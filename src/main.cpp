@@ -22,19 +22,21 @@ int main(int argc, char ** argv) {
     auto start = chrono::high_resolution_clock::now();
 
     parse_args(argc, argv);
-    ofstream foutput;
 
+    // Creating Community object
     Community *c = new Community(filename, weighted, precision, reproducibility, renumbering);
     if (filename_part != "")
         c->init_partition(filename_part);
     int level = 0;
-    double mod = c->modularity(), new_mod;
+    double mod = c->modularity();
 
     auto end = chrono::high_resolution_clock::now();
+    // Displaying time (seconds) needed to renumber and load graph
     double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     time_taken *= 1e-9;
     cerr << "loading graph in: " << fixed << time_taken << " seconds" << endl;
     
+    bool improvement = true;
     start = chrono::high_resolution_clock::now();
     do {
         const Graph *community_graph = c->get_graph();
@@ -46,23 +48,27 @@ int main(int argc, char ** argv) {
                 community_graph->get_total_weight() << " weight." << endl;
         }
 
+        // Directed Louvain: main procedure
         improvement = c->one_level();
-        new_mod = c->modularity();
+        double new_mod = c->modularity();
         if (++level == display_level)
             community_graph->display();
         if (display_level == -1)
             c->display_partition();
+        // Updating the graph to computer hierarchical structurer
         c->partition_to_graph();
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
 
         mod = new_mod;
-        if (filename_part != "" && level == 1) // do at least one more computation if partition is provided
+        // Doing at least one more computation if partition is provided
+        if (filename_part != "" && level == 1) 
             improvement = true;
     } while (improvement);
 
+    // Releasing memory
     delete c;
-    cerr << "modularity: " << new_mod << endl;
+    cerr << "modularity: " << mod << endl;
 
     end = chrono::high_resolution_clock::now();
     time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();

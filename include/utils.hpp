@@ -14,7 +14,6 @@ int display_level = -2;
 bool verbose = false;
 bool reproducibility = false;
 bool renumbering = true;
-bool improvement = true;
 
 void usage(char * prog_name) {
     cerr << "usage: " << prog_name << " -f [-r] [-w] [-n] [-p partition_file] [-q epsilon] [-l display_level] [-v] [-h]" << endl;
