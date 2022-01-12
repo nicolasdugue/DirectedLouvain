@@ -39,13 +39,10 @@ class Community {
     private:
         Graph* g;                           /*!< A graph object to compute communities for */
         unsigned int size;                  /*!< Number of nodes in the graph */
-
-        vector<int> node_to_community;      /*!< Community to which each node belongs */
-
-        vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
-
         double precision;                   /*!< A real number describing the minimum improvement on modularity to carry on computation */
 
+        vector<int> node_to_community;      /*!< Community to which each node belongs */
+        vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
@@ -85,6 +82,11 @@ class Community {
 
         //! Member function computing communities of the Graph attribute for one level
         /*!
+         * The algorithm proceeds as follow: repeat main procedure while
+         * + there is an improvement of modularity
+         * + or there is an improvement of modularity greater than a given epsilon
+         * + FIXME: the possibility to end after a given number of passes has been removed because  
+         *          we never used it. Should we plug it back? (easy to do but...)
          * \return true if some nodes have been moved 
          * \sa modularity_gain()
          */
@@ -137,10 +139,6 @@ class Community {
         //! Getter for the graph to compute communities for
         inline const Graph *get_graph() {
             return this->g; 
-        }
-        //! Getter for the vector associating nodes to communities
-        inline const vector<int>& get_node_to_community() const {
-            return this->node_to_community; 
         }
         //! Getter for the size (i.e. number of communities)
         inline unsigned int get_size() const {
