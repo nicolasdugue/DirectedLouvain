@@ -70,7 +70,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format.  
+<p>Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format.  
  <a href="classGraph.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="graph_8hpp_source.html">graph.hpp</a>&gt;</code></p>
@@ -88,10 +88,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a06e0f62ab24147de8830a5aad8fe4a78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <a href="classGraph.html#a06e0f62ab24147de8830a5aad8fe4a78">More...</a><br /></td></tr>
 <tr class="separator:a06e0f62ab24147de8830a5aad8fe4a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a941b402aac0cbf42ca2dbdc675a279c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a941b402aac0cbf42ca2dbdc675a279c6">load</a> (string filename)</td></tr>
-<tr class="memdesc:a941b402aac0cbf42ca2dbdc675a279c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function loading and initializing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object from binary file under <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format.  <a href="classGraph.html#a941b402aac0cbf42ca2dbdc675a279c6">More...</a><br /></td></tr>
+<tr class="memdesc:a941b402aac0cbf42ca2dbdc675a279c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function loading and initializing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object from binary file under <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format.  <a href="classGraph.html#a941b402aac0cbf42ca2dbdc675a279c6">More...</a><br /></td></tr>
 <tr class="separator:a941b402aac0cbf42ca2dbdc675a279c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a8f31a67495efc518a21dd87cfee1d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a7a8f31a67495efc518a21dd87cfee1d8">write</a> (string filename)</td></tr>
-<tr class="memdesc:a7a8f31a67495efc518a21dd87cfee1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function writing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object into binary file ".bin" under <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format.  <a href="classGraph.html#a7a8f31a67495efc518a21dd87cfee1d8">More...</a><br /></td></tr>
+<tr class="memdesc:a7a8f31a67495efc518a21dd87cfee1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function writing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object into binary file ".bin" under <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format.  <a href="classGraph.html#a7a8f31a67495efc518a21dd87cfee1d8">More...</a><br /></td></tr>
 <tr class="separator:a7a8f31a67495efc518a21dd87cfee1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc36a8cd95f6213855d2523efda0fb72"><td class="memItemLeft" align="right" valign="top"><a id="adc36a8cd95f6213855d2523efda0fb72"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#adc36a8cd95f6213855d2523efda0fb72">display</a> () const</td></tr>
@@ -162,7 +162,7 @@ Friends</h2></td></tr>
 <tr class="separator:ad20a3e9355abade2dd724d5862dafbb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format. </p>
+<div class="textblock"><p>Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format. </p>
 <p>Nodes are renumbered unless stated otherwise, and the resulting correspondance is built. <br  />
  Outcoming and incoming arcs are represented using cumulative degree sequences and a list of both out- and in-neighbors and the corresponding weights. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -331,7 +331,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Member function returning positions of the first in-neighbor of a given node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>If the in-degree of the node is 0, this actually returns the position of the first in-neighbor of node-1. However, this method is always used by looping on the out-degree of node. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">node</td><td>the node to consider </td></tr>
   </table>
@@ -357,7 +357,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Member function loading and initializing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object from binary file under <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format. </p>
+<p>Member function loading and initializing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object from binary file under <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filename</td><td>path (absolute or relative) to the ".bin" file </td></tr>
@@ -427,7 +427,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Member function returning positions of the first out-neighbor of a given node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>If the out-degree of the node is 0, this actually returns the position of the first out-neighbor of node-1. However, this method is always used by looping on the out-degree of node. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">node</td><td>the node to consider </td></tr>
   </table>
@@ -542,7 +542,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Member function writing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object into binary file ".bin" under <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain">CSR</a> format. </p>
+<p>Member function writing <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object into binary file ".bin" under <a href="https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR">CSR</a> format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filename</td><td>path (absolute or relative) to the ".bin" file </td></tr>

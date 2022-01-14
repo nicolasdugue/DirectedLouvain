@@ -123,72 +123,68 @@ $(function() {
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keywordtype">double</span> weighted_in_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordtype">size_t</span> out_neighbors(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) <span class="keyword">const</span>; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> out_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordtype">size_t</span> in_neighbors(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> in_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keywordtype">double</span> weighted_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_out_neighbor(<span class="keywordtype">size_t</span> index) {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;            <span class="keywordflow">return</span> this-&gt;outcoming_arcs[index];</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        }</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_in_neighbor(<span class="keywordtype">size_t</span> index) {</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            <span class="keywordflow">return</span> this-&gt;incoming_arcs[index];</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        }</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_weighted_out_neighbor(<span class="keywordtype">size_t</span> index) {</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            <span class="keywordflow">return</span> this-&gt;outcoming_weights[index];</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        }</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; </div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_weighted_in_neighbor(<span class="keywordtype">size_t</span> index) {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            <span class="keywordflow">return</span> this-&gt;incoming_weights[index];</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordtype">bool</span> is_weighted() {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;            <span class="keywordflow">return</span> this-&gt;weighted;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordtype">size_t</span> out_neighbors(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) <span class="keyword">const</span>; </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> out_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordtype">size_t</span> in_neighbors(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> in_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keywordtype">double</span> weighted_degree(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_out_neighbor(<span class="keywordtype">size_t</span> index) {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            <span class="keywordflow">return</span> this-&gt;outcoming_arcs[index];</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_in_neighbor(<span class="keywordtype">size_t</span> index) {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            <span class="keywordflow">return</span> this-&gt;incoming_arcs[index];</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        }</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_weighted_out_neighbor(<span class="keywordtype">size_t</span> index) {</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;            <span class="keywordflow">return</span> this-&gt;outcoming_weights[index];</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        }</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_weighted_in_neighbor(<span class="keywordtype">size_t</span> index) {</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;            assert(index &lt; this-&gt;arcs);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;            <span class="keywordflow">return</span> this-&gt;incoming_weights[index];</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        }</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
-<div class="line"><a name="l00172"></a><span class="lineno"><a class="line" href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">  172</a></span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">get_nodes</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;            <span class="keywordflow">return</span> this-&gt;nodes; </div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        } </div>
-<div class="line"><a name="l00176"></a><span class="lineno"><a class="line" href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">  176</a></span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">get_arcs</a>()<span class="keyword"> const </span>{ </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;            <span class="keywordflow">return</span> this-&gt;arcs; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;        }</div>
-<div class="line"><a name="l00180"></a><span class="lineno"><a class="line" href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">  180</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">get_total_weight</a>()<span class="keyword"> const </span>{ </div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            <span class="keywordflow">return</span> this-&gt;total_weight; </div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordtype">bool</span> is_weighted() {</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            <span class="keywordflow">return</span> this-&gt;weighted;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        }</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
+<div class="line"><a name="l00176"></a><span class="lineno"><a class="line" href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">  176</a></span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">get_nodes</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;            <span class="keywordflow">return</span> this-&gt;nodes; </div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;        } </div>
+<div class="line"><a name="l00180"></a><span class="lineno"><a class="line" href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">  180</a></span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">get_arcs</a>()<span class="keyword"> const </span>{ </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            <span class="keywordflow">return</span> this-&gt;arcs; </div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        }</div>
-<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">  184</a></span>&#160;        <span class="keyword">const</span> vector&lt;unsigned long&gt; &amp;<a class="code" href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">get_correspondance</a>() { </div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            <span class="keywordflow">return</span> this-&gt;correspondance; </div>
+<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">  184</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">get_total_weight</a>()<span class="keyword"> const </span>{ </div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            <span class="keywordflow">return</span> this-&gt;total_weight; </div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        }</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;};</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
-<div class="line"><a name="l00190"></a><span class="lineno"><a class="line" href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">  190</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">size_t</span> <a class="code" href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">Graph::out_neighbors</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordflow">if</span> (node==0)</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordflow">return</span> this-&gt;outdegrees[node-1];</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">  197</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">Graph::out_degree</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">return</span> (node==0 ? this-&gt;outdegrees[0] : this-&gt;outdegrees[node]-this-&gt;outdegrees[node-1]);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
-<div class="line"><a name="l00202"></a><span class="lineno"><a class="line" href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">  202</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">size_t</span> <a class="code" href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">Graph::in_neighbors</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordflow">if</span> (node==0)</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="keywordflow">return</span> this-&gt;indegrees[node-1];</div>
+<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">  188</a></span>&#160;        <span class="keyword">const</span> vector&lt;unsigned long&gt; &amp;<a class="code" href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">get_correspondance</a>() { </div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            <span class="keywordflow">return</span> this-&gt;correspondance; </div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;};</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
+<div class="line"><a name="l00194"></a><span class="lineno"><a class="line" href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">  194</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">size_t</span> <a class="code" href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">Graph::out_neighbors</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordflow">return</span> (node==0 ? 0 : this-&gt;outdegrees[node-1]);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;}</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
+<div class="line"><a name="l00199"></a><span class="lineno"><a class="line" href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">  199</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">Graph::out_degree</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordflow">return</span> (node==0 ? this-&gt;outdegrees[0] : this-&gt;outdegrees[node]-this-&gt;outdegrees[node-1]);</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;}</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
+<div class="line"><a name="l00204"></a><span class="lineno"><a class="line" href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">  204</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">size_t</span> <a class="code" href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">Graph::in_neighbors</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    assert(node&lt;this-&gt;nodes);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="keywordflow">return</span> (node==0 ? 0 : this-&gt;indegrees[node-1]);</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;}</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
 <div class="line"><a name="l00209"></a><span class="lineno"><a class="line" href="classGraph.html#a2726e24b1c074a2b4ef0a7207cefa3f5">  209</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classGraph.html#a2726e24b1c074a2b4ef0a7207cefa3f5">Graph::in_degree</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> node) {</div>
@@ -204,17 +200,17 @@ $(function() {
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="preprocessor">#endif // GRAPH_HPP</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassCommunity_html_ae742d78b0276cc0d6aca0b5ec55df989"><div class="ttname"><a href="classCommunity.html#ae742d78b0276cc0d6aca0b5ec55df989">Community::display</a></div><div class="ttdeci">void display()</div><div class="ttdoc">Member function displaying the community of each node.</div><div class="ttdef"><b>Definition:</b> community.cpp:69</div></div>
-<div class="ttc" id="aclassGraph_html_acb3ea06ce574f02b09a6b14a787a966d"><div class="ttname"><a href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">Graph::out_neighbors</a></div><div class="ttdeci">size_t out_neighbors(unsigned int node) const</div><div class="ttdoc">Member function returning positions of the first out-neighbor of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:190</div></div>
-<div class="ttc" id="aclassGraph_html_a38daf56fce0ddfdbda3bf340d833a024"><div class="ttname"><a href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">Graph::get_arcs</a></div><div class="ttdeci">unsigned int get_arcs() const</div><div class="ttdoc">Getter for the number of arcs.</div><div class="ttdef"><b>Definition:</b> graph.hpp:176</div></div>
-<div class="ttc" id="aclassGraph_html_a9dd97b0a12a0c8aa58864716c57fc45a"><div class="ttname"><a href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">Graph::get_nodes</a></div><div class="ttdeci">unsigned int get_nodes() const</div><div class="ttdoc">Getter for the number of nodes.</div><div class="ttdef"><b>Definition:</b> graph.hpp:172</div></div>
+<div class="ttc" id="aclassGraph_html_acb3ea06ce574f02b09a6b14a787a966d"><div class="ttname"><a href="classGraph.html#acb3ea06ce574f02b09a6b14a787a966d">Graph::out_neighbors</a></div><div class="ttdeci">size_t out_neighbors(unsigned int node) const</div><div class="ttdoc">Member function returning positions of the first out-neighbor of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:194</div></div>
+<div class="ttc" id="aclassGraph_html_a38daf56fce0ddfdbda3bf340d833a024"><div class="ttname"><a href="classGraph.html#a38daf56fce0ddfdbda3bf340d833a024">Graph::get_arcs</a></div><div class="ttdeci">unsigned int get_arcs() const</div><div class="ttdoc">Getter for the number of arcs.</div><div class="ttdef"><b>Definition:</b> graph.hpp:180</div></div>
+<div class="ttc" id="aclassGraph_html_a9dd97b0a12a0c8aa58864716c57fc45a"><div class="ttname"><a href="classGraph.html#a9dd97b0a12a0c8aa58864716c57fc45a">Graph::get_nodes</a></div><div class="ttdeci">unsigned int get_nodes() const</div><div class="ttdoc">Getter for the number of nodes.</div><div class="ttdef"><b>Definition:</b> graph.hpp:176</div></div>
 <div class="ttc" id="aclassGraph_html_a7fc7369aa485adc81e2676910bb289a9"><div class="ttname"><a href="classGraph.html#a7fc7369aa485adc81e2676910bb289a9">Graph::weighted_degree</a></div><div class="ttdeci">double weighted_degree(unsigned int node)</div><div class="ttdoc">Member function returning the total degree of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:214</div></div>
-<div class="ttc" id="aclassGraph_html_af7a40a4ef236079893f1b99e6c118328"><div class="ttname"><a href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">Graph::out_degree</a></div><div class="ttdeci">unsigned int out_degree(unsigned int node) const</div><div class="ttdoc">Member function returning the out-degree of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:197</div></div>
-<div class="ttc" id="aclassGraph_html_af45614f7b4c9a5c06aa418a918879a68"><div class="ttname"><a href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">Graph::in_neighbors</a></div><div class="ttdeci">size_t in_neighbors(unsigned int node)</div><div class="ttdoc">Member function returning positions of the first in-neighbor of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:202</div></div>
+<div class="ttc" id="aclassGraph_html_af7a40a4ef236079893f1b99e6c118328"><div class="ttname"><a href="classGraph.html#af7a40a4ef236079893f1b99e6c118328">Graph::out_degree</a></div><div class="ttdeci">unsigned int out_degree(unsigned int node) const</div><div class="ttdoc">Member function returning the out-degree of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:199</div></div>
+<div class="ttc" id="aclassGraph_html_af45614f7b4c9a5c06aa418a918879a68"><div class="ttname"><a href="classGraph.html#af45614f7b4c9a5c06aa418a918879a68">Graph::in_neighbors</a></div><div class="ttdeci">size_t in_neighbors(unsigned int node)</div><div class="ttdoc">Member function returning positions of the first in-neighbor of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:204</div></div>
 <div class="ttc" id="aclassGraph_html_a2726e24b1c074a2b4ef0a7207cefa3f5"><div class="ttname"><a href="classGraph.html#a2726e24b1c074a2b4ef0a7207cefa3f5">Graph::in_degree</a></div><div class="ttdeci">unsigned int in_degree(unsigned int node)</div><div class="ttdoc">Member function returning the in-degree of a given node.</div><div class="ttdef"><b>Definition:</b> graph.hpp:209</div></div>
-<div class="ttc" id="aclassGraph_html_a8fd5dc67acd5c4e90c6a4bd4939f9bcb"><div class="ttname"><a href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">Graph::get_total_weight</a></div><div class="ttdeci">double get_total_weight() const</div><div class="ttdoc">Getter for the total_weight of the graph.</div><div class="ttdef"><b>Definition:</b> graph.hpp:180</div></div>
+<div class="ttc" id="aclassGraph_html_a8fd5dc67acd5c4e90c6a4bd4939f9bcb"><div class="ttname"><a href="classGraph.html#a8fd5dc67acd5c4e90c6a4bd4939f9bcb">Graph::get_total_weight</a></div><div class="ttdeci">double get_total_weight() const</div><div class="ttdoc">Getter for the total_weight of the graph.</div><div class="ttdef"><b>Definition:</b> graph.hpp:184</div></div>
 <div class="ttc" id="aclassGraph_html"><div class="ttname"><a href="classGraph.html">Graph</a></div><div class="ttdoc">Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...</div><div class="ttdef"><b>Definition:</b> graph.hpp:41</div></div>
 <div class="ttc" id="aclassCommunity_html"><div class="ttname"><a href="classCommunity.html">Community</a></div><div class="ttdoc">Class implementing the Directed Louvain algorithm. Stores information regarding partial graphs that a...</div><div class="ttdef"><b>Definition:</b> community.hpp:38</div></div>
-<div class="ttc" id="aclassGraph_html_a43d02e0ab0c5de986b796095c94fef4a"><div class="ttname"><a href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">Graph::get_correspondance</a></div><div class="ttdeci">const vector&lt; unsigned long &gt; &amp; get_correspondance()</div><div class="ttdoc">Getter for renumbering correspondance.</div><div class="ttdef"><b>Definition:</b> graph.hpp:184</div></div>
+<div class="ttc" id="aclassGraph_html_a43d02e0ab0c5de986b796095c94fef4a"><div class="ttname"><a href="classGraph.html#a43d02e0ab0c5de986b796095c94fef4a">Graph::get_correspondance</a></div><div class="ttdeci">const vector&lt; unsigned long &gt; &amp; get_correspondance()</div><div class="ttdoc">Getter for renumbering correspondance.</div><div class="ttdef"><b>Definition:</b> graph.hpp:188</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

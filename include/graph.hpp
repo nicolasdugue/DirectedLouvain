@@ -1,5 +1,5 @@
 /*! \file graph.hpp
- *  \brief Header for class Graph (under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format)
+ *  \brief Header for class Graph (under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format)
  *         Base of the Directed Louvain community detection algorithm
  * 
  * ### Based on the articles:
@@ -32,7 +32,7 @@ using namespace std;
 
 /*! \class Graph 
  * \brief   Class handling directed graphs. 
- *          Graphs are read from edgelist or binary formats and stored using [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format.
+ *          Graphs are read from edgelist or binary formats and stored using [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format.
  *
  *          Nodes are renumbered unless stated otherwise, and the resulting correspondance is built.    
  *          Outcoming and incoming arcs are represented using cumulative degree sequences and a list of 
@@ -48,11 +48,11 @@ class Graph {
         double total_weight;                    //!< Total weight on the arcs of the graph
 
         vector<unsigned long> outdegrees;       /*!< A vector containing cumulative out-degrees for nodes 0 to nodes-1 */
-        vector<unsigned int> outcoming_arcs;    /*!< A vector containing the out-neighbors of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format */
-        vector<double> outcoming_weights;       /*!< A vector containing the weights of outgoing arcs of every node according to [CSR](linktoguthub) format */ 
+        vector<unsigned int> outcoming_arcs;    /*!< A vector containing the out-neighbors of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format */
+        vector<double> outcoming_weights;       /*!< A vector containing the weights of outgoing arcs of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format */ 
         vector<unsigned long> indegrees;        /*!< A vector containing cumulative in-degrees for nodes 0 to nodes-1 */
-        vector<unsigned int> incoming_arcs;     /*!< A vector containing the in-neighbors of every node according to <a href="https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain" target="_blank">CSR</a> format */
-        vector<double> incoming_weights;        /*!< A vector containing the weights of ingoing arcs of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format */
+        vector<unsigned int> incoming_arcs;     /*!< A vector containing the in-neighbors of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format */
+        vector<double> incoming_weights;        /*!< A vector containing the weights of ingoing arcs of every node according to [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format */
 
         vector<unsigned long> correspondance;   /*!< A vector containing the original label of the input graph (if the graph is not renumbered this is identity) */
 
@@ -81,12 +81,12 @@ class Graph {
          */ 
         Graph (const Graph &g);
 
-        //! Member function loading and initializing Graph object from binary file under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format
+        //! Member function loading and initializing Graph object from binary file under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format
         /*!
          * \param filename path (absolute or relative) to the ".bin" file
          */
         void load(string filename); 
-        //! Member function writing Graph object into binary file ".bin" under [CSR](https://github.com/nicolasdugue/DirectedLouvain#DirectedLouvain) format
+        //! Member function writing Graph object into binary file ".bin" under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format
         /*! 
          * \param filename path (absolute or relative) to the ".bin" file
          */
