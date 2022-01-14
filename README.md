@@ -42,10 +42,10 @@ More options and information are provided using `./bin/community`
 
 Graphs are stored under the [Compressed Sparse Row (CSR)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format.  
 Several structures are containing the whole graph information: 
-+ two arrays of **cumulative degrees** (out- and in-degrees): for out-degrees, each index _i_ contains the sum of all weighted out-degrees for nodes from _0_ to _i_. 
-+ two arrays of outcoming and incoming **arcs**: the _d(0)_ first values contain neighbors of vertex _0_ and so on.   
-To find the first neighbor of a given vertex _i_ one simply needs to consider the difference between cumulative degree of _i_ and _i-1_.
-+ two array of outcoming and incoming **weights**: similar to the previous ones but store weights instead of vertex identifiers. 
++ two arrays of **cumulative degrees** (out- and in-degrees): for out-degrees, each index _i_ contains the sum of all out-degrees for nodes from _0_ to _i_. 
++ two arrays of outcoming and incoming **arcs**: the _d(0)_ (out- or in-degree of node _0_) first values contain neighbors of node _0_ and so on.   
+To find the first neighbor of a given node _i_ one simply needs to consider the difference between cumulative degree of _i_ and _i-1_.
++ two array of outcoming and incoming **weights**: similar to the previous ones but store weights instead of node identifiers. 
 
 Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.
 ![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.")
