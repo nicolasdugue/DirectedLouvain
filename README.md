@@ -47,7 +47,7 @@ Several structures are containing the whole graph information:
 To find the first neighbor of a given vertex _i_ one simply needs to consider the difference between cumulative degree of _i_ and _i-1_.
 + two array of outcoming and incoming **weights**: similar to the previous ones but store weights instead of vertex identifiers. 
 
-![CSR example](docs/CSR.png)
+![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees)
 
 ## Examples 
 Using `graph/graph.txt` one obtains: 
