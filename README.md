@@ -38,7 +38,7 @@ Several options are available, among which:
 
 More options and information are provided using `./bin/community`
 
-### Graph representation: CSR format {#CSR}
+### [Graph representation: CSR format](#CSR)
 
 Graphs are stored under the [Compressed Sparse Row (CSR)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format.  
 Several structures are containing the whole graph information: 
@@ -47,8 +47,8 @@ Several structures are containing the whole graph information:
 To find the first neighbor of a given vertex _i_ one simply needs to consider the difference between cumulative degree of _i_ and _i-1_.
 + two array of outcoming and incoming **weights**: similar to the previous ones but store weights instead of vertex identifiers. 
 
-Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees
-![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees")
+Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.
+![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.")
 
 ## Examples 
 Using `graph/graph.txt` one obtains: 
