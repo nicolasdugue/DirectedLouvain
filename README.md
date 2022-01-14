@@ -42,7 +42,7 @@ More options and information are provided using `./bin/community`
 
 Graphs are stored under the [Compressed Sparse Row (CSR)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format.  
 Several structures are containing the whole graph information: 
-+ two arrays of **cumulative degrees** (out- and in-degrees): for out-degrees, each index \\(i\\) contains the value \\(\sum_{j=0}^i \omega^+(j)\\) where \\(\omega(i)\\) stands for the out-weighted degree of i. 
++ two arrays of **cumulative degrees** (out- and in-degrees): for out-degrees, each index $i$ contains the value \\(\sum_{j=0}^i \omega^+(j)\\) where \\(\omega(i)\\) stands for the out-weighted degree of i. 
 + two arrays of outcoming and incoming arcs: the \\(\omega^+(0)\\) first values contain neighbors of vertex \\(0\\) and so on.   
 To find the first neighbor of a given vertex \\(i\\) one simply needs to consider the difference between cumulative degree of \\(i+1\\) and \\(i\\). 
 
