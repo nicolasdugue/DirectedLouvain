@@ -92,6 +92,6 @@ the tree:
 
 -----------------------------------------------------------------------------
 ## References
-* **[1]** Nicolas Dugué, Vincent Labatut, Anthony Perez. A community role approach to assess social capitalists visibility in the Twitter network. Social Network Analysis and Mining, Springer, 2015, 5, pp.26.
-* **[2]** BLONDEL, Vincent D., GUILLAUME, Jean-Loup, LAMBIOTTE, Renaud, et al. Fast unfolding of communities in large networks. Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.
-* **[3]** Nicolas Dugué, Anthony Perez. Directed Louvain : maximizing modularity in directed networks. [Research Report] Université d'Orléans. 2015.
+* **[1]** Nicolas Dugué, Vincent Labatut, Anthony Perez. [A community role approach to assess social capitalists visibility in the Twitter network](https://arxiv.org/pdf/1506.04571.pdf). Social Network Analysis and Mining, Springer, 2015, 5, pp.26.
+* **[2]** Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, Etienne Lefebvre. [Fast unfolding of communities in large networks](https://arxiv.org/pdf/0803.0476.pdf). Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.
+* **[3]** Nicolas Dugué, Anthony Perez. [Directed Louvain: maximizing modularity in directed networks](https://hal.archives-ouvertes.fr/hal-01231784/document). [Research Report] Université d'Orléans. 2015.
