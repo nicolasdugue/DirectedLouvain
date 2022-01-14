@@ -1,4 +1,4 @@
-# [Directed Louvain algorithm]{#mainpage}
+# [Directed Louvain algorithm](#mainpage)
 
 The algorithm used in this package is based on the Louvain algorithm developed by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded on the [Louvain algorithm webpage] (https://sites.google.com/site/findcommunities/) (**[2]**).
 The algorithm was then adjusted to handle directed graphs and to optimize the directed modularity of Leich and Newman instead of the classic modularity.
