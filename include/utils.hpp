@@ -10,6 +10,7 @@ string filename = "";
 string filename_part = "";
 bool weighted = false;
 double precision = 0.000001;
+// No display done
 int display_level = -2;
 bool verbose = false;
 bool reproducibility = false;
