@@ -1,4 +1,4 @@
-# [Directed Louvain algorithm](#mainpage)                       
+# Directed Louvain algorithm
 
 The algorithm used in this package is based on the Louvain algorithm developed by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded on the [Louvain algorithm webpage](https://sites.google.com/site/findcommunities/) (**[1]**).
 The algorithm was then adjusted to handle directed graphs and to optimize directed modularity of Arenas _et al._ (**[2]**).
@@ -38,7 +38,7 @@ Several options are available, among which:
 
 More options and information are provided using `./bin/community`
 
-### [Graph representation: CSR format](#CSR)
+### Graph representation: CSR format
 
 Graphs are stored under the [Compressed Sparse Row (CSR)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format.  
 Several structures are containing the whole graph information: 
@@ -48,7 +48,9 @@ To find the first neighbor of a given node _i_ one simply needs to consider the 
 + two array of outcoming and incoming **weights**: similar to the previous ones but store weights instead of node identifiers. 
 
 Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.
-![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.")
+
+
+<img src="../CSR.png" title="Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only." width="50%" />
 
 ## Examples 
 Using `graph/graph.txt` one obtains: 
