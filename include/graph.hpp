@@ -115,6 +115,8 @@ class Graph {
 
         //! Member function returning positions of the first out-neighbor of a given node 
         /*! 
+         * If the out-degree of the node is 0, this actually returns the position of the first 
+         * out-neighbor of node-1. However, this method is always used by looping on the out-degree of node. 
          * \param node the node to consider
          * \result the position of its out-neighbors and weights, according to cumulative out-degree sequence.
          */
@@ -127,6 +129,8 @@ class Graph {
         unsigned int out_degree(unsigned int node) const;
         //! Member function returning positions of the first in-neighbor of a given node 
         /*! 
+         * If the in-degree of the node is 0, this actually returns the position of the first 
+         * in-neighbor of node-1. However, this method is always used by looping on the out-degree of node. 
          * \param node the node to consider
          * \result the position of its in-neighbors and weights, according to cumulative in-degree sequence.
          */
@@ -189,9 +193,7 @@ class Graph {
 
 inline size_t Graph::out_neighbors(unsigned int node) const {
     assert(node<this->nodes);
-    if (node==0)
-        return 0;
-    return this->outdegrees[node-1];
+    return (node==0 ? 0 : this->outdegrees[node-1]);
 }
 
 inline unsigned int Graph::out_degree(unsigned int node) const {
@@ -201,9 +203,7 @@ inline unsigned int Graph::out_degree(unsigned int node) const {
 
 inline size_t Graph::in_neighbors(unsigned int node) {
     assert(node<this->nodes);
-    if (node==0)
-        return 0;
-    return this->indegrees[node-1];
+    return (node==0 ? 0 : this->indegrees[node-1]);
 }
 
 inline unsigned int Graph::in_degree(unsigned int node) {
