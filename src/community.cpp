@@ -207,8 +207,8 @@ bool Community::one_level() {
         random_order[i] = i;
 
     // ... randomized: (Directed) Louvain's algorithm is not deterministic
-    //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    //shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
 
     // Vectors containing weights and positions of neighboring communities
     vector<double> neighbor_weight(this->size,-1);
