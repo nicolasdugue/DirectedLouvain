@@ -43,6 +43,30 @@ class Community {
 
         vector<int> node_to_community;      /*!< Community to which each node belongs */
         vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
+
+        //! Private member function initiliazing first partition with something different than identity
+        /*!
+         * \param filename the partition to be read
+         */
+        void init_partition(string filename);
+
+        //! Private member function updating the graph to compute communities for 
+        /*!
+         * \sa one_level()
+         */
+        void partition_to_graph();
+
+        //! Private member function computing communities of the Graph attribute for one level
+        /*!
+         * The algorithm proceeds as follow: repeat main procedure while
+         * + there is an improvement of modularity
+         * + or there is an improvement of modularity greater than a given epsilon
+         * + FIXME: the possibility to end after a given number of passes has been removed because  
+         *          we never used it. Should we plug it back? (easy to do but...)
+         * \return true if some nodes have been moved 
+         * \sa modularity_gain()
+         */
+        bool one_level();
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
@@ -56,12 +80,6 @@ class Community {
         //! Destructor
         ~Community(); 
 
-        //! Member function initiliazing first partition with something different than identity
-        /*!
-         * \param filename the partition to be read
-         */
-        void init_partition(string filename);
-
         //! Member function displaying the community of each node
         void display();
 
@@ -74,23 +92,17 @@ class Community {
         //! Member function displaying the current partition (with communities renumbered from 0 to k-1) on standard output
         void display_partition();
 
-        //! Member function updating the graph to compute communities for 
-        /*!
-         * \sa one_level()
-         */
-        void partition_to_graph();
-
         //! Member function computing communities of the Graph attribute for one level
         /*!
-         * The algorithm proceeds as follow: repeat main procedure while
-         * + there is an improvement of modularity
-         * + or there is an improvement of modularity greater than a given epsilon
-         * + FIXME: the possibility to end after a given number of passes has been removed because  
-         *          we never used it. Should we plug it back? (easy to do but...)
-         * \return true if some nodes have been moved 
-         * \sa modularity_gain()
+         * \param verbose       boolean value indicating if verbose mode is activated
+         * \param display_level integer value representing the level to display 
+         * \param filename_part     an initial partition file (absolute or relative path)
+         * The algorithm proceeds while the one_level() function returns true
+         * FIXME: the possibility to end after a given number of passes has been removed because  
+         *        we never used it. Should we plug it back? (easy to do but...)
+         * \sa one_level(), modularity_gain()
          */
-        bool one_level();
+        void run(bool verbose, int display_level, string filename_part);
 
         //! Friend method removing a node from its current community with which it has dnodecomm arcs
         /*! 

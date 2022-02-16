@@ -208,7 +208,7 @@ bool Community::one_level() {
 
     // ... randomized: (Directed) Louvain's algorithm is not deterministic
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
+    //shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
 
     // Vectors containing weights and positions of neighboring communities
     vector<double> neighbor_weight(this->size,-1);
@@ -261,6 +261,48 @@ bool Community::one_level() {
     } while (nb_moves > 0 && delta > precision);
 
     return improvement;
+}
+
+void Community::run(bool verbose, int display_level, string filename_part) {
+    int level = 0;
+    double mod = this->modularity();
+
+    bool improvement = true;
+    auto start = chrono::high_resolution_clock::now();
+    if (filename_part != "")
+        this->init_partition(filename_part);
+    do {
+        const Graph *community_graph = this->get_graph();
+        if (verbose) {
+            cerr << "level " << level << ":\n";
+            cerr << "  network size: " <<
+                community_graph->get_nodes() << " nodes, " <<
+                community_graph->get_arcs() << " arcs, " <<
+                community_graph->get_total_weight() << " weight." << endl;
+        }
+
+        // Directed Louvain: main procedure
+        improvement = this->one_level();
+        double new_mod = this->modularity();
+        if (++level == display_level)
+            community_graph->display();
+        if (display_level == -1)
+            this->display_partition();
+        // Updating the graph to computer hierarchical structurer
+        this->partition_to_graph();
+        if (verbose)
+            cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
+
+        mod = new_mod;
+        // Doing at least one more computation if partition is provided
+        if (filename_part != "" && level == 1) 
+            improvement = true;
+    } while (improvement);
+
+    auto end = chrono::high_resolution_clock::now();
+    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    time_taken *= 1e-9;
+    cerr << "computing communities in: " << fixed << time_taken << setprecision(9) << " seconds" << endl;
 }
 
 // Friend and static functions are defered to a different file for readability 
