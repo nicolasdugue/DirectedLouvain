@@ -90,6 +90,8 @@ double Community::modularity() {
 void Community::display_partition() {
     vector < int > renumber(size, -1);
     renumber_communities(*this, renumber);
+    // Marking the beginning of new level
+    cout << -1 << " " << -1 << endl;
     for (unsigned int i = 0; i < size; ++i)
         cout << (this->g)->correspondance[i] << " " << renumber[this->node_to_community[i]] << endl;
 }

@@ -84,14 +84,16 @@ main(int argc, char ** argv) {
     while (!finput.eof()) {
         int node, nodecomm;
         finput >> node >> nodecomm;
-        corres.push_back(node);
+        if(node>=0) 
+            corres.push_back(node);
 
         if (finput) {
-            if (node == 0) {
+            if (node == -1) {
                 l++;
                 levels.resize(l + 1);
             }
-            levels[l].push_back(nodecomm);
+            else 
+                levels[l].push_back(nodecomm);
         }
     }
 
@@ -99,9 +101,19 @@ main(int argc, char ** argv) {
         cout << "Number of levels: " << levels.size() << endl;
         for (unsigned int i = 0; i < levels.size(); i++)
             cout << "level " << i << ": " << levels[i].size() << " nodes" << endl;
-    } else if (display_level < 0 || (unsigned) display_level >= levels.size()) {
-        cerr << "Incorrect level\n";
+        return EXIT_SUCCESS;
+    } 
+    else if (display_level < -2) {
+        cerr << "Incorrect level" << endl;
+        return EXIT_FAILURE;
     } else {
+        if (display_level == -2)
+                display_level = levels.size()-1;
+
+        if ((unsigned) display_level >= levels.size()) {
+            cerr << "Incorrect level" << endl;
+            return EXIT_FAILURE;
+        }
 
         if (display_level == 0) {
 
@@ -118,6 +130,7 @@ main(int argc, char ** argv) {
                 cout << corres[node] << " " << n2c[node] << endl;
 
         } else {
+            /* FIXME: why are we parsing ALL levels instead of required one?! */
             vector < int > n2c(levels[0].size());
 
             for (unsigned int i = 0; i < levels[0].size(); i++)
@@ -127,9 +140,10 @@ main(int argc, char ** argv) {
                 for (unsigned int node = 0; node < levels[0].size(); node++)
                     n2c[node] = levels[l][n2c[node]];
 
-            for (unsigned int node = 0; node < levels[0].size(); node++)
+            for (unsigned int node = 0; node < levels[0].size(); node++) 
                 cout << corres[node] << " " << n2c[node] << endl;
         }
+        return EXIT_SUCCESS;
 
     }
 }

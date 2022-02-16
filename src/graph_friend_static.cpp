@@ -19,12 +19,14 @@ static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned lon
 }
 
 // This function returns the renumbered identifier of a given node
-static inline unsigned int get_mapped_node(unsigned long int node, const vector<int>& corres, const map< unsigned long, unsigned int> &corres_big_ids) {
-    unsigned int mapped_node;
-    if (node < MAP_LIMIT)
-        mapped_node = corres[node];
-    else
-        mapped_node = corres_big_ids.at(node);
+static inline unsigned int get_mapped_node(unsigned long int node, const vector<int>& corres, const map< unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
+    unsigned int mapped_node = node;
+    if(renumbering) {
+        if (node < MAP_LIMIT)
+            mapped_node = corres[node];
+        else
+            mapped_node = corres_big_ids.at(node);
+    }
     return mapped_node;
 }
 
@@ -76,8 +78,8 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
             if (weighted)
                 finput >> weight;
 
-            map_src = get_mapped_node(src, corres, corres_big_ids);
-            map_dest = get_mapped_node(dest, corres, corres_big_ids);
+            map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
+            map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
 
             LOUT[map_src].push_back(make_pair(map_dest, weight));
             if(map_src!=map_dest)
