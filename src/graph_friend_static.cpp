@@ -66,6 +66,16 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
         }
     }
 
+    cerr << cpt << endl;
+
+    // If the graph is already renumbered the correspondance must be identity 
+    if(!renumbering) {
+        // Number of nodes in that case is cpt+1 
+        ++cpt;
+        for(unsigned int i = 0; i < cpt; ++i)
+            correspondance.push_back(i);
+    }
+
     LOUT.resize(cpt);
     LIN.resize(cpt);
 
@@ -95,14 +105,6 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
 
     if(reproducibility)
         foutput.close();
-
-    // If the graph is already renumbered the correspondance must be identity 
-    if(!renumbering) {
-        // Number of nodes in that case is cpt+1 
-        ++cpt;
-        for(unsigned int i = 0; i < cpt; ++i)
-            correspondance.push_back(i);
-    }
 
     return cpt;
 }
