@@ -45,7 +45,7 @@ void Community::init_partition(string filename) {
         unsigned int neighboring_communities = 0;
         list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
 
-        remove(*this, node, old_comm, neighbor_weight[old_comm]);
+        remove(*this, node, old_comm, neighbor_weight[old_comm], (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
 
         unsigned int best_community  = 0; 
         double best_nbarcs      = 0.;
@@ -55,13 +55,13 @@ void Community::init_partition(string filename) {
             best_community   = positions_neighboring_communities[i];
             best_nbarcs = neighbor_weight[positions_neighboring_communities[i]];
             if (best_community == comm) {
-                insert(*this, node, best_community, best_nbarcs);
+                insert(*this, node, best_community, best_nbarcs, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
                 break;
             }
         }
 
         if (i == neighboring_communities)
-            insert(*this, node, comm, 0.f);
+            insert(*this, node, comm, 0.f, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
     }
     finput.close();
 }
@@ -195,10 +195,10 @@ void Community::partition_to_graph() {
     }
 }
 
-bool Community::one_level() {
+bool Community::one_level(double &modularity) {
     int nb_moves = 0;
     bool improvement = false;
-    double current_modularity = modularity();
+    double current_modularity = this->modularity();
     double delta;
 
     // Order in which to proceed nodes of the graph...
@@ -208,58 +208,69 @@ bool Community::one_level() {
 
     // ... randomized: (Directed) Louvain's algorithm is not deterministic
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    //shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
+    shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
 
     // Vectors containing weights and positions of neighboring communities
     vector<double> neighbor_weight(this->size,-1);
     vector<unsigned int> positions_neighboring_communities(size);
     // Every node neighbors its own community
     unsigned int neighboring_communities = 1;
+    double total_increase = 0.;
 
     do {
         nb_moves = 0;
+        total_increase = 0.;
 
         // For each node: remove it from its community and insert it in the best community (if any)
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
             int node = random_order[node_tmp];
             int node_community = this->node_to_community[node];
+            double weighted_out_degree  = (this->g)->weighted_out_degree(node);
+            double weighted_in_degree   = (this->g)->weighted_in_degree(node);
+            double self_loops           = (this->g)->count_selfloops(node);
 
             // Computating all neighboring communities of current node (the number of such communities is stored in neighboring_communities)
             list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
 
-            // Removing node from its current community
-            remove(*this, node, node_community, neighbor_weight[node_community]);
+            // Gain from removing node from its current community
+            //start_mod = this->modularity();
+            double removal = gain_from_removal(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree);
+            remove(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree, self_loops);
 
             // Default choice for future insertion is the former community
             int best_community = node_community;
-            double best_nbarcs = 0.;
+            double best_nbarcs = neighbor_weight[node_community];
             double best_increase = 0.;
+
             // Computing modularity gain for all neighboring communities
             for (unsigned int i = 0; i < neighboring_communities; ++i) {
-                double increase = modularity_gain(*this, node, positions_neighboring_communities[i], neighbor_weight[positions_neighboring_communities[i]]);
-                if (increase > best_increase) {
+                // (Gain from) inserting note to neighboring community
+                double insertion = gain_from_insertion(*this, node, positions_neighboring_communities[i], neighbor_weight[positions_neighboring_communities[i]], weighted_out_degree, weighted_in_degree);
+                double increase = insertion+removal;
+                if(increase > best_increase) {
                     best_community = positions_neighboring_communities[i];
-                    best_nbarcs = neighbor_weight[positions_neighboring_communities[i]];
+                    best_nbarcs = neighbor_weight[best_community];
                     best_increase = increase;
                 }
             }
-
             // Inserting node in the nearest community
-            insert(*this, node, best_community, best_nbarcs);
+            insert(*this, node, best_community, best_nbarcs, weighted_out_degree, weighted_in_degree, self_loops);
 
             // If a move was made then we do one more step
             if (best_community != node_community) {
+                total_increase+=best_increase;
                 improvement = true;
                 ++nb_moves;
             }
         }
         
         // Computing the difference between the two modularities
-        delta = this->modularity() - current_modularity;
+        delta = (current_modularity+total_increase) - current_modularity;
         current_modularity = delta + current_modularity;
 
     } while (nb_moves > 0 && delta > precision);
 
+    modularity = current_modularity;
     return improvement;
 }
 
@@ -268,7 +279,6 @@ void Community::run(bool verbose, int display_level, string filename_part) {
     double mod = this->modularity();
 
     bool improvement = true;
-    auto start = chrono::high_resolution_clock::now();
     if (filename_part != "")
         this->init_partition(filename_part);
     do {
@@ -282,8 +292,8 @@ void Community::run(bool verbose, int display_level, string filename_part) {
         }
 
         // Directed Louvain: main procedure
-        improvement = this->one_level();
-        double new_mod = this->modularity();
+        double new_mod = 0;
+        improvement = this->one_level(new_mod);
         if (++level == display_level)
             community_graph->display();
         if (display_level == -1)
@@ -298,11 +308,6 @@ void Community::run(bool verbose, int display_level, string filename_part) {
         if (filename_part != "" && level == 1) 
             improvement = true;
     } while (improvement);
-
-    auto end = chrono::high_resolution_clock::now();
-    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    time_taken *= 1e-9;
-    cerr << "computing communities in: " << fixed << time_taken << setprecision(9) << " seconds" << endl;
 }
 
 // Friend and static functions are defered to a different file for readability 

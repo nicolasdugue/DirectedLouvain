@@ -63,10 +63,11 @@ class Community {
          * + or there is an improvement of modularity greater than a given epsilon
          * + FIXME: the possibility to end after a given number of passes has been removed because  
          *          we never used it. Should we plug it back? (easy to do but...)
+         * \param modularity double value containing the new modularity at the end
          * \return true if some nodes have been moved 
          * \sa modularity_gain()
          */
-        bool one_level();
+        bool one_level(double &modularity);
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
@@ -110,7 +111,7 @@ class Community {
          * \param node the node to remove from a community
          * \param comm the community to remove node from
          * \param dnodecomm the weighted degree of node within its community */
-        friend void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
+        friend void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops);
 
         //! Friend method inserting a node to a new community with which it has dnodecomm arcs
         /*! 
@@ -118,7 +119,7 @@ class Community {
          * \param node the node to insert within a community
          * \param comm the community to insert node in
          * \param dnodecomm the weighted degree of node within the community */
-        friend void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm);
+        friend void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops);
 
         // Friend method computing the gain of modularity if node is inserted into comm
         /*! 
@@ -136,7 +137,8 @@ class Community {
          * \param dnodecomm the weight of arcs from node to comm
          * \return the modularity gained from inserting node into comm (can be a negative value)
          */
-        friend double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm);
+        friend double gain_from_removal(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree);
+        friend double gain_from_insertion(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree);
 
         //! Friend method computing the set of neighboring communities of a given node
         /*!

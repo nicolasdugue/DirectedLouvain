@@ -11,33 +11,39 @@ static unsigned int renumber_communities(const Community &c, vector< int > &renu
 }
 
 // Function updating the total number of arcs going from, to and inside a community after the removal of a node
-void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
+void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops) {
     assert(node<c.size);
-    c.communities_arcs[comm].total_outcoming_arcs   -= (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].total_incoming_arcs    -= (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].total_arcs_inside      -= dnodecomm + (c.g)->count_selfloops(node);
-    c.node_to_community[node]         = -1;
+    c.communities_arcs[comm].total_outcoming_arcs   -= weighted_out_degree;
+    c.communities_arcs[comm].total_incoming_arcs    -= weighted_in_degree;
+    c.communities_arcs[comm].total_arcs_inside      -= (dnodecomm + self_loops);
+    c.node_to_community[node]                       = -1;
 }
 
 // Function updating the total number of arcs going from, to and inside a community after the insertion of a node
-void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
+void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops) {
     assert(node<c.size);
-    c.communities_arcs[comm].total_outcoming_arcs   += (c.g)->weighted_out_degree(node);
-    c.communities_arcs[comm].total_incoming_arcs    += (c.g)->weighted_in_degree(node);
-    c.communities_arcs[comm].total_arcs_inside      += dnodecomm + (c.g)->count_selfloops(node);
-    c.node_to_community[node]         = comm;
+    c.communities_arcs[comm].total_outcoming_arcs   += weighted_out_degree;
+    c.communities_arcs[comm].total_incoming_arcs    += weighted_in_degree;
+    c.communities_arcs[comm].total_arcs_inside      += (dnodecomm + self_loops);
+    c.node_to_community[node]                       = comm;
 }
 
 // Function computing the modularity gain from inserting a node within a given community
-double modularity_gain(const Community &c, unsigned int node, unsigned int comm, double dnodecomm) {
+double gain_from_removal(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree) {
     assert(node<c.size);
-    double weighted_out_degree  = (c.g)->weighted_out_degree(node);
-    double weighted_in_degree   = (c.g)->weighted_in_degree(node);
     double totc_out             = c.communities_arcs[comm].total_outcoming_arcs;
     double totc_in              = c.communities_arcs[comm].total_incoming_arcs;
     double m                    = (c.g)->get_total_weight();
+    return ((-dnodecomm / m) + ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
+}
 
-    return (dnodecomm / m - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out) / (m*m)));
+// Function computing the modularity gain from inserting a node within a given community
+double gain_from_insertion(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree) {
+    assert(node<c.size);
+    double totc_out             = c.communities_arcs[comm].total_outcoming_arcs + weighted_out_degree;
+    double totc_in              = c.communities_arcs[comm].total_incoming_arcs + weighted_in_degree;
+    double m                    = (c.g)->get_total_weight();
+    return ((dnodecomm / m) - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
 }
 
 // Function computing the weights and positions of communities neighboring a given node (including its own) 
@@ -81,8 +87,8 @@ void list_neighboring_communities(unsigned int node, const Community &c, vector<
         double neigh_w_in = ((c.g)->is_weighted()) ? (c.g)->get_weighted_in_neighbor(p_in + i) : 1.f;
 
         if (neigh_in != node) {
-            if (neighbor_weight[neigh_comm_in] == -1) {
-                neighbor_weight[neigh_comm_in] = 0.;
+            if (neighbor_weight[neigh_comm_in] == -1.f) {
+                neighbor_weight[neigh_comm_in] = 0.f;
                 positions_neighboring_communities[neighboring_communities++] = neigh_comm_in;
             }
             neighbor_weight[neigh_comm_in] += neigh_w_in;
