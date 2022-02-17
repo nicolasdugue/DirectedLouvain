@@ -6,7 +6,7 @@
 // Static function renumbering communities from 0 to k-1 (returns k)
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
-Community::Community(string in_filename, bool weighted, double minm, bool reproducibility, bool renumbering) {
+Community::Community(const string& in_filename, bool weighted, const double& minm, bool reproducibility, bool renumbering) {
     this->g              = new Graph(in_filename, weighted, reproducibility, renumbering);
     this->size           = g->nodes;
     this->precision = minm;
@@ -45,7 +45,7 @@ void Community::init_partition(string filename) {
         unsigned int neighboring_communities = 0;
         list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
 
-        remove(*this, node, old_comm, neighbor_weight[old_comm], (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
+        remove(*this, node, old_comm, neighbor_weight[old_comm], (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node));
 
         unsigned int best_community  = 0; 
         double best_nbarcs      = 0.;
@@ -55,13 +55,13 @@ void Community::init_partition(string filename) {
             best_community   = positions_neighboring_communities[i];
             best_nbarcs = neighbor_weight[positions_neighboring_communities[i]];
             if (best_community == comm) {
-                insert(*this, node, best_community, best_nbarcs, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
+                insert(*this, node, best_community, best_nbarcs, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node));
                 break;
             }
         }
 
         if (i == neighboring_communities)
-            insert(*this, node, comm, 0.f, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node), (this->g)->count_selfloops(node));
+            insert(*this, node, comm, 0.f, (this->g)->weighted_out_degree(node), (this->g)->weighted_in_degree(node));
     }
     finput.close();
 }
@@ -235,7 +235,7 @@ bool Community::one_level(double &modularity) {
             // Gain from removing node from its current community
             //start_mod = this->modularity();
             double removal = gain_from_removal(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree);
-            remove(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree, self_loops);
+            remove(*this, node, node_community, neighbor_weight[node_community]+self_loops, weighted_out_degree, weighted_in_degree);
 
             // Default choice for future insertion is the former community
             int best_community = node_community;
@@ -254,7 +254,7 @@ bool Community::one_level(double &modularity) {
                 }
             }
             // Inserting node in the nearest community
-            insert(*this, node, best_community, best_nbarcs, weighted_out_degree, weighted_in_degree, self_loops);
+            insert(*this, node, best_community, best_nbarcs+self_loops, weighted_out_degree, weighted_in_degree);
 
             // If a move was made then we do one more step
             if (best_community != node_community) {
@@ -274,7 +274,7 @@ bool Community::one_level(double &modularity) {
     return improvement;
 }
 
-void Community::run(bool verbose, int display_level, string filename_part) {
+void Community::run(bool verbose, const int& display_level, const string& filename_part) {
     int level = 0;
     double mod = this->modularity();
 

@@ -11,25 +11,25 @@ static unsigned int renumber_communities(const Community &c, vector< int > &renu
 }
 
 // Function updating the total number of arcs going from, to and inside a community after the removal of a node
-void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops) {
+void remove(Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree) {
     assert(node<c.size);
     c.communities_arcs[comm].total_outcoming_arcs   -= weighted_out_degree;
     c.communities_arcs[comm].total_incoming_arcs    -= weighted_in_degree;
-    c.communities_arcs[comm].total_arcs_inside      -= (dnodecomm + self_loops);
+    c.communities_arcs[comm].total_arcs_inside      -= dnodecomm;
     c.node_to_community[node]                       = -1;
 }
 
 // Function updating the total number of arcs going from, to and inside a community after the insertion of a node
-void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops) {
+void insert(Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree) {
     assert(node<c.size);
     c.communities_arcs[comm].total_outcoming_arcs   += weighted_out_degree;
     c.communities_arcs[comm].total_incoming_arcs    += weighted_in_degree;
-    c.communities_arcs[comm].total_arcs_inside      += (dnodecomm + self_loops);
+    c.communities_arcs[comm].total_arcs_inside      += dnodecomm;
     c.node_to_community[node]                       = comm;
 }
 
 // Function computing the modularity gain from inserting a node within a given community
-double gain_from_removal(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree) {
+double gain_from_removal(const Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree) {
     assert(node<c.size);
     double totc_out             = c.communities_arcs[comm].total_outcoming_arcs;
     double totc_in              = c.communities_arcs[comm].total_incoming_arcs;
@@ -38,7 +38,7 @@ double gain_from_removal(Community &c, unsigned int node, unsigned int comm, dou
 }
 
 // Function computing the modularity gain from inserting a node within a given community
-double gain_from_insertion(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree) {
+double gain_from_insertion(const Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree) {
     assert(node<c.size);
     double totc_out             = c.communities_arcs[comm].total_outcoming_arcs + weighted_out_degree;
     double totc_in              = c.communities_arcs[comm].total_incoming_arcs + weighted_in_degree;
@@ -47,7 +47,7 @@ double gain_from_insertion(Community &c, unsigned int node, unsigned int comm, d
 }
 
 // Function computing the weights and positions of communities neighboring a given node (including its own) 
-void list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &positions_neighboring_communities, unsigned int &neighboring_communities) {
+void list_neighboring_communities(const unsigned int& node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &positions_neighboring_communities, unsigned int &neighboring_communities) {
     // Cleaning the previously computed neighbors
     for(unsigned int i = 0; i < neighboring_communities; ++i)
         neighbor_weight[positions_neighboring_communities[i]] = -1.f;

@@ -77,7 +77,7 @@ class Community {
          * \param renumbering       boolean value indicating whether the graph must be renumbered
          * \sa Graph()
          */
-        Community (string filename, bool weighted, double precision, bool reproducibility, bool renumbering);
+        Community (const string &filename, bool weighted, const double &precision, bool reproducibility, bool renumbering);
         //! Destructor
         ~Community(); 
 
@@ -103,7 +103,7 @@ class Community {
          *        we never used it. Should we plug it back? (easy to do but...)
          * \sa one_level(), modularity_gain()
          */
-        void run(bool verbose, int display_level, string filename_part);
+        void run(bool verbose, const int& display_level, const string& filename_part);
 
         //! Friend method removing a node from its current community with which it has dnodecomm arcs
         /*! 
@@ -111,7 +111,7 @@ class Community {
          * \param node the node to remove from a community
          * \param comm the community to remove node from
          * \param dnodecomm the weighted degree of node within its community */
-        friend void remove(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops);
+        friend void remove(Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree);
 
         //! Friend method inserting a node to a new community with which it has dnodecomm arcs
         /*! 
@@ -119,7 +119,7 @@ class Community {
          * \param node the node to insert within a community
          * \param comm the community to insert node in
          * \param dnodecomm the weighted degree of node within the community */
-        friend void insert(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree, double self_loops);
+        friend void insert(Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree);
 
         // Friend method computing the gain of modularity if node is inserted into comm
         /*! 
@@ -137,8 +137,8 @@ class Community {
          * \param dnodecomm the weight of arcs from node to comm
          * \return the modularity gained from inserting node into comm (can be a negative value)
          */
-        friend double gain_from_removal(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree);
-        friend double gain_from_insertion(Community &c, unsigned int node, unsigned int comm, double dnodecomm, double weighted_out_degree, double weighted_in_degree);
+        friend double gain_from_removal(const Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree);
+        friend double gain_from_insertion(const Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree);
 
         //! Friend method computing the set of neighboring communities of a given node
         /*!
@@ -148,7 +148,7 @@ class Community {
          * \param node the node to consider
          * \param neighboring_communities a reference to the number of communities neighboring node 
          */ 
-        friend void list_neighboring_communities(unsigned int node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int &neighboring_communities);
+        friend void list_neighboring_communities(const unsigned int& node, const Community &c, vector<double> &neighbor_weight, vector<unsigned int> &neigh_pos, unsigned int &neighboring_communities);
 
         //! Getter for the graph to compute communities for
         inline const Graph *get_graph() {
