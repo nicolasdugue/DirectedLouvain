@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['list_5fneighboring_5fcommunities_69',['list_neighboring_communities',['../classCommunity.html#a17028c4aa9fe3ac5a5e4f5d24a029a89',1,'Community']]]
+  ['init_5fattributes_63',['init_attributes',['../classGraph.html#ad20a3e9355abade2dd724d5862dafbb6',1,'Graph']]],
+  ['insert_64',['insert',['../classCommunity.html#a1d10aa48b94d8e02b91abce86cbe4a33',1,'Community']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Directed Louvain: Directed Louvain algorithm</title>
+<title>Directed Louvain: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -60,64 +60,11 @@ $(function() {
 </iframe>
 </div>
 
-<div class="PageDoc"><div class="header">
+<div class="header">
   <div class="headertitle">
-<div class="title">Directed Louvain algorithm </div>  </div>
+<div class="title">Directed Louvain Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The algorithm used in this package is based on the Louvain algorithm developed by V. Blondel, J.-L. Guillaume, R. Lambiotte, E. Lefebvre and was downloaded on the <a href="https://sites.google.com/site/findcommunities/">Louvain algorithm webpage</a> (<b>[1]</b>). The algorithm was then adjusted to handle directed graphs and to optimize directed modularity of Arenas <em>et al.</em> (<b>[2]</b>). These modifications were mostly made by <a href="https://www.univ-orleans.fr/lifo/membres/Anthony.Perez">Anthony perez</a> and by <a href="https://lium.univ-lemans.fr/team/nicolas-dugue/">Nicolas Dugué</a>.</p>
-<p>The directed modularity is proved to be more efficient in the case of directed graphs as shown in <a href="https://hal.archives-ouvertes.fr/hal-01231784">Directed Louvain : maximizing modularity in directed networks</a> (<b>[3]</b>).</p>
-<hr  />
- <h1><a class="anchor" id="autotoc_md2"></a>
-How to use</h1>
-<p>The algorithm works in two steps, namely computing communities and then displaying hierarchical tree.</p>
-<h2><a class="anchor" id="autotoc_md3"></a>
-Computing communities</h2>
-<p>The graph <b>must</b> be in edgelist format, that is one edge per line as follows (the <code>weight</code> being optional): <br  />
- </p><pre class="fragment">src dest [weight]
-</pre><p>Moreover, it is <b>mandatory</b> that vertices of the input graph are numbered from <code>0</code> to <code>n-1</code>. To ensure a proper computation of the communities, the default computation encompasses a renumbering of the input graph. The option <code>-n</code> indicates that the graph is already numbered from <code>0</code> to <code>n-1</code> and hence avoids renumbering. <b>Important</b>: communities are written using the <b>original label nodes</b>.</p>
-<p>The standard command is: </p><pre class="fragment">./bin/community -f graph/graph.txt -l -1 -v &gt; graph.tree
-</pre><p>Another possibility is to pass a binary file containing all information regarding the graph. This file <b>must</b> be generated using the our program in a first place, or follows the CSR format (see below). In this case, the only mandatory option is <code>-w</code> to indicate whether the graph is weighted.</p>
-<p>Several options are available, among which:</p><ul>
-<li><code>-f</code> path to the input graph (edgelist or binary format (<code>.bin</code>))</li>
-<li><code>-w</code> to indicate that the input graph is weighted</li>
-<li><code>-n</code> to indicate that the input graph is correctly numbered (from <code>0</code> to <code>n-1</code>)</li>
-<li><code>-r</code> for reproducibility purposes: the renumbered graph is stored on hard drive.</li>
-</ul>
-<p>More options and information are provided using <code>./bin/community</code></p>
-<h2><a class="anchor" id="autotoc_md4"></a>
-Graph representation: CSR format</h2>
-<p>Graphs are stored under the <a href="https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)">Compressed Sparse Row (CSR)</a> format. <br  />
- Several structures are containing the whole graph information:</p><ul>
-<li>two arrays of <b>cumulative degrees</b> (out- and in-degrees): for out-degrees, each index <em>i</em> contains the sum of all out-degrees for nodes from <em>0</em> to <em>i</em>.</li>
-<li>two arrays of outcoming and incoming <b>arcs</b>: the <em>d(0)</em> (out- or in-degree of node <em>0</em>) first values contain neighbors of node <em>0</em> and so on. <br  />
- To find the first neighbor of a given node <em>i</em> one simply needs to consider the difference between cumulative degrees of <em>i</em> and <em>i-1</em>.</li>
-<li>two array of outcoming and incoming <b>weights</b>: similar to the previous ones but store weights instead of node identifiers.</li>
-</ul>
-<p>Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out&ndash;degrees only.</p>
-<p><img src="../CSR.png" alt="" title="Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only." width="50%" class="inline"/></p>
-<h1><a class="anchor" id="autotoc_md5"></a>
-Examples</h1>
-<p>Using <code>graph/graph.txt</code> one obtains: </p><pre class="fragment">./bin/community -f graph/graph.txt -l -1 -v -w -r &gt; graph/graph.tree
-</pre><p>to compute hierarchical community structure (using <b>original</b> label nodes) by first renumbering the graph, and then writing files for reproducibility. The next runs would thus be: </p><pre class="fragment">./bin/community -f graph/graph.bin -w -l -1 &gt; graph/graph.tree
-</pre><p>Finally, using an already renumbered graph one gets: </p><pre class="fragment">./bin/community -f graph/graph_renum.txt -l -1 -v -w -n &gt; graph/graph.tree
-</pre><p>The program can also start with any given partition using -p option </p><pre class="fragment">./community graph.bin -p graph.part -v
-</pre><h2><a class="anchor" id="autotoc_md6"></a>
-Improvements</h2>
-<p>To ensure a faster computation (with a loss of quality), one can use the -q option to specify that the program must stop if the increase of modularity is below epsilon for a given iteration or pass: </p><pre class="fragment">./bin/community graph/graph.bin -w -l -1 -q 0.0001 &gt; graph/graph.tree
-</pre><hr  />
-<p> <b>Display communities information</b></p>
-<p>Displays information on the tree structure (number of hierarchical levels and nodes per level): </p><pre class="fragment">./hierarchy graph.tree
-</pre><p>Displays the belonging of nodes to communities for a given level of the tree: </p><pre class="fragment">./hierarchy graph.tree -l 2 &gt; graph_node2comm_level2
-</pre><hr  />
- <h1><a class="anchor" id="autotoc_md7"></a>
-References</h1>
-<ul>
-<li><b>[1]</b> Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, Etienne Lefebvre. <a href="https://arxiv.org/pdf/0803.0476.pdf">Fast unfolding of communities in large networks</a>. Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.</li>
-<li><b>[2]</b> Alexandre Arenas, Jordi Duch, Alberto Fern\'andez, Sergio G\'omez, 2007. <a href="https://iopscience.iop.org/article/10.1088/1367-2630/9/6/176/pdf">Size reduction of complex networks preserving modularity</a>. New Journal of Physics 9, 176.</li>
-<li><b>[3]</b> Nicolas Dugué, Anthony Perez. <a href="https://hal.archives-ouvertes.fr/hal-01231784/document">Directed Louvain: maximizing modularity in directed networks</a>. [Research Report] Université d'Orléans. 2015. </li>
-</ul>
-</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

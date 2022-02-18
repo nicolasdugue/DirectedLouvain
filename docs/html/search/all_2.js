@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['gain_5ffrom_5fremoval_5',['gain_from_removal',['../classCommunity.html#a4d44222a280bf96f9f54abbde977b3e3',1,'Community']]],
   ['get_5farcs_6',['get_arcs',['../classGraph.html#a38daf56fce0ddfdbda3bf340d833a024',1,'Graph']]],
   ['get_5fcommunity_7',['get_community',['../classCommunity.html#a40bc93ffe63190e1725f28081ee3a085',1,'Community']]],
   ['get_5fcorrespondance_8',['get_correspondance',['../classGraph.html#a43d02e0ab0c5de986b796095c94fef4a',1,'Graph']]],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['modularity_5fgain_70',['modularity_gain',['../classCommunity.html#ae160cb32eb56aef062308a071eab69c5',1,'Community']]]
+  ['list_5fneighboring_5fcommunities_65',['list_neighboring_communities',['../classCommunity.html#a2b91b07b6498cdb30dd8fa1a0eb9c878',1,'Community']]]
 ];

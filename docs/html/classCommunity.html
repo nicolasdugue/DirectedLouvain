@@ -78,16 +78,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac32d9e342f5b4e315a26d61dd06b751d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#ac32d9e342f5b4e315a26d61dd06b751d">Community</a> (string filename, bool weighted, double precision, bool reproducibility, bool renumbering)</td></tr>
-<tr class="memdesc:ac32d9e342f5b4e315a26d61dd06b751d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor from edgelist format (initializes <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object)  <a href="classCommunity.html#ac32d9e342f5b4e315a26d61dd06b751d">More...</a><br /></td></tr>
-<tr class="separator:ac32d9e342f5b4e315a26d61dd06b751d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b795cdc012e123726f50fd68ddeadab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a5b795cdc012e123726f50fd68ddeadab">Community</a> (const string &amp;filename, bool weighted=false, const double precision=0.0001, bool reproducibility=false, bool renumbering=false)</td></tr>
+<tr class="memdesc:a5b795cdc012e123726f50fd68ddeadab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor from edgelist format (initializes <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> object)  <a href="classCommunity.html#a5b795cdc012e123726f50fd68ddeadab">More...</a><br /></td></tr>
+<tr class="separator:a5b795cdc012e123726f50fd68ddeadab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ed3b94e90b38497805610de6d18df4e"><td class="memItemLeft" align="right" valign="top"><a id="a9ed3b94e90b38497805610de6d18df4e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a9ed3b94e90b38497805610de6d18df4e">~Community</a> ()</td></tr>
 <tr class="memdesc:a9ed3b94e90b38497805610de6d18df4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:a9ed3b94e90b38497805610de6d18df4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3ccfb3788f7534232b3b6053eed4a09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#aa3ccfb3788f7534232b3b6053eed4a09">init_partition</a> (string filename)</td></tr>
-<tr class="memdesc:aa3ccfb3788f7534232b3b6053eed4a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function initiliazing first partition with something different than identity.  <a href="classCommunity.html#aa3ccfb3788f7534232b3b6053eed4a09">More...</a><br /></td></tr>
-<tr class="separator:aa3ccfb3788f7534232b3b6053eed4a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae742d78b0276cc0d6aca0b5ec55df989"><td class="memItemLeft" align="right" valign="top"><a id="ae742d78b0276cc0d6aca0b5ec55df989"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#ae742d78b0276cc0d6aca0b5ec55df989">display</a> ()</td></tr>
 <tr class="memdesc:ae742d78b0276cc0d6aca0b5ec55df989"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function displaying the community of each node. <br /></td></tr>
@@ -98,12 +95,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a56aa71b7dec2293a536b4f84a2d8b94e">display_partition</a> ()</td></tr>
 <tr class="memdesc:a56aa71b7dec2293a536b4f84a2d8b94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function displaying the current partition (with communities renumbered from 0 to k-1) on standard output. <br /></td></tr>
 <tr class="separator:a56aa71b7dec2293a536b4f84a2d8b94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fa9fa5af96c765d9aebf0d87a78e414"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a1fa9fa5af96c765d9aebf0d87a78e414">partition_to_graph</a> ()</td></tr>
-<tr class="memdesc:a1fa9fa5af96c765d9aebf0d87a78e414"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function updating the graph to compute communities for.  <a href="classCommunity.html#a1fa9fa5af96c765d9aebf0d87a78e414">More...</a><br /></td></tr>
-<tr class="separator:a1fa9fa5af96c765d9aebf0d87a78e414"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39a2f6af84b012fc5bed50c2293d3b49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a39a2f6af84b012fc5bed50c2293d3b49">one_level</a> ()</td></tr>
-<tr class="memdesc:a39a2f6af84b012fc5bed50c2293d3b49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function computing communities of the <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> attribute for one level.  <a href="classCommunity.html#a39a2f6af84b012fc5bed50c2293d3b49">More...</a><br /></td></tr>
-<tr class="separator:a39a2f6af84b012fc5bed50c2293d3b49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a2fcf6d10fb4690fc0fa431e9f005574f">run</a> (bool verbose, const int &amp;display_level, const string &amp;filename_part)</td></tr>
+<tr class="memdesc:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function computing communities of the <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> attribute for one level.  <a href="classCommunity.html#a2fcf6d10fb4690fc0fa431e9f005574f">More...</a><br /></td></tr>
+<tr class="separator:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02ace53d67edff947bc66da95ec70d14"><td class="memItemLeft" align="right" valign="top"><a id="a02ace53d67edff947bc66da95ec70d14"></a>
 const <a class="el" href="classGraph.html">Graph</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a02ace53d67edff947bc66da95ec70d14">get_graph</a> ()</td></tr>
 <tr class="memdesc:a02ace53d67edff947bc66da95ec70d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the graph to compute communities for. <br /></td></tr>
@@ -118,24 +112,27 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a5e899c8664e99236cb025a4dc30c22b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a5e899c8664e99236cb025a4dc30c22b1">remove</a> (<a class="el" href="classCommunity.html">Community</a> &amp;c, unsigned int node, unsigned int comm, double dnodecomm)</td></tr>
-<tr class="memdesc:a5e899c8664e99236cb025a4dc30c22b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method removing a node from its current community with which it has dnodecomm arcs.  <a href="classCommunity.html#a5e899c8664e99236cb025a4dc30c22b1">More...</a><br /></td></tr>
-<tr class="separator:a5e899c8664e99236cb025a4dc30c22b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad0b4b78d3541559c107381d6e88e73b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#aad0b4b78d3541559c107381d6e88e73b">insert</a> (<a class="el" href="classCommunity.html">Community</a> &amp;c, unsigned int node, unsigned int comm, double dnodecomm)</td></tr>
-<tr class="memdesc:aad0b4b78d3541559c107381d6e88e73b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method inserting a node to a new community with which it has dnodecomm arcs.  <a href="classCommunity.html#aad0b4b78d3541559c107381d6e88e73b">More...</a><br /></td></tr>
-<tr class="separator:aad0b4b78d3541559c107381d6e88e73b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae160cb32eb56aef062308a071eab69c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#ae160cb32eb56aef062308a071eab69c5">modularity_gain</a> (const <a class="el" href="classCommunity.html">Community</a> &amp;c, unsigned int node, unsigned int comm, double dnodecomm)</td></tr>
-<tr class="separator:ae160cb32eb56aef062308a071eab69c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17028c4aa9fe3ac5a5e4f5d24a029a89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a17028c4aa9fe3ac5a5e4f5d24a029a89">list_neighboring_communities</a> (unsigned int node, const <a class="el" href="classCommunity.html">Community</a> &amp;c, vector&lt; double &gt; &amp;neighbor_weight, vector&lt; unsigned int &gt; &amp;neigh_pos, unsigned int &amp;neighboring_communities)</td></tr>
-<tr class="memdesc:a17028c4aa9fe3ac5a5e4f5d24a029a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method computing the set of neighboring communities of a given node.  <a href="classCommunity.html#a17028c4aa9fe3ac5a5e4f5d24a029a89">More...</a><br /></td></tr>
-<tr class="separator:a17028c4aa9fe3ac5a5e4f5d24a029a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a206eb36d14e97c3a9dee276deceb527e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a206eb36d14e97c3a9dee276deceb527e">remove</a> (<a class="el" href="classCommunity.html">Community</a> &amp;c, const unsigned int &amp;node, const int &amp;comm, const double &amp;dnodecomm, const double &amp;weighted_out_degree, const double &amp;weighted_in_degree)</td></tr>
+<tr class="memdesc:a206eb36d14e97c3a9dee276deceb527e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method removing a node from its current community with which it has dnodecomm arcs.  <a href="classCommunity.html#a206eb36d14e97c3a9dee276deceb527e">More...</a><br /></td></tr>
+<tr class="separator:a206eb36d14e97c3a9dee276deceb527e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d10aa48b94d8e02b91abce86cbe4a33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a1d10aa48b94d8e02b91abce86cbe4a33">insert</a> (<a class="el" href="classCommunity.html">Community</a> &amp;c, const unsigned int &amp;node, const int &amp;comm, const double &amp;dnodecomm, const double &amp;weighted_out_degree, const double &amp;weighted_in_degree)</td></tr>
+<tr class="memdesc:a1d10aa48b94d8e02b91abce86cbe4a33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method inserting a node to a new community with which it has dnodecomm arcs.  <a href="classCommunity.html#a1d10aa48b94d8e02b91abce86cbe4a33">More...</a><br /></td></tr>
+<tr class="separator:a1d10aa48b94d8e02b91abce86cbe4a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d44222a280bf96f9f54abbde977b3e3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a4d44222a280bf96f9f54abbde977b3e3">gain_from_removal</a> (const <a class="el" href="classCommunity.html">Community</a> &amp;c, const unsigned int &amp;node, const int &amp;comm, const double &amp;dnodecomm, const double &amp;weighted_out_degree, const double &amp;weighted_in_degree)</td></tr>
+<tr class="separator:a4d44222a280bf96f9f54abbde977b3e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2308e8c25a23c29f1154ab513ef619"><td class="memItemLeft" align="right" valign="top"><a id="abc2308e8c25a23c29f1154ab513ef619"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>gain_from_insertion</b> (const <a class="el" href="classCommunity.html">Community</a> &amp;c, const unsigned int &amp;node, const int &amp;comm, const double &amp;dnodecomm, const double &amp;weighted_out_degree, const double &amp;weighted_in_degree)</td></tr>
+<tr class="separator:abc2308e8c25a23c29f1154ab513ef619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b91b07b6498cdb30dd8fa1a0eb9c878"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a2b91b07b6498cdb30dd8fa1a0eb9c878">list_neighboring_communities</a> (const unsigned int &amp;node, const <a class="el" href="classCommunity.html">Community</a> &amp;c, vector&lt; double &gt; &amp;neighbor_weight, vector&lt; unsigned int &gt; &amp;neigh_pos, unsigned int &amp;neighboring_communities)</td></tr>
+<tr class="memdesc:a2b91b07b6498cdb30dd8fa1a0eb9c878"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend method computing the set of neighboring communities of a given node.  <a href="classCommunity.html#a2b91b07b6498cdb30dd8fa1a0eb9c878">More...</a><br /></td></tr>
+<tr class="separator:a2b91b07b6498cdb30dd8fa1a0eb9c878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class implementing the Directed Louvain algorithm. Stores information regarding partial graphs that are computed during the algorithm <br  />
  that can be displayed if needed (hierarchical community detection) </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac32d9e342f5b4e315a26d61dd06b751d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac32d9e342f5b4e315a26d61dd06b751d">&#9670;&nbsp;</a></span>Community()</h2>
+<a id="a5b795cdc012e123726f50fd68ddeadab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b795cdc012e123726f50fd68ddeadab">&#9670;&nbsp;</a></span>Community()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,32 +140,32 @@ Friends</h2></td></tr>
         <tr>
           <td class="memname">Community::Community </td>
           <td>(</td>
-          <td class="paramtype">string&#160;</td>
+          <td class="paramtype">const string &amp;&#160;</td>
           <td class="paramname"><em>filename</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>weighted</em>, </td>
+          <td class="paramname"><em>weighted</em> = <code>false</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>precision</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>reproducibility</em>, </td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>precision</em> = <code>0.0001</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>renumbering</em>&#160;</td>
+          <td class="paramname"><em>reproducibility</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>renumbering</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -228,32 +225,6 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="aa3ccfb3788f7534232b3b6053eed4a09"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3ccfb3788f7534232b3b6053eed4a09">&#9670;&nbsp;</a></span>init_partition()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Community::init_partition </td>
-          <td>(</td>
-          <td class="paramtype">string&#160;</td>
-          <td class="paramname"><em>filename</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Member function initiliazing first partition with something different than identity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">filename</td><td>the partition to be read </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a3bc9ed20b62c78464f59d1e0a295249c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3bc9ed20b62c78464f59d1e0a295249c">&#9670;&nbsp;</a></span>modularity()</h2>
 
@@ -272,56 +243,125 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a39a2f6af84b012fc5bed50c2293d3b49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39a2f6af84b012fc5bed50c2293d3b49">&#9670;&nbsp;</a></span>one_level()</h2>
+<a id="a2fcf6d10fb4690fc0fa431e9f005574f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fcf6d10fb4690fc0fa431e9f005574f">&#9670;&nbsp;</a></span>run()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Community::one_level </td>
+          <td class="memname">void Community::run </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verbose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const int &amp;&#160;</td>
+          <td class="paramname"><em>display_level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramname"><em>filename_part</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Member function computing communities of the <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> attribute for one level. </p>
-<p>The algorithm proceeds as follow: repeat main procedure while</p><ul>
-<li>there is an improvement of modularity</li>
-<li>or there is an improvement of modularity greater than a given epsilon</li>
-<li>FIXME: the possibility to end after a given number of passes has been removed because <br  />
- we never used it. Should we plug it back? (easy to do but...) <dl class="section return"><dt>Returns</dt><dd>true if some nodes have been moved </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classCommunity.html#ae160cb32eb56aef062308a071eab69c5">modularity_gain()</a> </dd></dl>
-</li>
-</ul>
-
-</div>
-</div>
-<a id="a1fa9fa5af96c765d9aebf0d87a78e414"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fa9fa5af96c765d9aebf0d87a78e414">&#9670;&nbsp;</a></span>partition_to_graph()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Community::partition_to_graph </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Member function updating the graph to compute communities for. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classCommunity.html#a39a2f6af84b012fc5bed50c2293d3b49" title="Member function computing communities of the Graph attribute for one level.">one_level()</a> </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">verbose</td><td>boolean value indicating if verbose mode is activated </td></tr>
+    <tr><td class="paramname">display_level</td><td>integer value representing the level to display </td></tr>
+    <tr><td class="paramname">filename_part</td><td>an initial partition file (absolute or relative path) The algorithm proceeds while the one_level() function returns true FIXME: the possibility to end after a given number of passes has been removed because <br  />
+ we never used it. Should we plug it back? (easy to do but...) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>one_level(), modularity_gain() </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="aad0b4b78d3541559c107381d6e88e73b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad0b4b78d3541559c107381d6e88e73b">&#9670;&nbsp;</a></span>insert</h2>
+<a id="a4d44222a280bf96f9f54abbde977b3e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d44222a280bf96f9f54abbde977b3e3">&#9670;&nbsp;</a></span>gain_from_removal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double gain_from_removal </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classCommunity.html">Community</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned int &amp;&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int &amp;&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>dnodecomm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_out_degree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_in_degree</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The formula is: d(node,comm)/m - [(dout(node)*In(comm) + din(node)*Out(comm)) / (m*m)] where In(comm) = number of incoming arcs to comm Out(comm) = number of outcoming arcs from comm dout(node) = weighted out-degree of node in whole graph din(node) = weighted in-degree of node in whole graph d(node,comm) = weights of arcs from node to comm m = number of arcs </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>the <a class="el" href="classCommunity.html" title="Class implementing the Directed Louvain algorithm. Stores information regarding partial graphs that a...">Community</a> object </td></tr>
+    <tr><td class="paramname">node</td><td>the node to consider </td></tr>
+    <tr><td class="paramname">comm</td><td>the community to consider </td></tr>
+    <tr><td class="paramname">dnodecomm</td><td>the weight of arcs from node to comm </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the modularity gained from inserting node into comm (can be a negative value) </dd></dl>
+
+</div>
+</div>
+<a id="a1d10aa48b94d8e02b91abce86cbe4a33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d10aa48b94d8e02b91abce86cbe4a33">&#9670;&nbsp;</a></span>insert</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -338,20 +378,32 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int &amp;&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const int &amp;&#160;</td>
           <td class="paramname"><em>comm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>dnodecomm</em>&#160;</td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>dnodecomm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_out_degree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_in_degree</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -379,8 +431,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a17028c4aa9fe3ac5a5e4f5d24a029a89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a17028c4aa9fe3ac5a5e4f5d24a029a89">&#9670;&nbsp;</a></span>list_neighboring_communities</h2>
+<a id="a2b91b07b6498cdb30dd8fa1a0eb9c878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b91b07b6498cdb30dd8fa1a0eb9c878">&#9670;&nbsp;</a></span>list_neighboring_communities</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -391,7 +443,7 @@ Friends</h2></td></tr>
         <tr>
           <td class="memname">void list_neighboring_communities </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int &amp;&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
         <tr>
@@ -445,66 +497,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="ae160cb32eb56aef062308a071eab69c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae160cb32eb56aef062308a071eab69c5">&#9670;&nbsp;</a></span>modularity_gain</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double modularity_gain </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classCommunity.html">Community</a> &amp;&#160;</td>
-          <td class="paramname"><em>c</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>node</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>comm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>dnodecomm</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>The formula is: d(node,comm)/m - [(dout(node)*In(comm) + din(node)*Out(comm)) / (m*m)] where In(comm) = number of incoming arcs to comm Out(comm) = number of outcoming arcs from comm dout(node) = weighted out-degree of node in whole graph din(node) = weighted in-degree of node in whole graph d(node,comm) = weights of arcs from node to comm m = number of arcs </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">c</td><td>the <a class="el" href="classCommunity.html" title="Class implementing the Directed Louvain algorithm. Stores information regarding partial graphs that a...">Community</a> object </td></tr>
-    <tr><td class="paramname">node</td><td>the node to consider </td></tr>
-    <tr><td class="paramname">comm</td><td>the community to consider </td></tr>
-    <tr><td class="paramname">dnodecomm</td><td>the weight of arcs from node to comm </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the modularity gained from inserting node into comm (can be a negative value) </dd></dl>
-
-</div>
-</div>
-<a id="a5e899c8664e99236cb025a4dc30c22b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5e899c8664e99236cb025a4dc30c22b1">&#9670;&nbsp;</a></span>remove</h2>
+<a id="a206eb36d14e97c3a9dee276deceb527e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a206eb36d14e97c3a9dee276deceb527e">&#9670;&nbsp;</a></span>remove</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -521,20 +515,32 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int &amp;&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const int &amp;&#160;</td>
           <td class="paramname"><em>comm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>dnodecomm</em>&#160;</td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>dnodecomm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_out_degree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>weighted_in_degree</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
