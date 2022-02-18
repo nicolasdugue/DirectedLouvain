@@ -84,6 +84,7 @@ main(int argc, char ** argv) {
     while (!finput.eof()) {
         int node, nodecomm;
         finput >> node >> nodecomm;
+        /* FIXME: there are too many nodes in here */
         if(node>=0) 
             corres.push_back(node);
 
