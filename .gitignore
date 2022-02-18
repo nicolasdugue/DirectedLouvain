@@ -27,6 +27,7 @@
 *.out
 *.app
 
+# Gargabe collector --- needs to be uptaded
 bin/
 obj/
 *links-anon*
@@ -39,3 +40,6 @@ modularity_values_directed_louvain.txt
 snap/
 config-doxygen
 README_DOXYGEN.md
+
+src/build/*
+!src/build/python-use.py
