@@ -10,7 +10,7 @@
 
 This is the only step needed to be able to use [`pybind11`](https://github.com/pybind/pybind11).
 
-### Computing communities
+### Create python library (`.so`)
 
 The graph **must** be in edgelist format, that is one edge per line as follows (the `weight` being optional):  
 
