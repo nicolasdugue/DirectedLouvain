@@ -77,7 +77,12 @@ class Community {
          * \param renumbering       boolean value indicating whether the graph must be renumbered
          * \sa Graph()
          */
-        Community (const string &filename, bool weighted, const double &precision, bool reproducibility, bool renumbering);
+        Community (
+                const string &filename, 
+                bool weighted=false, 
+                const double precision=0.0001, 
+                bool reproducibility=false, 
+                bool renumbering=false);
         //! Destructor
         ~Community(); 
 

@@ -6,10 +6,10 @@
 // Static function renumbering communities from 0 to k-1 (returns k)
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
-Community::Community(const string& in_filename, bool weighted, const double& minm, bool reproducibility, bool renumbering) {
-    this->g              = new Graph(in_filename, weighted, reproducibility, renumbering);
-    this->size           = g->nodes;
-    this->precision = minm;
+Community::Community(const string& in_filename, bool weighted, const double precision, bool reproducibility, bool renumbering) {
+    this->g         = new Graph(in_filename, weighted, reproducibility, renumbering);
+    this->size      = g->nodes;
+    this->precision = precision;
 
     this->node_to_community.resize(this->size); 
     this->communities_arcs.resize(this->size);
