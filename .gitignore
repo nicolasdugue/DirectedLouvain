@@ -41,5 +41,5 @@ snap/
 config-doxygen
 README_DOXYGEN.md
 
-src/build/*
-!src/build/python-use.py
+python-binding/build/*
+!python-binding/build/python-use.py
