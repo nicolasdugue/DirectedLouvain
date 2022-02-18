@@ -1,12 +1,14 @@
 # [Python binding](#pythonbinding)                       
 
 ---
-## Add pybind11 submodule
+## Add [pybind11](https://github.com/pybind/pybind11) submodule
 
 `pybind11` is included as a submodule of this project. Thus, in order to bind our `C++` implementation with `python3`, first do the following:
 
     git submodule init
     git submodule update
+
+This is the only step needed to be able to use [`pybind11`](https://github.com/pybind/pybind11).
 
 ### Computing communities
 
