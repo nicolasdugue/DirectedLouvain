@@ -13,9 +13,9 @@ if __name__=="__main__":
             + [reproducibility] boolean value indicating whether to write renumbered graph on hard drive (default: false)
             + [renumbering] boolean value indicating whether to renumber the input grah (default: true)
     '''
-    dl = directedlouvain.init(sys.argv[1])
-    # or for instance
-    # dl = directedlouvain.create(sys.argv[1], weighted=True, renumbering=False)
+    dl = directedlouvain.init(sys.argv[1], weighted=True)
+    # or for instance for an unweighted graph with nodes not ranging from 0 to N-1
+    # dl = directedlouvain.create(sys.argv[1], renumbering=False)
     '''this method uses three arguments:
             + [verbose] boolean value indicating whether to print information on stderr (default: false)
             + [display_level] int value indicating which hierarchical level to display on stdout (default: -1, i.e. all levels)
