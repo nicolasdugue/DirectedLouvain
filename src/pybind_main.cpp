@@ -1,3 +1,7 @@
+/* Based on the following sources:
+ * - https://ekbanaml.github.io/old_site_data/cpp-references/pybind-reference/
+ * - https://pybind11.readthedocs.io/en/latest/basics.html#default-args
+ */
 #include "../include/community.hpp"
 #include "../extern/pybind11/include/pybind11/pybind11.h"
 #include "../extern/pybind11/include/pybind11/operators.h"
