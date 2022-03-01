@@ -13,14 +13,13 @@ if __name__=="__main__":
             + [reproducibility] boolean value indicating whether to write renumbered graph on hard drive (default: false)
             + [renumbering] boolean value indicating whether to renumber the input grah (default: true)
     '''
-    dl = directedlouvain.init(sys.argv[1], weighted=True)
+    dl = directedlouvain.Community(sys.argv[1], weighted=True)
     # or for instance for an unweighted graph with nodes not ranging from 0 to N-1
     # dl = directedlouvain.create(sys.argv[1], renumbering=False)
     '''this method uses three arguments:
             + [verbose] boolean value indicating whether to print information on stderr (default: false)
-            + [display_level] int value indicating which hierarchical level to display on stdout (default: -1, i.e. all levels)
+            + [display_level] int value indicating which hierarchical level to display on stdout (default: -2, i.e. last level)
             + [filename_part] string value indicating the path to a partition file for initialization (default: "")
     '''
-    # indicating an output file for all stdout output
     dl.run(verbose=True)
     print("modularity of the last computed hierarchical level: {:.6f}".format(dl.modularity()),file=sys.stderr)

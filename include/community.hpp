@@ -37,12 +37,15 @@ typedef struct count Count;
  */
 class Community {
     private:
-        Graph* g;                           /*!< A graph object to compute communities for */
-        unsigned int size;                  /*!< Number of nodes in the graph */
-        double precision;                   /*!< A real number describing the minimum improvement on modularity to carry on computation */
+        Graph* g;                               /*!< A graph object to compute communities for */
+        Graph* community_graph;                 /*!< A copy of the original graph object to compute communities for */
+        unsigned int size;                      /*!< Number of nodes in the graph */
+        double precision;                       /*!< A real number describing the minimum improvement on modularity to carry on computation */
 
-        vector<int> node_to_community;      /*!< Community to which each node belongs */
-        vector< Count > communities_arcs;   /*!< A vector of Count structures with arcs information for all communities */
+        vector<int> node_to_community;          /*!< Community to which each node belongs */
+        vector< Count > communities_arcs;       /*!< A vector of Count structures with arcs information for all communities */
+
+        void init_attributes();
 
         //! Private member function initiliazing first partition with something different than identity
         /*!
@@ -68,6 +71,8 @@ class Community {
          * \sa modularity_gain()
          */
         bool one_level(double &modularity);
+
+        void print_last_level(const vector< vector<int> > levels, int level);
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 

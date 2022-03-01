@@ -131,7 +131,6 @@ main(int argc, char ** argv) {
                 cout << corres[node] << " " << n2c[node] << endl;
 
         } else {
-            /* FIXME: why are we parsing ALL levels instead of required one?! */
             vector < int > n2c(levels[0].size());
 
             for (unsigned int i = 0; i < levels[0].size(); i++)

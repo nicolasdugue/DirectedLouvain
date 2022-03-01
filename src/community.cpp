@@ -7,10 +7,14 @@
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 
 Community::Community(const string& in_filename, bool weighted, const double precision, bool reproducibility, bool renumbering) {
-    this->g         = new Graph(in_filename, weighted, reproducibility, renumbering);
-    this->size      = g->nodes;
-    this->precision = precision;
+    this->g                 = new Graph(in_filename, weighted, reproducibility, renumbering);
+    this->precision         = precision;
 
+    init_attributes();
+}
+
+void Community::init_attributes() {
+    this->size              = g->nodes;
     this->node_to_community.resize(this->size); 
     this->communities_arcs.resize(this->size);
 
@@ -27,6 +31,7 @@ Community::Community(const string& in_filename, bool weighted, const double prec
 
 Community::~Community() {
     delete this->g;
+    delete this->community_graph;
 }
 
 
@@ -68,7 +73,7 @@ void Community::init_partition(string filename) {
 
 void Community::display() {
     for (unsigned int i = 0; i < size; ++i)
-        cout << " " << g->correspondance[i] << "/" << node_to_community[i] << "/" 
+        cout << " " << (this->g)->correspondance[i] << "/" << node_to_community[i] << "/" 
              << this->communities_arcs[i].total_arcs_inside << "/" 
              << this->communities_arcs[i].total_outcoming_arcs << "/" << this->communities_arcs[i].total_incoming_arcs;
     cout << endl;
@@ -129,13 +134,13 @@ void Community::partition_to_graph() {
         size_t comm_size = comm_nodes[comm].size();
         for (unsigned int node = 0; node < comm_size; ++node) {
             // Out-neighbors
-            size_t p = (this->g)->out_neighbors(comm_nodes[comm][node]);
-            unsigned int deg = (this->g)->out_degree(comm_nodes[comm][node]);
+            size_t p = (this->community_graph)->out_neighbors(comm_nodes[comm][node]);
+            unsigned int deg = (this->community_graph)->out_degree(comm_nodes[comm][node]);
             // Looking for communities of every out-neighbor of node and then storing/updating weighted out-degrees
             for (unsigned int i = 0; i < deg; ++i) {
-                out_neighbor = (this->g)->outcoming_arcs[p + i];
+                out_neighbor = (this->community_graph)->outcoming_arcs[p + i];
                 out_neighboring_community = renumber[this->node_to_community[out_neighbor]];
-                out_weight = ((this->g)->weighted) ? (this->g)->outcoming_weights[p + i] : 1.f;
+                out_weight = ((this->community_graph)->weighted) ? (this->community_graph)->outcoming_weights[p + i] : 1.f;
 
                 auto it_out = m_out.find(out_neighboring_community);
                 if (it_out == m_out.end())
@@ -145,13 +150,13 @@ void Community::partition_to_graph() {
             }
 
             // In-neighbors
-            size_t p_in = (this->g)->in_neighbors(comm_nodes[comm][node]);
-            deg = (this->g)->in_degree(comm_nodes[comm][node]);
+            size_t p_in = (this->community_graph)->in_neighbors(comm_nodes[comm][node]);
+            deg = (this->community_graph)->in_degree(comm_nodes[comm][node]);
             // Looking for communities of every in-neighbor of node and then storing/updating weighted in-degrees
             for (unsigned int i = 0; i < deg; ++i) {
-                in_neighbor = (this->g)->incoming_arcs[p_in + i];
+                in_neighbor = (this->community_graph)->incoming_arcs[p_in + i];
                 in_neighboring_community = renumber[this->node_to_community[in_neighbor]];
-                in_weight = ((this->g)->weighted) ? (this->g)->incoming_weights[p_in + i] : 1.f;
+                in_weight = ((this->community_graph)->weighted) ? (this->community_graph)->incoming_weights[p_in + i] : 1.f;
 
                 auto it_in = m_in.find(in_neighboring_community);
                 if (it_in == m_in.end())
@@ -180,18 +185,18 @@ void Community::partition_to_graph() {
     }
 
     // Updating graph attribute with computed graph g2
-    delete this->g;
-    this->g = g2;
+    delete this->community_graph;
+    this->community_graph = g2;
 
     // Updating other attributes according to constructed graph g
-    this->size           = this->g->nodes;
+    this->size           = this->community_graph->nodes;
     this->node_to_community.resize(this->size); 
 
     for (unsigned int i = 0; i < this->size; ++i) {
         this->node_to_community[i]                      = i; 
-        this->communities_arcs[i].total_arcs_inside     = this->g->count_selfloops(i);
-        this->communities_arcs[i].total_outcoming_arcs  = this->g->weighted_out_degree(i);
-        this->communities_arcs[i].total_incoming_arcs   = this->g->weighted_in_degree(i);
+        this->communities_arcs[i].total_arcs_inside     = this->community_graph->count_selfloops(i);
+        this->communities_arcs[i].total_outcoming_arcs  = this->community_graph->weighted_out_degree(i);
+        this->communities_arcs[i].total_incoming_arcs   = this->community_graph->weighted_in_degree(i);
     }
 }
 
@@ -225,9 +230,9 @@ bool Community::one_level(double &modularity) {
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
             int node = random_order[node_tmp];
             int node_community = this->node_to_community[node];
-            double weighted_out_degree  = (this->g)->weighted_out_degree(node);
-            double weighted_in_degree   = (this->g)->weighted_in_degree(node);
-            double self_loops           = (this->g)->count_selfloops(node);
+            double weighted_out_degree  = (this->community_graph)->weighted_out_degree(node);
+            double weighted_in_degree   = (this->community_graph)->weighted_in_degree(node);
+            double self_loops           = (this->community_graph)->count_selfloops(node);
 
             // Computating all neighboring communities of current node (the number of such communities is stored in neighboring_communities)
             list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
@@ -274,27 +279,54 @@ bool Community::one_level(double &modularity) {
     return improvement;
 }
 
+static void update_levels(const Community &c, vector< vector<int> > &levels, int level) {
+    vector < int > renumber(c.get_size(), -1);
+    renumber_communities(c, renumber);
+    for (unsigned int i = 0; i < c.get_size(); ++i)
+        levels[level].push_back(renumber[c.get_community(i)]);
+}
+
+void Community::print_last_level(const vector< vector<int> > levels, int level) {
+    vector < int > n2c(levels[0].size());
+
+    for (unsigned int i = 0; i < levels[0].size(); i++)
+        n2c[i] = i;
+
+    for (int l = 0; l < level; l++)
+        for (unsigned int node = 0; node < levels[0].size(); node++)
+            n2c[node] = levels[l][n2c[node]];
+
+    for (unsigned int node = 0; node < levels[0].size(); node++) 
+        cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
+}
+
 void Community::run(bool verbose, const int& display_level, const string& filename_part) {
     int level = 0;
     double mod = this->modularity();
+    vector < vector<int> > levels;
+    vector < int > corres(0);
 
     bool improvement = true;
     if (filename_part != "")
         this->init_partition(filename_part);
+    this->community_graph   = new Graph(*(this->g));
+    this->init_attributes();
     do {
-        const Graph *community_graph = this->get_graph();
         if (verbose) {
             cerr << "level " << level << ":\n";
             cerr << "  network size: " <<
-                community_graph->get_nodes() << " nodes, " <<
-                community_graph->get_arcs() << " arcs, " <<
-                community_graph->get_total_weight() << " weight." << endl;
+                this->community_graph->get_nodes() << " nodes, " <<
+                this->community_graph->get_arcs() << " arcs, " <<
+                this->community_graph->get_total_weight() << " weight." << endl;
         }
 
         // Directed Louvain: main procedure
         double new_mod = 0;
         improvement = this->one_level(new_mod);
-        if (++level == display_level)
+        // Maintaining levels
+        levels.resize(++level);
+        update_levels(*this, levels, level-1);
+        if (level == display_level)
             community_graph->display();
         if (display_level == -1)
             this->display_partition();
@@ -308,6 +340,8 @@ void Community::run(bool verbose, const int& display_level, const string& filena
         if (filename_part != "" && level == 1) 
             improvement = true;
     } while (improvement);
+    if (display_level == -2)
+        print_last_level(levels, levels.size()-1);
 }
 
 // Friend and static functions are defered to a different file for readability 

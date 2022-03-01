@@ -107,7 +107,7 @@ void parse_args(int argc, char **argv) {
                 }
             case 'l':
                 isnumber = (string(optarg).find_first_not_of("0123456789") == string::npos);
-                if(!isnumber && string(optarg)!="-1") {
+                if(!isnumber && string(optarg)!="-1" && string(optarg)!="-2") {
                     cerr << "Option -l|--level expects a number as argument" << endl; 
                     exit(1);
                 }
