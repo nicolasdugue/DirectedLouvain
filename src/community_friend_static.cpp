@@ -10,6 +10,13 @@ static unsigned int renumber_communities(const Community &c, vector< int > &renu
     return f;
 }
 
+static void update_levels(const Community &c, vector< vector<int> > &levels, int level) {
+    vector < int > renumber(c.get_size(), -1);
+    renumber_communities(c, renumber);
+    for (unsigned int i = 0; i < c.get_size(); ++i)
+        levels[level].push_back(renumber[c.get_community(i)]);
+}
+
 // Function updating the total number of arcs going from, to and inside a community after the removal of a node
 void remove(Community &c, const unsigned int& node, const int& comm, const double& dnodecomm, const double& weighted_out_degree, const double& weighted_in_degree) {
     assert(node<c.size);

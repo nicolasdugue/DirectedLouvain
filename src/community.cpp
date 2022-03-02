@@ -5,6 +5,7 @@
 
 // Static function renumbering communities from 0 to k-1 (returns k)
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
+static void update_levels(const Community &c, vector< vector<int> > &levels, int level);
 
 Community::Community(const string& in_filename, bool weighted, const double precision, bool reproducibility, bool renumbering) {
     this->g                 = new Graph(in_filename, weighted, reproducibility, renumbering);
@@ -277,13 +278,6 @@ bool Community::one_level(double &modularity) {
 
     modularity = current_modularity;
     return improvement;
-}
-
-static void update_levels(const Community &c, vector< vector<int> > &levels, int level) {
-    vector < int > renumber(c.get_size(), -1);
-    renumber_communities(c, renumber);
-    for (unsigned int i = 0; i < c.get_size(); ++i)
-        levels[level].push_back(renumber[c.get_community(i)]);
 }
 
 void Community::print_last_level(const vector< vector<int> > levels, int level) {
