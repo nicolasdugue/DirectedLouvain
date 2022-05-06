@@ -26,3 +26,20 @@
 *.exe
 *.out
 *.app
+
+# Gargabe collector --- needs to be uptaded
+bin/
+obj/
+*links-anon*
+*.bin
+modularity_values_louvain_oriente.txt
+modularity_values_directed_louvain.txt
+*.tree
+*.wgt
+*renum*
+snap/
+config-doxygen
+README_DOXYGEN.md
+
+python-binding/build/*
+!python-binding/build/python-use.py
