@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
 project (directedlouvain)
+find_package(Python COMPONENTS Interpreter Development
 add_subdirectory(../extern/pybind11 REQUIRED)
 pybind11_add_module(directedlouvain ../src/pybind_main.cpp ../src/community.cpp ../src/graph.cpp)
