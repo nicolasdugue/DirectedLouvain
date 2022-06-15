@@ -9,7 +9,7 @@ The directed modularity is proved to be more efficient in the case of directed g
 ---
 ## How to use
 
-The algorithm works in two steps, namely computing communities and then displaying hierarchical tree. 
+The algorithm works in two steps, namely computing communities and then displaying hierarchical tree. Note that the algorithme computes a hierarchical community structure, with several levels. More information are given below regarding the meaning and use of such levels. 
 
 ### Computing communities
 
@@ -61,6 +61,7 @@ then writing files for reproducibility. The next runs would thus be:
 
     ./bin/community -f graph/graph.bin -w -l -1 > graph/graph.tree
 
+Another useful value for `-l` is `-2`, which computes only the last level of the hierarchical structure. 
 Finally, using an already renumbered graph one gets: 
 
     ./bin/community -f graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
@@ -89,6 +90,8 @@ Displays the belonging of nodes to communities for a given level of
 the tree:
 
     ./hierarchy graph.tree -l 2 > graph_node2comm_level2
+
+The option `-l -1` displays information regarding the hierarchical structure, including number of levels. 
 
 -----------------------------------------------------------------------------
 ## References
