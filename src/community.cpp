@@ -99,7 +99,7 @@ void Community::display_partition() {
     // Marking the beginning of new level
     cout << -1 << " " << -1 << endl;
     for (unsigned int i = 0; i < size; ++i)
-        cout << (this->g)->correspondance[i] << " " << renumber[this->node_to_community[i]] << endl;
+        cout << (this->community_graph)->correspondance[i] << " " << renumber[this->node_to_community[i]] << endl;
 }
 
 void Community::partition_to_graph() {
@@ -280,24 +280,24 @@ bool Community::one_level(double &modularity) {
     return improvement;
 }
 
-void Community::print_last_level(const vector< vector<int> > levels, int level) {
-    vector < int > n2c(levels[0].size());
+void Community::print_level(int level) {
+    assert(level >= 0 && level < (int)this->levels.size());
+    vector < int > n2c(this->g->nodes);
 
-    for (unsigned int i = 0; i < levels[0].size(); i++)
+    for (unsigned int i = 0; i < this->g->nodes; i++)
         n2c[i] = i;
 
     for (int l = 0; l < level; l++)
-        for (unsigned int node = 0; node < levels[0].size(); node++)
-            n2c[node] = levels[l][n2c[node]];
+        for (unsigned int node = 0; node < this->g->nodes; node++)
+            n2c[node] = this->levels[l][n2c[node]];
 
-    for (unsigned int node = 0; node < levels[0].size(); node++) 
+    for (unsigned int node = 0; node < this->g->nodes; node++) 
         cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
 }
 
 void Community::run(bool verbose, const int& display_level, const string& filename_part) {
     int level = 0;
     double mod = this->modularity();
-    vector < vector<int> > levels;
     vector < int > corres(0);
 
     bool improvement = true;
@@ -320,9 +320,7 @@ void Community::run(bool verbose, const int& display_level, const string& filena
         // Maintaining levels
         levels.resize(++level);
         update_levels(*this, levels, level-1);
-        if (level == display_level)
-            community_graph->display();
-        if (display_level == -1)
+        if (level == display_level || display_level == -1)
             this->display_partition();
         // Updating the graph to computer hierarchical structurer
         this->partition_to_graph();
@@ -335,7 +333,7 @@ void Community::run(bool verbose, const int& display_level, const string& filena
             improvement = true;
     } while (improvement);
     if (display_level == -2)
-        print_last_level(levels, levels.size()-1);
+        print_level(levels.size()-1);
 }
 
 // Friend and static functions are defered to a different file for readability 

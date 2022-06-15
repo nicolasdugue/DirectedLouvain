@@ -11,7 +11,7 @@ string filename_part = "";
 bool weighted = false;
 double precision = 0.000001;
 // No display done
-int display_level = -2;
+int display_level = -1;
 bool verbose = false;
 bool reproducibility = false;
 bool renumbering = true;
@@ -28,7 +28,8 @@ void usage(char * prog_name) {
     cerr << "\tfile must contain lines \"node community\"." << endl;
     cerr << "[-q|--precision] eps\ta given pass stops when the modularity is increased by less than epsilon." << endl;
     cerr << "[-l|--level] k\tdisplays the graph of level k rather than the hierachical structure." << endl;
-    cerr << "\tif k=-1 then displays the hierarchical structure rather than the graph at a given level." << endl;
+    cerr << "\tif k=-1 then displays the hierarchical structure rather than the graph at a given level (default)." << endl;
+    cerr << "\tif k=-2 then displays the last level computed" << endl;
     cerr << "[-v|--verbose]\tverbose mode: gives computation time, information about the hierarchy and modularity." << endl;
     cerr << "[-h|--help]\tshow this usage message." << endl;
     exit(0);

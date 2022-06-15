@@ -43,6 +43,7 @@ class Community {
         double precision;                       /*!< A real number describing the minimum improvement on modularity to carry on computation */
 
         vector<int> node_to_community;          /*!< Community to which each node belongs */
+        vector < vector<int> > levels;          /*! Hierarchical community structure */
         vector< Count > communities_arcs;       /*!< A vector of Count structures with arcs information for all communities */
 
         void init_attributes();
@@ -71,8 +72,6 @@ class Community {
          * \sa modularity_gain()
          */
         bool one_level(double &modularity);
-
-        void print_last_level(const vector< vector<int> > levels, int level);
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
@@ -114,6 +113,12 @@ class Community {
          * \sa one_level(), modularity_gain()
          */
         void run(bool verbose, const int& display_level, const string& filename_part);
+
+        //! Member function printing a given hierarchical level on standard output
+        /*!
+         * \param level       the level to print (must be between 0 and levels.size()-1)
+         */
+        void print_level(int level);
 
         //! Friend method removing a node from its current community with which it has dnodecomm arcs
         /*! 
@@ -175,6 +180,13 @@ class Community {
          */
         inline unsigned int get_community(unsigned int node) const {
             return this->node_to_community[node];
+        }
+        //! Getter for the hierarchical community structure
+        /*!
+         * \return A vector of vector of int containing each level of the hierarchical community structure
+         */
+        inline const vector< vector<int> > & get_hierarchy() const {
+            return this->levels;
         }
 
 };
