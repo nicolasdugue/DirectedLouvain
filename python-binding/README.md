@@ -22,7 +22,8 @@ That's all folks! After these steps you should see a `.so` file added to the `bu
 **started from this directory** can import `directedlouvain`. The library is minimalist on purpose, with the following methods: 
 
 + `init`: creates a `Community` object from a graph (edgelist or binary)
-+ `run`: computes communities using Directed Louvain algorithm
++ `run`: computes communities using Directed Louvain algorithm and returns the number of levels computed
 + `modularity`: computes he modularity of the last hierarchical level
++ `print_level`: displays the community structure at some given level (between 0 and the value returned by run()-1, which is the last level of the structure)
 
 More information about these methods (and their arguments) can be found inside the `python-use.py` file. 
