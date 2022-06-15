@@ -19,7 +19,7 @@ The next step requires [`cmake`](https://cmake.org/) and can be easily reproduce
     make
 
 That's all folks! After these steps you should see a `.so` file added to the `build` directory. Now any `python` program 
-**started from this directory** can import `directedlouvain`. The library is minimalist on purpose, with the following methods: 
+**started from this directory** can import `directedlouvain`. To work from another directory you can simply copy the `.so` file into it. The library is minimalist on purpose, with the following methods: 
 
 + `init`: creates a `Community` object from a graph (edgelist or binary)
 + `run`: computes communities using Directed Louvain algorithm and returns the number of levels computed
