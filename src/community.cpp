@@ -287,7 +287,7 @@ void Community::print_level(int level) {
     for (unsigned int i = 0; i < this->g->nodes; i++)
         n2c[i] = i;
 
-    for (int l = 0; l < level; l++)
+    for (int l = 0; l < level-1; l++)
         for (unsigned int node = 0; node < this->g->nodes; node++)
             n2c[node] = this->levels[l][n2c[node]];
 
@@ -295,7 +295,7 @@ void Community::print_level(int level) {
         cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
 }
 
-void Community::run(bool verbose, const int& display_level, const string& filename_part) {
+int Community::run(bool verbose, const int& display_level, const string& filename_part) {
     int level = 0;
     double mod = this->modularity();
     vector < int > corres(0);
@@ -334,6 +334,7 @@ void Community::run(bool verbose, const int& display_level, const string& filena
     } while (improvement);
     if (display_level == -2)
         print_level(levels.size()-1);
+    return level;
 }
 
 // Friend and static functions are defered to a different file for readability 

@@ -107,12 +107,13 @@ class Community {
          * \param verbose       boolean value indicating if verbose mode is activated
          * \param display_level integer value representing the level to display 
          * \param filename_part     an initial partition file (absolute or relative path)
+         * \return the number of levels computed by the algorithm
          * The algorithm proceeds while the one_level() function returns true
          * FIXME: the possibility to end after a given number of passes has been removed because  
          *        we never used it. Should we plug it back? (easy to do but...)
          * \sa one_level(), modularity_gain()
          */
-        void run(bool verbose, const int& display_level, const string& filename_part);
+        int run(bool verbose, const int& display_level, const string& filename_part);
 
         //! Member function printing a given hierarchical level on standard output
         /*!

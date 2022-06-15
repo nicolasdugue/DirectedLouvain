@@ -17,5 +17,9 @@ PYBIND11_MODULE(directedlouvain, dl){
                         py::arg("verbose")=false, py::arg("display_level")=-1, py::arg("filename_part")="", 
                         py::call_guard<py::scoped_ostream_redirect,
                         py::scoped_estream_redirect>())
-		.def("modularity",&Community::modularity);
+		.def("modularity",&Community::modularity)
+                .def("print_level",&Community::print_level,
+                        py::arg("level")=0,
+                        py::call_guard<py::scoped_ostream_redirect,
+                        py::scoped_estream_redirect>());
 }
