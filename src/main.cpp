@@ -31,8 +31,10 @@ int main(int argc, char ** argv) {
     time_taken *= 1e-9;
     cerr << "loading graph in: " << fixed << time_taken << " seconds" << endl;
    
-    // Computing communities
-    c->run(verbose, display_level, filename_part);
+    // Computing communities and keeping the number of levels computed
+    int levels = c->run(verbose, display_level, filename_part);
+    // The last level of the hierarchical structure can be printed using the following
+    //c->print_level(levels-1);
 
     cerr << "modularity: " << c->modularity() << endl;
     end = chrono::high_resolution_clock::now();

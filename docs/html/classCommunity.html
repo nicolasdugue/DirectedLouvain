@@ -95,9 +95,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a56aa71b7dec2293a536b4f84a2d8b94e">display_partition</a> ()</td></tr>
 <tr class="memdesc:a56aa71b7dec2293a536b4f84a2d8b94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function displaying the current partition (with communities renumbered from 0 to k-1) on standard output. <br /></td></tr>
 <tr class="separator:a56aa71b7dec2293a536b4f84a2d8b94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a2fcf6d10fb4690fc0fa431e9f005574f">run</a> (bool verbose, const int &amp;display_level, const string &amp;filename_part)</td></tr>
-<tr class="memdesc:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function computing communities of the <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> attribute for one level.  <a href="classCommunity.html#a2fcf6d10fb4690fc0fa431e9f005574f">More...</a><br /></td></tr>
-<tr class="separator:a2fcf6d10fb4690fc0fa431e9f005574f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a592e81f4d2367ee07d968b972f4a961f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a592e81f4d2367ee07d968b972f4a961f">run</a> (bool verbose, const int &amp;display_level, const string &amp;filename_part)</td></tr>
+<tr class="memdesc:a592e81f4d2367ee07d968b972f4a961f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function computing communities of the <a class="el" href="classGraph.html" title="Class handling directed graphs. Graphs are read from edgelist or binary formats and stored using CSR ...">Graph</a> attribute for one level.  <a href="classCommunity.html#a592e81f4d2367ee07d968b972f4a961f">More...</a><br /></td></tr>
+<tr class="separator:a592e81f4d2367ee07d968b972f4a961f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc7a815d5029781a5bfa7f5170100f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a9dc7a815d5029781a5bfa7f5170100f0">print_level</a> (int level)</td></tr>
+<tr class="memdesc:a9dc7a815d5029781a5bfa7f5170100f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member function printing a given hierarchical level on standard output.  <a href="classCommunity.html#a9dc7a815d5029781a5bfa7f5170100f0">More...</a><br /></td></tr>
+<tr class="separator:a9dc7a815d5029781a5bfa7f5170100f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02ace53d67edff947bc66da95ec70d14"><td class="memItemLeft" align="right" valign="top"><a id="a02ace53d67edff947bc66da95ec70d14"></a>
 const <a class="el" href="classGraph.html">Graph</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a02ace53d67edff947bc66da95ec70d14">get_graph</a> ()</td></tr>
 <tr class="memdesc:a02ace53d67edff947bc66da95ec70d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the graph to compute communities for. <br /></td></tr>
@@ -109,6 +112,9 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memitem:a40bc93ffe63190e1725f28081ee3a085"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#a40bc93ffe63190e1725f28081ee3a085">get_community</a> (unsigned int node) const</td></tr>
 <tr class="memdesc:a40bc93ffe63190e1725f28081ee3a085"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the community of a given node.  <a href="classCommunity.html#a40bc93ffe63190e1725f28081ee3a085">More...</a><br /></td></tr>
 <tr class="separator:a40bc93ffe63190e1725f28081ee3a085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc04e3fec3bd93802d47e7e6a9fbbd56"><td class="memItemLeft" align="right" valign="top">const vector&lt; vector&lt; int &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCommunity.html#abc04e3fec3bd93802d47e7e6a9fbbd56">get_hierarchy</a> () const</td></tr>
+<tr class="memdesc:abc04e3fec3bd93802d47e7e6a9fbbd56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the hierarchical community structure.  <a href="classCommunity.html#abc04e3fec3bd93802d47e7e6a9fbbd56">More...</a><br /></td></tr>
+<tr class="separator:abc04e3fec3bd93802d47e7e6a9fbbd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -225,6 +231,34 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>gain_from_insertion
 
 </div>
 </div>
+<a id="abc04e3fec3bd93802d47e7e6a9fbbd56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc04e3fec3bd93802d47e7e6a9fbbd56">&#9670;&nbsp;</a></span>get_hierarchy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const vector&lt; vector&lt;int&gt; &gt;&amp; Community::get_hierarchy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Getter for the hierarchical community structure. </p>
+<dl class="section return"><dt>Returns</dt><dd>A vector of vector of int containing each level of the hierarchical community structure </dd></dl>
+
+</div>
+</div>
 <a id="a3bc9ed20b62c78464f59d1e0a295249c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3bc9ed20b62c78464f59d1e0a295249c">&#9670;&nbsp;</a></span>modularity()</h2>
 
@@ -243,14 +277,40 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>gain_from_insertion
 
 </div>
 </div>
-<a id="a2fcf6d10fb4690fc0fa431e9f005574f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fcf6d10fb4690fc0fa431e9f005574f">&#9670;&nbsp;</a></span>run()</h2>
+<a id="a9dc7a815d5029781a5bfa7f5170100f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc7a815d5029781a5bfa7f5170100f0">&#9670;&nbsp;</a></span>print_level()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Community::run </td>
+          <td class="memname">void Community::print_level </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Member function printing a given hierarchical level on standard output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>the level to print (must be between 0 and levels.size()-1) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a592e81f4d2367ee07d968b972f4a961f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a592e81f4d2367ee07d968b972f4a961f">&#9670;&nbsp;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Community::run </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>verbose</em>, </td>
@@ -280,11 +340,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>gain_from_insertion
   <table class="params">
     <tr><td class="paramname">verbose</td><td>boolean value indicating if verbose mode is activated </td></tr>
     <tr><td class="paramname">display_level</td><td>integer value representing the level to display </td></tr>
-    <tr><td class="paramname">filename_part</td><td>an initial partition file (absolute or relative path) The algorithm proceeds while the one_level() function returns true FIXME: the possibility to end after a given number of passes has been removed because <br  />
- we never used it. Should we plug it back? (easy to do but...) </td></tr>
+    <tr><td class="paramname">filename_part</td><td>an initial partition file (absolute or relative path) </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>the number of levels computed by the algorithm The algorithm proceeds while the one_level() function returns true FIXME: the possibility to end after a given number of passes has been removed because <br  />
+ we never used it. Should we plug it back? (easy to do but...) </dd></dl>
 <dl class="section see"><dt>See also</dt><dd>one_level(), modularity_gain() </dd></dl>
 
 </div>
