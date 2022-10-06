@@ -16,7 +16,6 @@ The directed modularity is proved to be more efficient in the case of directed g
         issn    = {0378-4371},
         doi     = {https://doi.org/10.1016/j.physa.2022.127798},
     }
-
 ---
 ## How to use
 
