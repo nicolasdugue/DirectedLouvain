@@ -4,7 +4,18 @@ The algorithm used in this package is based on the Louvain algorithm developed b
 The algorithm was then adjusted to handle directed graphs and to optimize directed modularity of Arenas _et al._ (**[2]**).
 These modifications were mostly made by [Anthony perez](https://www.univ-orleans.fr/lifo/membres/Anthony.Perez) and by [Nicolas Dugué](https://lium.univ-lemans.fr/team/nicolas-dugue/).
 
-The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Directed Louvain : maximizing modularity in directed networks](https://hal.archives-ouvertes.fr/hal-01231784) (**[3]**).
+The directed modularity is proved to be more efficient in the case of directed graphs as shown in [Direction matters in complex networks: A theoretical and applied study for greedy modularity optimization](https://doi.org/10.1016/j.physa.2022.127798) and [Directed Louvain : maximizing modularity in directed networks](https://hal.archives-ouvertes.fr/hal-01231784) (**[3,4]**). **For any citation of this work please use the following**: 
+
+    @article{DP22,
+        author  = {Nicolas Dugué and Anthony Perez},
+        title   = {Direction matters in complex networks: A theoretical and applied study for greedy modularity optimization},
+        journal = {Physica A: Statistical Mechanics and its Applications},
+        volume  = {603},
+        pages   = {127798},
+        year    = {2022},
+        issn    = {0378-4371},
+        doi     = {https://doi.org/10.1016/j.physa.2022.127798},
+    }
 
 ---
 ## How to use
@@ -96,5 +107,6 @@ The option `-l -1` displays information regarding the hierarchical structure, in
 -----------------------------------------------------------------------------
 ## References
 * **[1]** Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, Etienne Lefebvre. [Fast unfolding of communities in large networks](https://arxiv.org/pdf/0803.0476.pdf). Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.
-* **[2]** Alexandre Arenas, Jordi Duch, Alberto Fern\'andez, Sergio G\'omez, 2007. [Size reduction of complex networks preserving modularity](https://iopscience.iop.org/article/10.1088/1367-2630/9/6/176/pdf). New Journal of Physics 9, 176.
-* **[3]** Nicolas Dugué, Anthony Perez. [Directed Louvain: maximizing modularity in directed networks](https://hal.archives-ouvertes.fr/hal-01231784/document). [Research Report] Université d'Orléans. 2015.
+* **[2]** Alexandre Arenas, Jordi Duch, Alberto Fern\'andez, Sergio G\'omez. [Size reduction of complex networks preserving modularity](https://iopscience.iop.org/article/10.1088/1367-2630/9/6/176/pdf). New Journal of Physics 9, 176, 2007.
+* **[3]** Nicolas Dugué, Anthony Perez. [Direction matters in complex networks: A theoretical and applied study for greedy modularity optimization](https://doi.org/10.1016/j.physa.2022.127798). Physica A: Statistical Mechanics and its Applications, 603, 2022.
+* **[4]** Nicolas Dugué, Anthony Perez. [Directed Louvain: maximizing modularity in directed networks](https://hal.archives-ouvertes.fr/hal-01231784/document). Research Report, Université d'Orléans. 2015.
