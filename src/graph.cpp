@@ -24,7 +24,7 @@ Graph::Graph() {
     this->indegrees.resize(0);
 }
 
-Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumbering) {
+Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumbering, bool verbose) {
     vector<vector<pair<unsigned int,double> > > LOUT;
     vector<vector<pair<unsigned int,double> > > LIN;
 
@@ -33,7 +33,7 @@ Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumber
 
     if(extension!=".bin") {
         this->correspondance.resize(0);
-        this->nodes = build_map(filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility);
+        this->nodes = build_map(filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility, verbose);
 
         cerr << "initializing graph..." << endl;
         init_attributes(*this, LOUT, LIN);

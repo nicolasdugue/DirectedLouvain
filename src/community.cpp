@@ -322,7 +322,7 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
         update_levels(*this, levels, level-1);
         if (level == display_level || display_level == -1)
             this->display_partition();
-        // Updating the graph to computer hierarchical structurer
+        // Updating the graph to computer hierarchical structure
         this->partition_to_graph();
         if (verbose)
             cerr << "  modularity increased from " << mod << " to " << new_mod << endl;

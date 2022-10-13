@@ -65,8 +65,9 @@ class Graph {
          * \param weighted          boolean value indicating whether the graph is weighted
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
          * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param verbose           boolean value indicating whether to print information
          */
-        Graph(string filename, bool weighted, bool reproducibility, bool renumbering); 
+        Graph(string filename, bool weighted, bool reproducibility, bool renumbering, bool verbose=false); 
         //! Friend method to initialize all attributes 
         /*!
          * \param g the Graph object to initialize
