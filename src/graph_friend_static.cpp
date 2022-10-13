@@ -110,8 +110,11 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
 }
 
 // This method initializes all attributs of Graph object g from out- and in- adjacency lists LOUT and LIN
-void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN) {
-    cerr << "number of nodes: " << g.nodes << endl;
+void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool verbose) {
+    if(verbose) {
+        cerr << "initializing graph..." << endl;
+        cerr << "number of nodes: " << g.nodes << endl;
+    }
 
     // Building cumulative out-degree sequence
     g.outdegrees.resize(g.nodes);
@@ -182,8 +185,8 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     LIN.clear();
     vector < vector < pair < unsigned int, double > > > ().swap(LIN);
 
-    cerr << "number of arcs: ";
-    cerr << g.arcs << endl;
+    if(verbose)
+        cerr << "number of arcs: " << g.arcs << endl;
 
     // Computing the total weight of the graph
     g.total_weight = 0.;
@@ -193,5 +196,6 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
         total_weight += g.weighted_out_degree(i);
     }
 
-    cerr << "total weight: " << g.total_weight << endl;
+    if(verbose)
+        cerr << "total weight: " << g.total_weight << endl << "done." << endl;
 }

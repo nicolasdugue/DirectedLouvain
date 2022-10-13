@@ -35,9 +35,7 @@ Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumber
         this->correspondance.resize(0);
         this->nodes = build_map(filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility, verbose);
 
-        cerr << "initializing graph..." << endl;
-        init_attributes(*this, LOUT, LIN);
-        cerr << "done." << endl;
+        init_attributes(*this, LOUT, LIN, verbose);
         string name = filename.substr(0,filename.size()-4);
         this->write(name+".bin");
     }
@@ -106,7 +104,7 @@ void Graph::load(string filename, bool verbose) {
 
     this->indegrees.resize(this->nodes);
     finput.read((char*) & this->indegrees[0], this->nodes * sizeof(unsigned long));
-   
+  
     if(verbose)  
         cerr << "number of arcs:" << this->indegrees[this->nodes - 1] << endl;
 

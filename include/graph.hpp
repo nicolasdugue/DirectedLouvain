@@ -73,9 +73,10 @@ class Graph {
          * \param g the Graph object to initialize
          * \param LOUT adjacency list for outcoming arcs
          * \param LIN adjacency list for incoming arcs
+         * \param verbose           boolean value indicating whether to print information
          * \sa Graph()
          */
-        friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN);
+        friend void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool verbose);
         //! Copy constructor
         /*! 
          * \param g the Graph object to be copied
@@ -85,6 +86,7 @@ class Graph {
         //! Member function loading and initializing Graph object from binary file under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format
         /*!
          * \param filename path (absolute or relative) to the ".bin" file
+         * \param verbose           boolean value indicating whether to print information
          */
         void load(string filename, bool verbose=false); 
         //! Member function writing Graph object into binary file ".bin" under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format
