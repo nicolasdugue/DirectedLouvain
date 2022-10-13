@@ -7,8 +7,8 @@ HEADDIR=include
 LIBDIR=obj
 BINDIR=bin
 
-CFLAGS := --std=c++11 -Wall -Wextra -pedantic -ggdb -Wno-unused-parameter -Wno-return-type -Wno-variadic-macros -Wno-unknown-pragmas -fopenmp
-LDFLAGS= -lm -fopenmp
+CFLAGS := --std=c++11 -Wall -Wextra -pedantic -ggdb -Wno-unused-parameter -Wno-return-type -Wno-variadic-macros -Wno-unknown-pragmas 
+LDFLAGS= -lm 
 EXEC=community hierarchy
 
 SRC= $(wildcard $(SRCDIR)/*.cpp)

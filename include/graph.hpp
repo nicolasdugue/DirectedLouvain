@@ -86,7 +86,7 @@ class Graph {
         /*!
          * \param filename path (absolute or relative) to the ".bin" file
          */
-        void load(string filename); 
+        void load(string filename, bool verbose=false); 
         //! Member function writing Graph object into binary file ".bin" under [CSR](https://github.com/nicolasdugue/DirectedLouvain/tree/c+%2B11#CSR) format
         /*! 
          * \param filename path (absolute or relative) to the ".bin" file

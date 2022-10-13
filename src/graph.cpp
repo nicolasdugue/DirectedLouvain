@@ -8,7 +8,7 @@
 #include "../include/graph.hpp"
 
 const unsigned int MAP_LIMIT = 5000000;
-static unsigned int build_map(string, vector<unsigned long>&, vector<vector<pair<unsigned int,double> > >&, vector<vector<pair<unsigned int,double> > >&, bool, bool, bool);
+static unsigned int build_map(string, vector<unsigned long>&, vector<vector<pair<unsigned int,double> > >&, vector<vector<pair<unsigned int,double> > >&, bool, bool, bool, bool);
 
 Graph::Graph() {
     this->nodes         = 0;
@@ -42,7 +42,7 @@ Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumber
         this->write(name+".bin");
     }
     else
-        this->load(filename);
+        this->load(filename, verbose);
 }
 
 Graph::Graph(const Graph &g) {
@@ -81,14 +81,13 @@ Graph::write(string outfile) {
     foutput.close();
 }
 
-void Graph::load(string filename) {
+void Graph::load(string filename, bool verbose) {
     ifstream finput;
     finput.open(filename, fstream:: in | fstream::binary);
     assert(finput.rdstate() == ios::goodbit);
     this->outcoming_weights.resize(0);
     this->incoming_weights.resize(0);
 
-    // Loading attributes from binary file and displaying information
     cerr << "number of nodes: ";
     finput.read((char*) & this->nodes, sizeof(unsigned int));
     cerr << this->nodes << endl;
