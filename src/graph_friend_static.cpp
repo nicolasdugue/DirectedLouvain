@@ -66,8 +66,6 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
         }
     }
 
-    cerr << cpt << endl;
-
     // If the graph is already renumbered the correspondance must be identity 
     if(!renumbering) {
         // Number of nodes in that case is cpt+1 
