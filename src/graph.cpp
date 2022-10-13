@@ -88,9 +88,9 @@ void Graph::load(string filename, bool verbose) {
     this->outcoming_weights.resize(0);
     this->incoming_weights.resize(0);
 
-    cerr << "number of nodes: ";
     finput.read((char*) & this->nodes, sizeof(unsigned int));
-    cerr << this->nodes << endl;
+    if(verbose) 
+        cerr << "number of nodes: " << this->nodes << endl;
 
     this->outdegrees.resize(this->nodes);
     finput.read((char*) & this->outdegrees[0], this->nodes * sizeof(unsigned long));
@@ -106,9 +106,9 @@ void Graph::load(string filename, bool verbose) {
 
     this->indegrees.resize(this->nodes);
     finput.read((char*) & this->indegrees[0], this->nodes * sizeof(unsigned long));
-    
-    cerr << "number of arcs: ";
-    cerr << this->indegrees[this->nodes - 1] << endl;
+   
+    if(verbose)  
+        cerr << "number of arcs:" << this->indegrees[this->nodes - 1] << endl;
 
     this->incoming_arcs.resize(this->arcs);
     finput.read((char*)( & this->incoming_arcs[0]), this->arcs * sizeof(unsigned int));
@@ -126,7 +126,8 @@ void Graph::load(string filename, bool verbose) {
         this->total_weight += this->weighted_out_degree(i);
     }
 
-    cerr << "total weight: " << this->total_weight << endl;
+    if(verbose)
+        cerr << "total weight: " << this->total_weight << endl;
     finput.close();
 }
 
