@@ -14,7 +14,7 @@ This is the only step needed to be able to use [`pybind11`](https://github.com/p
 
 The next step requires [`cmake`](https://cmake.org/) and can be easily reproduced using the following steps:
 
-    cd build
+    mkdir -p build && cd build
     cmake ..
     make
 
