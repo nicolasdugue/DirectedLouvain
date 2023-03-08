@@ -287,7 +287,7 @@ void Community::print_level(int level) {
     for (unsigned int i = 0; i < this->g->nodes; i++)
         n2c[i] = i;
 
-    for (int l = 0; l < level-1; l++)
+    for (int l = 0; l < level; l++)
         for (unsigned int node = 0; node < this->g->nodes; node++)
             n2c[node] = this->levels[l][n2c[node]];
 
