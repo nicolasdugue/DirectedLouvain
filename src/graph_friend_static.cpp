@@ -32,7 +32,7 @@ static inline unsigned int get_mapped_node(unsigned long int node, const vector<
 
 // This function builds the map for renumbering the input graph and returns cpt (the number of nodes)
 // If reproducibility is set to true, the renumbered graph is written into a file under edgelist format: src dest (weight)
-static unsigned int build_map(string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool weighted, bool renumbering, bool reproducibility, bool verbose) {
+static unsigned int build_map(string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool renumbering, bool reproducibility, bool verbose) {
 
     vector<int> corres(MAP_LIMIT,-1);
     map < unsigned long, unsigned int > corres_big_ids;
@@ -53,22 +53,29 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
     assert(finput.rdstate() == ios::goodbit);
 
     unsigned int cpt = 0;
-    double weight = 1.f;
-    if (finput) {
-        unsigned int src, dest;
 
-        while (finput >> src >> dest) {
-            if (weighted)
-                finput >> weight;
+    // Read the graph file to generate a map of node
+    string line;
+    while (getline(finput, line)) {
+        istringstream iss(line);
+        vector<unsigned int> node;
+        unsigned int src, dest, tmp;
 
-            add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
-            add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
-        }
+        while(iss >> tmp)
+            node.push_back(tmp);
+
+        assert(node.size() <= 3);
+        src = node[0];
+        dest = node[1];
+
+        add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
+        add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
     }
 
-    // If the graph is already renumbered the correspondance must be identity 
+
+    // If the graph is already renumbered the correspondance must be identity
     if(!renumbering) {
-        // Number of nodes in that case is cpt+1 
+        // Number of nodes in that case is cpt+1
         ++cpt;
         for(unsigned int i = 0; i < cpt; ++i)
             correspondance.push_back(i);
@@ -77,29 +84,38 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
     LOUT.resize(cpt);
     LIN.resize(cpt);
 
-    unsigned int src, dest, map_src, map_dest;
-
     finput.clear();
     finput.seekg(0);
     
-    while (finput >> src >> dest) {
+    while (getline(finput, line)) {
+        istringstream iss(line);
+        vector<double> node;
+        unsigned int src, dest, map_src, map_dest, tmp;
+        double weight = 1.f;
+
+        while(iss >> tmp)
+            node.push_back(tmp);
+
+        src = (unsigned int)node[0];
+        dest = (unsigned int)node[1];
+        // If the input file contains three columns, the graph is weighted
+        if (node.size()==3)
+            weight = node[2];
+
+        map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
+        map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
+
+        LOUT[map_src].push_back(make_pair(map_dest, weight));
+        if(map_src!=map_dest)
+            LIN[map_dest].push_back(make_pair(map_src, weight));
+
+        if(reproducibility) {
+            foutput << map_src << " " << map_dest;
             if (weighted)
-                finput >> weight;
-
-            map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
-            map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
-
-            LOUT[map_src].push_back(make_pair(map_dest, weight));
-            if(map_src!=map_dest)
-                LIN[map_dest].push_back(make_pair(map_src, weight));
-
-            if(reproducibility) {
-                foutput << map_src << " " << map_dest;
-                if (weighted)
-                    foutput << " " << weight;
-                foutput << endl;
-            }
+                foutput << " " << weight;
+            foutput << endl;
         }
+    }
 
     if(reproducibility)
         foutput.close();
