@@ -36,7 +36,6 @@ Community::~Community() {
     delete this->community_graph;
 }
 
-
 /* FIXME: this needs to be tested! */
 void Community::init_partition(string filename) {
     ifstream finput;
@@ -280,6 +279,27 @@ bool Community::one_level(double &modularity) {
 
     modularity = current_modularity;
     return improvement;
+}
+
+map<unsigned int, unsigned int> Community::get_level(int level){
+    assert(level >= 0 && level < (int)this->levels.size());
+    vector < int > n2c(this->g->nodes);
+    map<int, int> lvl;
+
+    for (unsigned int i = 0; i < this->g->nodes; i++)
+        n2c[i] = i;
+
+    for (int l = 0; l < level; l++)
+        for (unsigned int node = 0; node < this->g->nodes; node++)
+            n2c[node] = this->levels[l][n2c[node]];
+
+    for (unsigned int node = 0; node < this->g->nodes; node++)
+        lvl[(this->g)->correspondance[node]] = n2c[node];
+    return lvl;
+}
+
+map<unsigned int, unsigned int> Community::get_last_level(){
+    return get_level(levels.size()-1);
 }
 
 void Community::print_level(int level) {
