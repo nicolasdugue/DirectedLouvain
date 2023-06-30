@@ -8,7 +8,7 @@
 #include "../include/graph.hpp"
 
 const unsigned int MAP_LIMIT = 5000000;
-static unsigned int build_map(string, vector<unsigned long>&, vector<vector<pair<unsigned int,double> > >&, vector<vector<pair<unsigned int,double> > >&, bool, bool, bool, bool);
+static unsigned int build_map(const Graph &g, string, vector<unsigned long>&, vector<vector<pair<unsigned int,double> > >&, vector<vector<pair<unsigned int,double> > >&, bool, bool, bool, bool);
 
 Graph::Graph() {
     this->nodes         = 0;
@@ -24,7 +24,7 @@ Graph::Graph() {
     this->indegrees.resize(0);
 }
 
-Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumbering, bool verbose) {
+Graph::Graph(string filename, bool reproducibility, bool renumbering, bool weighted, bool verbose) {
     vector<vector<pair<unsigned int,double> > > LOUT;
     vector<vector<pair<unsigned int,double> > > LIN;
 
@@ -33,7 +33,7 @@ Graph::Graph(string filename, bool weighted, bool reproducibility, bool renumber
 
     if(extension!=".bin") {
         this->correspondance.resize(0);
-        this->nodes = build_map(filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility, verbose);
+        this->nodes = build_map(this, filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility, verbose);
 
         init_attributes(*this, LOUT, LIN, verbose);
         string name = filename.substr(0,filename.size()-4);
