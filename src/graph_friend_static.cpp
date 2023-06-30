@@ -1,3 +1,5 @@
+#include<sstream>
+
 // This method adds node to the small or large int correspondance "map"
 // A reference to a counter is given, which will be the number of nodes in the end
 static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned long> &correspondance, vector<int> &corres, map<unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
@@ -99,9 +101,9 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
         src = (unsigned int)node[0];
         dest = (unsigned int)node[1];
         // If the input file contains three columns, the graph is weighted
-        if (node.size()==3 && g->weighted==false) {
+        if (node.size()==3 && !g.is_weighted()) {
             weight = node[2];
-            g->weighted=true;
+            g.set_weighted(true);
         }
 
         map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
@@ -113,7 +115,7 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
 
         if(reproducibility) {
             foutput << map_src << " " << map_dest;
-            if (weighted)
+            if (g.is_weighted())
                 foutput << " " << weight;
             foutput << endl;
         }
