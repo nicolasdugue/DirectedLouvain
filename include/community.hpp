@@ -42,7 +42,7 @@ class Community {
         unsigned int size;                      /*!< Number of nodes in the graph */
         double precision;                       /*!< A real number describing the minimum improvement on modularity to carry on computation */
         double gamma;                           /*!< Define the size of generated clusters. Higher gamma means smaller clusters */
-        bool random;                            /*!< Use to shuffle or not the process order of nodes */
+        bool randomized;                            /*!< Use to shuffle or not the process order of nodes */
 
         vector<int> node_to_community;          /*!< Community to which each node belongs */
         vector < vector<int> > levels;          /*! Hierarchical community structure */
@@ -78,11 +78,11 @@ class Community {
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
          * \param filename          the graph (edgelist format) needed for initializing Graph object attribute
-         * \param weighted          boolean value indicating whether the graph is weighted
          * \param precision         double value indicating the threshold for modularity improvement
          * \param gamma             double value indicating the size of generated clusters (higher gamma means smaller clusters)
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
          * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param randomized        boolean value indicating whether vertices are considered in random order
          * \sa Graph()
          */
         Community (
@@ -91,7 +91,7 @@ class Community {
             const double gamma=1,
             bool reproducibility=false,
             bool renumbering=false,
-            bool random=true);
+            bool randomized=true);
         //! Destructor
         ~Community(); 
 
