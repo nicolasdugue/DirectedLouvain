@@ -62,12 +62,11 @@ class Graph {
         //! Constructor with arguments
         /*! 
          * \param filename          the file to read the graph from 
-         * \param weighted          boolean value indicating whether the graph is weighted
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
          * \param renumbering       boolean value indicating whether the graph must be renumbered
          * \param verbose           boolean value indicating whether to print information
          */
-        Graph(string filename, bool reproducibility, bool renumbering=true, bool weighted=false, bool verbose=false); 
+        Graph(string filename, bool reproducibility, bool renumbering=true, bool verbose=false); 
         //! Friend method to initialize all attributes 
         /*!
          * \param g the Graph object to initialize
@@ -115,6 +114,12 @@ class Graph {
          * \result weighted in-degree of node
          */ 
         double weighted_in_degree(unsigned int node);
+        //! Member function returning the total degree of a given node 
+        /*! 
+         * \param node the node to consider
+         * \result the sum of out- and in-degrees of the node according to cumulative in-degree sequence.
+         */
+        double weighted_degree(unsigned int node);
 
         //! Member function returning positions of the first out-neighbor of a given node 
         /*! 
@@ -144,12 +149,6 @@ class Graph {
          * \result the in-degree of the node according to cumulative in-degree sequence.
          */
         unsigned int in_degree(unsigned int node);
-        //! Member function returning the total degree of a given node 
-        /*! 
-         * \param node the node to consider
-         * \result the sum of out- and in-degrees of the node according to cumulative in-degree sequence.
-         */
-        double weighted_degree(unsigned int node);
 
         unsigned int get_out_neighbor(size_t index) {
             assert(index < this->arcs);
@@ -171,10 +170,6 @@ class Graph {
             return this->incoming_weights[index];
         }
 
-        bool is_weighted() {
-            return this->weighted;
-        }
-
         //! Getter for the number of nodes
         unsigned int get_nodes() const {
             return this->nodes; 
@@ -192,6 +187,11 @@ class Graph {
             return this->correspondance; 
         }
 
+        bool is_weighted() {
+            return this->weighted;
+        }
+
+        void set_weighted(bool weighted);
 };
 
 inline size_t Graph::out_neighbors(unsigned int node) const {
@@ -217,6 +217,10 @@ inline unsigned int Graph::in_degree(unsigned int node) {
 inline double Graph::weighted_degree(unsigned int node) {
     assert(node<this->nodes);
     return this->weighted_out_degree(node) + this->weighted_in_degree(node);
+}
+
+inline void Graph::set_weighted(bool weighted) {
+    this->weighted = weighted;
 }
 
 #endif // GRAPH_HPP
