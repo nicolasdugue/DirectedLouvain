@@ -23,9 +23,9 @@
  * A structure containing information regarding the arcs within all communities 
  */
 struct count { 
-    double total_arcs_inside;       //<! Number of arcs (i.e. self-loops) within the community */
-    double total_incoming_arcs;     //!< Number of outcoming arcs from the community */
-    double total_outcoming_arcs;    //!< Number of incoming arcs to the community */
+    double total_arcs_inside;       /*<! Number of arcs (i.e. self-loops) within the community */
+    double total_incoming_arcs;     /*!< Number of outcoming arcs from the community */
+    double total_outcoming_arcs;    /*!< Number of incoming arcs to the community */
     count() : total_arcs_inside(0.), total_incoming_arcs(0.), total_outcoming_arcs(0.) { }
 };
 typedef struct count Count;
@@ -41,6 +41,7 @@ class Community {
         Graph* community_graph;                 /*!< A copy of the original graph object to compute communities for */
         unsigned int size;                      /*!< Number of nodes in the graph */
         double precision;                       /*!< A real number describing the minimum improvement on modularity to carry on computation */
+        double gamma;                           /*!< Define the size of generated clusters. Higher gamma means smaller clusters */
 
         vector<int> node_to_community;          /*!< Community to which each node belongs */
         vector < vector<int> > levels;          /*! Hierarchical community structure */
@@ -90,10 +91,23 @@ class Community {
         //! Destructor
         ~Community(); 
 
+        //! Getter for a specific level
+        /*!
+        * \param level the level to return
+        * \return A map for node associate with their community
+        */
+        map<int, int> get_level(int level);
+
+        //! Getter for the last level of the hierarchical structure
+        /*!
+        * \return A map for node associate with their community
+        */
+        map<int, int> get_last_level();
+
         //! Member function displaying the community of each node
         void display();
 
-        // Member function computing the directed modularity of the current partition
+        //! Member function computing the directed modularity of the current partition
         /*!
          * \return the value of directed modularity for the current partition
          */
