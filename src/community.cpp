@@ -7,10 +7,11 @@
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 static void update_levels(const Community &c, vector< vector<int> > &levels, int level);
 
-Community::Community(const string& in_filename, bool weighted, const double precision, bool reproducibility, bool renumbering) {
+Community::Community(const string& in_filename, bool weighted, const double precision, const double gamma, bool reproducibility, bool renumbering, bool random) {
     this->g                 = new Graph(in_filename, weighted, reproducibility, renumbering);
     this->precision         = precision;
-
+    this->gamma             = gamma;
+    this->random            = random;
     init_attributes();
 }
 
