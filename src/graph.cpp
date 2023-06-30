@@ -24,11 +24,10 @@ Graph::Graph() {
     this->indegrees.resize(0);
 }
 
-Graph::Graph(string filename, bool reproducibility, bool renumbering, bool weighted, bool verbose) {
+Graph::Graph(string filename, bool reproducibility, bool renumbering, bool verbose) {
     vector<vector<pair<unsigned int,double> > > LOUT;
     vector<vector<pair<unsigned int,double> > > LIN;
 
-    this->weighted = weighted;
     string extension = filename.substr(filename.size()-4,filename.size());
 
     if(extension!=".bin") {
