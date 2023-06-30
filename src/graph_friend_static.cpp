@@ -32,7 +32,7 @@ static inline unsigned int get_mapped_node(unsigned long int node, const vector<
 
 // This function builds the map for renumbering the input graph and returns cpt (the number of nodes)
 // If reproducibility is set to true, the renumbered graph is written into a file under edgelist format: src dest (weight)
-static unsigned int build_map(string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool renumbering, bool reproducibility, bool verbose) {
+static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &correspondance, vector<vector<pair<unsigned int,double> > > &LOUT, vector<vector<pair<unsigned int,double> > > &LIN, bool renumbering, bool reproducibility, bool verbose) {
 
     vector<int> corres(MAP_LIMIT,-1);
     map < unsigned long, unsigned int > corres_big_ids;
@@ -99,8 +99,10 @@ static unsigned int build_map(string filename, vector<unsigned long> &correspond
         src = (unsigned int)node[0];
         dest = (unsigned int)node[1];
         // If the input file contains three columns, the graph is weighted
-        if (node.size()==3)
+        if (node.size()==3 && g->weighted==false) {
             weight = node[2];
+            g->weighted=true;
+        }
 
         map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
         map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
