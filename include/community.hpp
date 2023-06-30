@@ -87,7 +87,6 @@ class Community {
          */
         Community (
             const string &filename,
-            bool weighted=false,
             const double precision=0.0001,
             const double gamma=1,
             bool reproducibility=false,
