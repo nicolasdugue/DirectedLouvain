@@ -30,6 +30,7 @@ Graph::Graph(string filename, bool reproducibility, bool renumbering, bool verbo
 
     string extension = filename.substr(filename.size()-4,filename.size());
 
+    this->weighted = false;
     if(extension!=".bin") {
         this->correspondance.resize(0);
         this->nodes = build_map(this, filename, this->correspondance, LOUT, LIN, this->weighted, renumbering, reproducibility, verbose);
