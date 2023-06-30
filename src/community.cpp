@@ -7,11 +7,11 @@
 static unsigned int renumber_communities(const Community &c, vector< int > &renumber);
 static void update_levels(const Community &c, vector< vector<int> > &levels, int level);
 
-Community::Community(const string& in_filename, const double precision, const double gamma, bool reproducibility, bool renumbering, bool random) {
+Community::Community(const string& in_filename, const double precision, const double gamma, bool reproducibility, bool renumbering, bool randomized) {
     this->g                 = new Graph(in_filename, reproducibility, renumbering);
     this->precision         = precision;
     this->gamma             = gamma;
-    this->random            = random;
+    this->randomized        = randomized;
     init_attributes();
 }
 
@@ -214,8 +214,10 @@ bool Community::one_level(double &modularity) {
         random_order[i] = i;
 
     // ... randomized: (Directed) Louvain's algorithm is not deterministic
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
+    if(randomized) {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        shuffle(random_order.begin(), random_order.end(), std::default_random_engine(seed));
+    }
 
     // Vectors containing weights and positions of neighboring communities
     vector<double> neighbor_weight(this->size,-1);
