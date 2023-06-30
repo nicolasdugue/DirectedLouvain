@@ -85,9 +85,10 @@ double Community::modularity() {
     double m = g->get_total_weight();
     for (unsigned int i = 0; i < size; ++i) {
         if (this->communities_arcs[i].total_incoming_arcs > 0 || this->communities_arcs[i].total_outcoming_arcs > 0) {
-            double total_outcoming_arcs_var     = this->communities_arcs[i].total_outcoming_arcs / m;
-            double total_incoming_arcs_var      = this->communities_arcs[i].total_incoming_arcs / m;
-            q                                   += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
+            double total_outcoming_arcs_var = (this->communities_arcs[i].total_outcoming_arcs) / m;
+            auto selfloops = g->count_selfloops(i);
+            double total_incoming_arcs_var = (this->communities_arcs[i].total_incoming_arcs + selfloops) / m;
+            q += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
         }
     }
     return q;
