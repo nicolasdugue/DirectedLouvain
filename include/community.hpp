@@ -101,13 +101,13 @@ class Community {
         * \param level the level to return
         * \return A map for node associate with their community
         */
-        map<int, int> get_level(int level);
+        map<unsigned int, unsigned int> get_level(int level);
 
         //! Getter for the last level of the hierarchical structure
         /*!
         * \return A map for node associate with their community
         */
-        map<int, int> get_last_level();
+        map<unsigned int, unsigned int> get_last_level();
 
         //! Member function displaying the community of each node
         void display();
