@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -180,7 +181,7 @@ class Graph {
         }
         //! Getter for the total_weight of the graph
         double get_total_weight() const { 
-            return this->total_weight; 
+            return this->total_weight;
         }
         //! Getter for renumbering correspondance 
         const vector<unsigned long> &get_correspondance() { 

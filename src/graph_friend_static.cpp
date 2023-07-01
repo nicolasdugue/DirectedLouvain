@@ -88,11 +88,13 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
 
     finput.clear();
     finput.seekg(0);
-    
+   
+    int c = 0; 
     while (getline(finput, line)) {
         istringstream iss(line);
         vector<double> node;
-        unsigned int src, dest, map_src, map_dest, tmp;
+        double tmp = 1.f;
+        unsigned int src, dest, map_src, map_dest;
         double weight = 1.f;
 
         while(iss >> tmp)
@@ -101,17 +103,21 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
         src = (unsigned int)node[0];
         dest = (unsigned int)node[1];
         // If the input file contains three columns, the graph is weighted
-        if (node.size()==3 && !g.is_weighted()) {
+        if (node.size()==3) {
+            
+            if(!g.is_weighted()) 
+                g.set_weighted(true);
+
             weight = node[2];
-            g.set_weighted(true);
+            c += weight;
         }
 
         map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
         map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
 
         LOUT[map_src].push_back(make_pair(map_dest, weight));
-        if(map_src!=map_dest)
-            LIN[map_dest].push_back(make_pair(map_src, weight));
+        //if(map_src!=map_dest)
+        LIN[map_dest].push_back(make_pair(map_src, weight));
 
         if(reproducibility) {
             foutput << map_src << " " << map_dest;
@@ -209,9 +215,8 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     // Computing the total weight of the graph
     g.total_weight = 0.;
 
-    double &total_weight = g.total_weight;
     for (unsigned int i = 0; i < g.nodes; ++i) {
-        total_weight += g.weighted_out_degree(i);
+        g.total_weight += g.weighted_out_degree(i);
     }
 
     if(verbose)

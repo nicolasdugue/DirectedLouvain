@@ -85,10 +85,9 @@ double Community::modularity() {
     double m = g->get_total_weight();
     for (unsigned int i = 0; i < size; ++i) {
         if (this->communities_arcs[i].total_incoming_arcs > 0 || this->communities_arcs[i].total_outcoming_arcs > 0) {
-            double total_outcoming_arcs_var = (this->communities_arcs[i].total_outcoming_arcs) / m;
-            auto selfloops = g->count_selfloops(i);
-            double total_incoming_arcs_var = (this->communities_arcs[i].total_incoming_arcs + selfloops) / m;
-            q += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
+            double total_outcoming_arcs_var     = (this->communities_arcs[i].total_outcoming_arcs) / m;
+            double total_incoming_arcs_var      = this->communities_arcs[i].total_incoming_arcs / m;
+            q                                   += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
         }
     }
     return q;
@@ -206,7 +205,6 @@ bool Community::one_level(double &modularity) {
     int nb_moves = 0;
     bool improvement = false;
     double current_modularity = this->modularity();
-    double delta;
 
     // Order in which to proceed nodes of the graph...
     vector < int > random_order(size);
@@ -242,7 +240,6 @@ bool Community::one_level(double &modularity) {
             list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
 
             // Gain from removing node from its current community
-            //start_mod = this->modularity();
             double removal = gain_from_removal(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree);
             remove(*this, node, node_community, neighbor_weight[node_community]+self_loops, weighted_out_degree, weighted_in_degree);
 
@@ -274,10 +271,9 @@ bool Community::one_level(double &modularity) {
         }
         
         // Computing the difference between the two modularities
-        delta = (current_modularity+total_increase) - current_modularity;
-        current_modularity = delta + current_modularity;
+        current_modularity = this->modularity();
 
-    } while (nb_moves > 0 && delta > precision);
+    } while (nb_moves > 0 && total_increase > precision);
 
     modularity = current_modularity;
     return improvement;
@@ -327,121 +323,6 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
     bool improvement = true;
     if (filename_part != "")
         this->init_partition(filename_part);
-
-    //Ensemble-Clustering-for-Graphs
-    map<pair<unsigned int, unsigned int>, double> weight;
-    for (int i = 0; i < 16; ++i) {
-        // Directed Louvain: main procedure
-        double new_mod = 0;
-        this->community_graph = new Graph(*(this->g));
-        this->init_attributes();
-        improvement = this->one_level(new_mod);
-        for (unsigned int origin = 0; origin < node_to_community.size(); origin++) {
-            cerr << origin << " = " << node_to_community[origin] << endl;
-            for (unsigned int j = 0; j < this->community_graph->out_degree(origin); ++j) {
-                int destination = this->community_graph->outcoming_arcs[this->community_graph->out_neighbors(origin)+j];
-                if(node_to_community[origin] == node_to_community[destination]){
-                    pair<int, int> to_add = *new pair<int, int>(origin, destination);
-                    if(weight.find( to_add ) != weight.end())
-                        weight[to_add]++;
-                    else
-                        weight[to_add] = 1.;
-                }
-            }
-        }
-    }
-
-    // 2-core
-    vector<bool> core(this->size, true);
-    this->community_graph = new Graph(*(this->g));
-    bool marked = false;
-    do {
-        marked = false;
-        for (unsigned int i = 0; i < core.size(); ++i) {
-            if (core[i]){
-                unsigned int outdegree = this->community_graph->out_degree(i);
-                unsigned int indegree = this->community_graph->in_degree(i);
-                unsigned int degree = outdegree + indegree;
-                if (degree < 2){
-                    core[i] = false;
-                    marked = true;
-                    if(outdegree==1) {
-                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(i);
-                        for (unsigned int j = i; j < this->community_graph->outdegrees.size(); ++j)
-                            this->community_graph->outdegrees[j]--;
-                        this->community_graph->outcoming_arcs.erase(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor);
-                        unsigned int in_neighbor = this->community_graph->outcoming_arcs[pos_out_neighbor];
-                        for (unsigned int j = in_neighbor; j < this->community_graph->indegrees.size(); ++j)
-                            this->community_graph->indegrees[j]--;
-                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(in_neighbor);
-                        vector<unsigned int>::iterator it;
-                        it = find(this->community_graph->incoming_arcs.begin()+pos_in_neighbor, this->community_graph->incoming_arcs.begin()+pos_in_neighbor + this->community_graph->in_degree(in_neighbor), i);
-                        this->community_graph->incoming_arcs.erase(it);
-                        this->community_graph->arcs--;
-                    }
-                    if(indegree == 1){
-                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(i);
-                        for (unsigned int j = i; j < this->community_graph->indegrees.size(); ++j)
-                            this->community_graph->indegrees[j]--;
-                        this->community_graph->incoming_arcs.erase(this->community_graph->incoming_arcs.begin()+pos_in_neighbor);
-                        unsigned int out_neighbor = this->community_graph->incoming_arcs[pos_in_neighbor];
-                        for (unsigned int j = out_neighbor; j < this->community_graph->outdegrees.size(); ++j)
-                            this->community_graph->outdegrees[j]--;
-                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(out_neighbor);
-                        vector<unsigned int>::iterator it;
-                        it = find(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor, this->community_graph->outcoming_arcs.begin()+pos_out_neighbor + this->community_graph->out_degree(out_neighbor), i);
-                        this->community_graph->outcoming_arcs.erase(it);
-                        this->community_graph->arcs--;
-                    }
-                }
-            }
-        }
-    } while(marked);
-
-       // TODO --- compute graph from previous steps
-    this->community_graph   = new Graph(*(this->g));
-    this->init_attributes();
-    
-    do {
-        if (verbose) {
-            cerr << "level " << level << ":\n";
-            cerr << "  network size: " <<
-                this->community_graph->get_nodes() << " nodes, " <<
-                this->community_graph->get_arcs() << " arcs, " <<
-                this->community_graph->get_total_weight() << " weight." << endl;
-        }
-
-        // Directed Louvain: main procedure
-        double new_mod = 0;
-        improvement = this->one_level(new_mod);
-        // Maintaining levels
-        levels.resize(++level);
-        update_levels(*this, levels, level-1);
-        if (level == display_level || display_level == -1)
-            this->display_partition();
-        // Updating the graph to computer hierarchical structure
-        this->partition_to_graph();
-        if (verbose)
-            cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
-
-        mod = new_mod;
-        // Doing at least one more computation if partition is provided
-        if (filename_part != "" && level == 1)
-            improvement = true;
-    } while (improvement);
-    if (display_level == -2)
-        print_level(levels.size()-1);
-    return level;
-}
-
-/*int Community::run(bool verbose, const int& display_level, const string& filename_part) {
-    int level = 0;
-    double mod = this->modularity();
-    vector < int > corres(0);
-
-    bool improvement = true;
-    if (filename_part != "")
-        this->init_partition(filename_part);
     this->community_graph   = new Graph(*(this->g));
     this->init_attributes();
     do {
@@ -474,7 +355,7 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
     if (display_level == -2)
         print_level(levels.size()-1);
     return level;
-}*/
+}
 
 // Friend and static functions are defered to a different file for readability 
 #include "community_friend_static.cpp"
