@@ -315,9 +315,152 @@ void Community::print_level(int level) {
         cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
 }
 
+int Community::run_egc(bool verbose, const int& display_level, const string& filename_part) {
+    int level = 0;
+    double mod = this->modularity();
+    vector < int > corres(0);
+
+    bool improvement = true;
+    if (filename_part != "")
+        this->init_partition(filename_part);
+
+    //Ensemble-Clustering-for-Graphs
+    cerr << "computing votes ensemble..." << endl;
+    map<pair<unsigned int, unsigned int>, unsigned int> weights;
+    for (int i = 0; i < 50; ++i) {
+        // Directed Louvain: main procedure
+        double new_mod = 0;
+        this->community_graph = new Graph(*(this->g));
+        this->init_attributes();
+        improvement = this->one_level(new_mod);
+        for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
+            for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
+                size_t p = this->g->out_neighbors(origin);
+                int destination = this->g->outcoming_arcs[p+j];
+                if(node_to_community[origin] == node_to_community[destination]){
+                    pair<unsigned int, unsigned int> to_add(origin, destination);
+                    weights[to_add]++;
+                }
+            }
+        }
+        //delete this->community_graph;
+    }
+    cerr << "done" << endl;
+    
+    cerr << "computing 2-core" << endl;
+    // 2-core
+    vector<bool> core(this->size, true);
+    this->community_graph = new Graph(*(this->g));
+    bool marked = false;
+    do {
+        marked = false;
+        for (unsigned int i = 0; i < core.size(); ++i) {
+            if (core[i]){
+                unsigned int outdegree = this->community_graph->out_degree(i);
+                unsigned int indegree = this->community_graph->in_degree(i);
+                unsigned int degree = outdegree + indegree;
+                if (degree < 2){
+                    core[i] = false;
+                    marked = true;
+                    if(outdegree==1) {
+                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(i);
+                        for (unsigned int j = i; j < this->community_graph->outdegrees.size(); ++j)
+                            this->community_graph->outdegrees[j]--;
+                        this->community_graph->outcoming_arcs.erase(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor);
+                        unsigned int in_neighbor = this->community_graph->outcoming_arcs[pos_out_neighbor];
+                        for (unsigned int j = in_neighbor; j < this->community_graph->indegrees.size(); ++j)
+                            this->community_graph->indegrees[j]--;
+                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(in_neighbor);
+                        vector<unsigned int>::iterator it;
+                        it = find(this->community_graph->incoming_arcs.begin()+pos_in_neighbor, this->community_graph->incoming_arcs.begin()+pos_in_neighbor + this->community_graph->in_degree(in_neighbor), i);
+                        this->community_graph->incoming_arcs.erase(it);
+                        this->community_graph->arcs--;
+                    }
+                    if(indegree == 1){
+                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(i);
+                        for (unsigned int j = i; j < this->community_graph->indegrees.size(); ++j)
+                            this->community_graph->indegrees[j]--;
+                        this->community_graph->incoming_arcs.erase(this->community_graph->incoming_arcs.begin()+pos_in_neighbor);
+                        unsigned int out_neighbor = this->community_graph->incoming_arcs[pos_in_neighbor];
+                        for (unsigned int j = out_neighbor; j < this->community_graph->outdegrees.size(); ++j)
+                            this->community_graph->outdegrees[j]--;
+                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(out_neighbor);
+                        vector<unsigned int>::iterator it;
+                        it = find(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor, this->community_graph->outcoming_arcs.begin()+pos_out_neighbor + this->community_graph->out_degree(out_neighbor), i);
+                        this->community_graph->outcoming_arcs.erase(it);
+                        this->community_graph->arcs--;
+                    }
+                }
+            }
+        }
+    } while(marked);
+
+    cerr << "done" << endl;
+    cerr << "computing ensemble graph" << endl;
+    ofstream foutput;
+    foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
+    Graph *tmp = new Graph(*(this->g));
+    // Computing weighted graph from previous steps
+    double min_weight = .05;
+    for (unsigned int node = 0; node < tmp->nodes; ++node) {
+        size_t p = tmp->out_neighbors(node);
+        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
+            tmp->outcoming_weights[p + i] = min_weight;
+            // If the arc is not in the map or has one core value false we assign min_weight to it
+            if(weights.count(make_pair(i,tmp->outcoming_arcs[p + i]))>0) 
+                if(core[i] && core[tmp->outcoming_arcs[p + i]]) {
+                    tmp->outcoming_weights[p + i] = min_weight + ((1-min_weight)*((double)weights[make_pair(i,tmp->outcoming_arcs[p + i])]/50));
+                    if(tmp->outcoming_weights[p+i] > 1)
+                        cerr << i << " " << tmp->outcoming_arcs[p+i] << " " << tmp->outcoming_weights[p+i] << endl;
+                }
+            foutput << this->g->correspondance[node] << " " << this->g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
+            tmp->outcoming_weights[p+i] << endl;
+        }
+    }
+
+    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
+
+    foutput.close();
+    
+    this->g                 = new Graph(*tmp);
+    this->community_graph   = new Graph(*(this->g));
+    this->init_attributes();
+    do {
+        if (verbose) {
+            cerr << "level " << level << ":\n";
+            cerr << "  network size: " <<
+                this->community_graph->get_nodes() << " nodes, " <<
+                this->community_graph->get_arcs() << " arcs, " <<
+                this->community_graph->get_total_weight() << " weight." << endl;
+        }
+
+        // Directed Louvain: main procedure
+        double new_mod = 0;
+        improvement = this->one_level(new_mod);
+        // Maintaining levels
+        levels.resize(++level);
+        update_levels(*this, levels, level-1);
+        if (level == display_level || display_level == -1)
+            this->display_partition();
+        // Updating the graph to computer hierarchical structure
+        this->partition_to_graph();
+        if (verbose)
+            cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
+
+        mod = new_mod;
+        // Doing at least one more computation if partition is provided
+        if (filename_part != "" && level == 1)
+            improvement = true;
+    } while (improvement);
+    if (display_level == -2)
+        print_level(levels.size()-1);
+    return level;
+}
+
 int Community::run(bool verbose, const int& display_level, const string& filename_part) {
     int level = 0;
     double mod = this->modularity();
+    cerr << mod << endl;
     vector < int > corres(0);
 
     bool improvement = true;

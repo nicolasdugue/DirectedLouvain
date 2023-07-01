@@ -132,6 +132,7 @@ class Community {
          * \sa one_level(), modularity_gain()
          */
         int run(bool verbose, const int& display_level, const string& filename_part);
+        int run_egc(bool verbose, const int& display_level, const string& filename_part);
 
         //! Member function printing a given hierarchical level on standard output
         /*!
