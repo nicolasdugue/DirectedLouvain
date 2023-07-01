@@ -38,6 +38,7 @@ modularity_values_directed_louvain.txt
 *.wgt
 *renum*
 snap/
+graph/
 config-doxygen
 README_DOXYGEN.md
 
