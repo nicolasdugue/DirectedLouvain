@@ -85,10 +85,9 @@ double Community::modularity() {
     double m = g->get_total_weight();
     for (unsigned int i = 0; i < size; ++i) {
         if (this->communities_arcs[i].total_incoming_arcs > 0 || this->communities_arcs[i].total_outcoming_arcs > 0) {
-            double total_outcoming_arcs_var = (this->communities_arcs[i].total_outcoming_arcs) / m;
-            auto selfloops = g->count_selfloops(i);
-            double total_incoming_arcs_var = (this->communities_arcs[i].total_incoming_arcs + selfloops) / m;
-            q += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
+            double total_outcoming_arcs_var     = (this->communities_arcs[i].total_outcoming_arcs) / m;
+            double total_incoming_arcs_var      = this->communities_arcs[i].total_incoming_arcs / m;
+            q                                   += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
         }
     }
     return q;
@@ -206,7 +205,6 @@ bool Community::one_level(double &modularity) {
     int nb_moves = 0;
     bool improvement = false;
     double current_modularity = this->modularity();
-    double delta;
 
     // Order in which to proceed nodes of the graph...
     vector < int > random_order(size);
@@ -242,7 +240,6 @@ bool Community::one_level(double &modularity) {
             list_neighboring_communities(node, *this, neighbor_weight, positions_neighboring_communities, neighboring_communities);
 
             // Gain from removing node from its current community
-            //start_mod = this->modularity();
             double removal = gain_from_removal(*this, node, node_community, neighbor_weight[node_community], weighted_out_degree, weighted_in_degree);
             remove(*this, node, node_community, neighbor_weight[node_community]+self_loops, weighted_out_degree, weighted_in_degree);
 
@@ -274,10 +271,9 @@ bool Community::one_level(double &modularity) {
         }
         
         // Computing the difference between the two modularities
-        delta = (current_modularity+total_increase) - current_modularity;
-        current_modularity = delta + current_modularity;
+        current_modularity += total_increase;
 
-    } while (nb_moves > 0 && delta > precision);
+    } while (nb_moves > 0 && total_increase > precision);
 
     modularity = current_modularity;
     return improvement;
