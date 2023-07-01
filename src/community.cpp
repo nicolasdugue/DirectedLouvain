@@ -271,7 +271,7 @@ bool Community::one_level(double &modularity) {
         }
         
         // Computing the difference between the two modularities
-        current_modularity = this->modularity();
+        current_modularity += total_increase;
 
     } while (nb_moves > 0 && total_increase > precision);
 
