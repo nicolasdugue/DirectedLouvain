@@ -39,5 +39,7 @@ $(LIBDIR)/%.o: $(SRCDIR)/%%.cpp $(HEADDIR)/%.hpp
 $(LIBDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC)  -o $@ -c $< $(CFLAGS)
 
+$(LIBDIR)/%.o: $(HEADDIR)/%.hcpp
+
 clean:
 	rm -f $(BINDIR)/* $(LIBDIR)/*.o $(LIBDIR)/*~ $(SRCDIR)/*~
