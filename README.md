@@ -47,7 +47,8 @@ Several options are available, among which:
 More options and information are provided using `./bin/community`
 
 Another possibility is to pass a binary file containing all information regarding the graph. 
-**We strongly recommand to generate the binary file using our program in a first place**, even if any file following the CSR format will do (see below for more information regarding binary file format). 
+**We strongly recommand to generate the binary file using our program in a first place**. 
+Using any binary file compatible with our format would of course work (see the `load` function in the `src/graph.cpp` file, more information to come). 
 
 ### [Graph representation: CSR format](#CSR)
 
