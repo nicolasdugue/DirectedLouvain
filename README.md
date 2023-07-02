@@ -37,10 +37,6 @@ The standard command is:
 
     ./bin/community -f graph/graph.txt -l -1 -v > graph.tree
 
-Another possibility is to pass a binary file containing all information regarding the graph. 
-This file **must** be generated using the our program in a first place, or follows the CSR format (see below). 
-In this case, the only mandatory option is `-w` to indicate whether the graph is weighted. 
-
 Several options are available, among which:
 + `-f` path to the input graph (edgelist or binary format (`.bin`))
 + `-g` value of the resolution parameter: the algorithm favors larger communities if less than 1 and smaller otherwise
@@ -49,6 +45,9 @@ Several options are available, among which:
 + `-s` for disabling randomness: the algorithm will consider vertices from `0` to `n-1`
 
 More options and information are provided using `./bin/community`
+
+Another possibility is to pass a binary file containing all information regarding the graph. 
+**We strongly recommand to generate the binary file using our program in a first place**, even if any file following the CSR format will do (see below for more information regarding binary file format). 
 
 ### [Graph representation: CSR format](#CSR)
 

@@ -80,6 +80,7 @@ Graph::write(string outfile) {
 }
 
 void Graph::load(string filename, bool verbose) {
+    /* TODO --- first bit to read should indicate whether the graph is weighted */
     ifstream finput;
     finput.open(filename, fstream:: in | fstream::binary);
     assert(finput.rdstate() == ios::goodbit);
