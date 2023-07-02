@@ -16,6 +16,7 @@ bool verbose = false;
 bool reproducibility = false;
 bool renumbering = true;
 bool randomized = true;
+bool egc = false;
 
 void usage(char * prog_name) {
     cerr << "usage: " << prog_name << " -f [-r] [-n] [-p partition_file] [-q epsilon] [-l display_level] [-v] [-h]" << endl;
@@ -28,6 +29,7 @@ void usage(char * prog_name) {
     cerr << "[-p|--partition] file\tstart the computation with a given partition instead of the trivial partition." << endl;
     cerr << "\tfile must contain lines \"node community\"." << endl;
     cerr << "[-q|--precision] eps\ta given pass stops when the modularity is increased by less than epsilon." << endl;
+    cerr << "[-e|--egc] \tto indicate whether to use the Ensemble Graph Clustering method (default is false)." << endl;
     cerr << "[-g|--gamma] define the size of generated clusters. Higher gamma (resolution) means smaller clusters, and conversely. (gamma is set to 1 by default)" << endl;
     cerr << "[-l|--level] k\tdisplays the graph of level k rather than the hierachical structure." << endl;
     cerr << "\tif k=-1 then displays the hierarchical structure rather than the graph at a given level (default)." << endl;
@@ -54,6 +56,7 @@ void parse_args(int argc, char **argv) {
         {"partition",           required_argument, 0, 'p'},
         {"precision",           required_argument, 0, 'q'},
         {"gamma",               required_argument, 0, 'g'},
+        {"egc",                 no_argument,       0, 'e'},
         {"level",               required_argument, 0, 'l'},
         {"verbose",             no_argument,       0, 'v'},
         {"help",                no_argument,       0, 'h'},
@@ -66,7 +69,7 @@ void parse_args(int argc, char **argv) {
     int option_index = 0;
     bool isnumber=true;
     // The first colon allows to separate error messages for missing argument and unknown options 
-    while ((arg = getopt_long(argc, argv, ":f:rnp:q:l:vh", long_options, &option_index)) != -1) {
+    while ((arg = getopt_long(argc, argv, ":f:rnp:q:g:el:vh", long_options, &option_index)) != -1) {
         switch (arg) {
             case 0:
                 break;
@@ -130,6 +133,9 @@ void parse_args(int argc, char **argv) {
                 }
             case 'v':
                 verbose = true;
+                break;
+            case 'e':
+                egc = true;
                 break;
             case 'h':
                 usage(argv[0]);

@@ -102,6 +102,42 @@ void Community::display_partition() {
         cout << (this->community_graph)->correspondance[i] << " " << renumber[this->node_to_community[i]] << endl;
 }
 
+map<unsigned int, unsigned int> Community::get_level(int level){
+    assert(level >= 0 && level < (int)this->levels.size());
+    vector < int > n2c(this->g->nodes);
+    map<unsigned int, unsigned int> lvl;
+
+    for (unsigned int i = 0; i < this->g->nodes; i++)
+        n2c[i] = i;
+
+    for (int l = 0; l < level; l++)
+        for (unsigned int node = 0; node < this->g->nodes; node++)
+            n2c[node] = this->levels[l][n2c[node]];
+
+    for (unsigned int node = 0; node < this->g->nodes; node++)
+        lvl[(this->g)->correspondance[node]] = n2c[node];
+    return lvl;
+}
+
+map<unsigned int, unsigned int> Community::get_last_level(){
+    return get_level(levels.size()-1);
+}
+
+void Community::print_level(int level) {
+    assert(level >= 0 && level < (int)this->levels.size());
+    vector < int > n2c(this->g->nodes);
+
+    for (unsigned int i = 0; i < this->g->nodes; i++)
+        n2c[i] = i;
+
+    for (int l = 0; l < level; l++)
+        for (unsigned int node = 0; node < this->g->nodes; node++)
+            n2c[node] = this->levels[l][n2c[node]];
+
+    for (unsigned int node = 0; node < this->g->nodes; node++) 
+        cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
+}
+
 void Community::partition_to_graph() {
     // Renumbering communities
     vector<int> renumber(size, -1);
@@ -204,7 +240,8 @@ void Community::partition_to_graph() {
 bool Community::one_level(double &modularity) {
     int nb_moves = 0;
     bool improvement = false;
-    double current_modularity = this->modularity();
+    double new_modularity = this->modularity();
+    double current_modularity = new_modularity;
 
     // Order in which to proceed nodes of the graph...
     vector < int > random_order(size);
@@ -227,6 +264,7 @@ bool Community::one_level(double &modularity) {
     do {
         nb_moves = 0;
         total_increase = 0.;
+        current_modularity = new_modularity;
 
         // For each node: remove it from its community and insert it in the best community (if any)
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
@@ -253,6 +291,7 @@ bool Community::one_level(double &modularity) {
                 // (Gain from) inserting note to neighboring community
                 double insertion = gain_from_insertion(*this, node, positions_neighboring_communities[i], neighbor_weight[positions_neighboring_communities[i]], weighted_out_degree, weighted_in_degree);
                 double increase = insertion+removal;
+                //double increase = insertion;
                 if(increase > best_increase) {
                     best_community = positions_neighboring_communities[i];
                     best_nbarcs = neighbor_weight[best_community];
@@ -271,203 +310,43 @@ bool Community::one_level(double &modularity) {
         }
         
         // Computing the difference between the two modularities
-        current_modularity += total_increase;
+        new_modularity = this->modularity();
+        //cerr << new_modularity << " " << current_modularity << endl;
 
-    } while (nb_moves > 0 && total_increase > precision);
+    } while (nb_moves > 0 && new_modularity-current_modularity > precision);
 
     modularity = current_modularity;
     return improvement;
 }
 
-map<unsigned int, unsigned int> Community::get_level(int level){
-    assert(level >= 0 && level < (int)this->levels.size());
-    vector < int > n2c(this->g->nodes);
-    map<unsigned int, unsigned int> lvl;
-
-    for (unsigned int i = 0; i < this->g->nodes; i++)
-        n2c[i] = i;
-
-    for (int l = 0; l < level; l++)
-        for (unsigned int node = 0; node < this->g->nodes; node++)
-            n2c[node] = this->levels[l][n2c[node]];
-
-    for (unsigned int node = 0; node < this->g->nodes; node++)
-        lvl[(this->g)->correspondance[node]] = n2c[node];
-    return lvl;
-}
-
-map<unsigned int, unsigned int> Community::get_last_level(){
-    return get_level(levels.size()-1);
-}
-
-void Community::print_level(int level) {
-    assert(level >= 0 && level < (int)this->levels.size());
-    vector < int > n2c(this->g->nodes);
-
-    for (unsigned int i = 0; i < this->g->nodes; i++)
-        n2c[i] = i;
-
-    for (int l = 0; l < level; l++)
-        for (unsigned int node = 0; node < this->g->nodes; node++)
-            n2c[node] = this->levels[l][n2c[node]];
-
-    for (unsigned int node = 0; node < this->g->nodes; node++) 
-        cout << (this->g)->correspondance[node] << " " << n2c[node] << endl;
-}
-
-int Community::run_egc(bool verbose, const int& display_level, const string& filename_part) {
+int Community::run(bool verbose, const int& display_level, const string& filename_part, bool egc) {
     int level = 0;
-    double mod = this->modularity();
-    vector < int > corres(0);
+
+    if(verbose) {
+        cerr << "Directed Louvain runs on the following parameters: " << endl; 
+        cerr << "graph with: " << 
+                this->g->get_nodes() << " nodes, " <<
+                this->g->get_arcs() << " arcs, " <<
+                this->g->get_total_weight() << " weight." << endl;
+        cerr << "precision is set to: " << this->precision << endl;
+        cerr << "resolution parameter is set to: " << this->gamma << endl;
+    }
 
     bool improvement = true;
     if (filename_part != "")
         this->init_partition(filename_part);
 
-    //Ensemble-Clustering-for-Graphs
-    cerr << "computing votes ensemble..." << endl;
-    map<pair<unsigned int, unsigned int>, unsigned int> weights;
-    for (int i = 0; i < 50; ++i) {
-        // Directed Louvain: main procedure
-        double new_mod = 0;
-        this->community_graph = new Graph(*(this->g));
-        this->init_attributes();
-        improvement = this->one_level(new_mod);
-        for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
-            for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
-                size_t p = this->g->out_neighbors(origin);
-                int destination = this->g->outcoming_arcs[p+j];
-                if(node_to_community[origin] == node_to_community[destination]){
-                    pair<unsigned int, unsigned int> to_add(origin, destination);
-                    weights[to_add]++;
-                }
-            }
-        }
-        //delete this->community_graph;
-    }
-    cerr << "done" << endl;
-    
-    cerr << "computing 2-core" << endl;
-    // 2-core
-    vector<bool> core(this->size, true);
-    this->community_graph = new Graph(*(this->g));
-    bool marked = false;
-    do {
-        marked = false;
-        for (unsigned int i = 0; i < core.size(); ++i) {
-            if (core[i]){
-                unsigned int outdegree = this->community_graph->out_degree(i);
-                unsigned int indegree = this->community_graph->in_degree(i);
-                unsigned int degree = outdegree + indegree;
-                if (degree < 2){
-                    core[i] = false;
-                    marked = true;
-                    if(outdegree==1) {
-                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(i);
-                        for (unsigned int j = i; j < this->community_graph->outdegrees.size(); ++j)
-                            this->community_graph->outdegrees[j]--;
-                        this->community_graph->outcoming_arcs.erase(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor);
-                        unsigned int in_neighbor = this->community_graph->outcoming_arcs[pos_out_neighbor];
-                        for (unsigned int j = in_neighbor; j < this->community_graph->indegrees.size(); ++j)
-                            this->community_graph->indegrees[j]--;
-                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(in_neighbor);
-                        vector<unsigned int>::iterator it;
-                        it = find(this->community_graph->incoming_arcs.begin()+pos_in_neighbor, this->community_graph->incoming_arcs.begin()+pos_in_neighbor + this->community_graph->in_degree(in_neighbor), i);
-                        this->community_graph->incoming_arcs.erase(it);
-                        this->community_graph->arcs--;
-                    }
-                    if(indegree == 1){
-                        unsigned int pos_in_neighbor = this->community_graph->in_neighbors(i);
-                        for (unsigned int j = i; j < this->community_graph->indegrees.size(); ++j)
-                            this->community_graph->indegrees[j]--;
-                        this->community_graph->incoming_arcs.erase(this->community_graph->incoming_arcs.begin()+pos_in_neighbor);
-                        unsigned int out_neighbor = this->community_graph->incoming_arcs[pos_in_neighbor];
-                        for (unsigned int j = out_neighbor; j < this->community_graph->outdegrees.size(); ++j)
-                            this->community_graph->outdegrees[j]--;
-                        unsigned int pos_out_neighbor = this->community_graph->out_neighbors(out_neighbor);
-                        vector<unsigned int>::iterator it;
-                        it = find(this->community_graph->outcoming_arcs.begin()+pos_out_neighbor, this->community_graph->outcoming_arcs.begin()+pos_out_neighbor + this->community_graph->out_degree(out_neighbor), i);
-                        this->community_graph->outcoming_arcs.erase(it);
-                        this->community_graph->arcs--;
-                    }
-                }
-            }
-        }
-    } while(marked);
-
-    cerr << "done" << endl;
-    cerr << "computing ensemble graph" << endl;
-    ofstream foutput;
-    foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
-    Graph *tmp = new Graph(*(this->g));
-    // Computing weighted graph from previous steps
-    double min_weight = .05;
-    for (unsigned int node = 0; node < tmp->nodes; ++node) {
-        size_t p = tmp->out_neighbors(node);
-        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
-            tmp->outcoming_weights[p + i] = min_weight;
-            // If the arc is not in the map or has one core value false we assign min_weight to it
-            if(weights.count(make_pair(i,tmp->outcoming_arcs[p + i]))>0) 
-                if(core[i] && core[tmp->outcoming_arcs[p + i]]) {
-                    tmp->outcoming_weights[p + i] = min_weight + ((1-min_weight)*((double)weights[make_pair(i,tmp->outcoming_arcs[p + i])]/50));
-                    if(tmp->outcoming_weights[p+i] > 1)
-                        cerr << i << " " << tmp->outcoming_arcs[p+i] << " " << tmp->outcoming_weights[p+i] << endl;
-                }
-            foutput << this->g->correspondance[node] << " " << this->g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
-            tmp->outcoming_weights[p+i] << endl;
-        }
+    if(egc) {
+        cerr << "computing Ensemble Graph" << endl; 
+        Graph *old_g = this->g;
+        this->g = this->egc_graph(50);
+        delete old_g;
     }
 
-    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
-
-    foutput.close();
-    
-    this->g                 = new Graph(*tmp);
     this->community_graph   = new Graph(*(this->g));
     this->init_attributes();
-    do {
-        if (verbose) {
-            cerr << "level " << level << ":\n";
-            cerr << "  network size: " <<
-                this->community_graph->get_nodes() << " nodes, " <<
-                this->community_graph->get_arcs() << " arcs, " <<
-                this->community_graph->get_total_weight() << " weight." << endl;
-        }
-
-        // Directed Louvain: main procedure
-        double new_mod = 0;
-        improvement = this->one_level(new_mod);
-        // Maintaining levels
-        levels.resize(++level);
-        update_levels(*this, levels, level-1);
-        if (level == display_level || display_level == -1)
-            this->display_partition();
-        // Updating the graph to computer hierarchical structure
-        this->partition_to_graph();
-        if (verbose)
-            cerr << "  modularity increased from " << mod << " to " << new_mod << endl;
-
-        mod = new_mod;
-        // Doing at least one more computation if partition is provided
-        if (filename_part != "" && level == 1)
-            improvement = true;
-    } while (improvement);
-    if (display_level == -2)
-        print_level(levels.size()-1);
-    return level;
-}
-
-int Community::run(bool verbose, const int& display_level, const string& filename_part) {
-    int level = 0;
     double mod = this->modularity();
     cerr << mod << endl;
-    vector < int > corres(0);
-
-    bool improvement = true;
-    if (filename_part != "")
-        this->init_partition(filename_part);
-    this->community_graph   = new Graph(*(this->g));
-    this->init_attributes();
     do {
         if (verbose) {
             cerr << "level " << level << ":\n";
@@ -500,5 +379,118 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
     return level;
 }
 
+Graph* Community::egc_graph(unsigned int nb_runs) {
+    Graph *tmp = new Graph(*(this->g));
+
+    //Ensemble-Clustering-for-Graphs
+    cerr << "computing votes ensemble..." << endl;
+    map<pair<unsigned int, unsigned int>, unsigned int> weights;
+    for (unsigned int i = 0; i < nb_runs; ++i) {
+        // Directed Louvain: main procedure
+        this->community_graph = new Graph(*(this->g));
+        this->init_attributes();
+        double new_mod = 0;
+        bool improvement = this->one_level(new_mod);
+        for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
+            for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
+                size_t p = this->g->out_neighbors(origin);
+                int destination = this->g->outcoming_arcs[p+j];
+                if(this->node_to_community[origin] == this->node_to_community[destination]){
+                    pair<unsigned int, unsigned int> to_add(origin, destination);
+                    weights[to_add]++;
+                }
+            }
+        }
+        delete this->community_graph;
+    }
+    cerr << "done" << endl;
+    
+    /*cerr << "computing 2-core" << endl;
+    // 2-core
+    vector<bool> core(size, true);
+    Graph* core_graph = new Graph(*(this->g));
+    bool marked = false;
+    do {
+        marked = false;
+        for (unsigned int i = 0; i < core.size(); ++i) {
+            if (core[i]){
+                unsigned int outdegree = core_graph->out_degree(i);
+                unsigned int indegree = core_graph->in_degree(i);
+                unsigned int degree = outdegree + indegree;
+                if (degree < 2){
+                    core[i] = false;
+                    marked = true;
+                    if(outdegree==1) {
+                        unsigned int pos_out_neighbor = core_graph->out_neighbors(i);
+                        for (unsigned int j = i; j < core_graph->outdegrees.size(); ++j)
+                            core_graph->outdegrees[j]--;
+                        core_graph->outcoming_arcs.erase(core_graph->outcoming_arcs.begin()+pos_out_neighbor);
+                        unsigned int in_neighbor = core_graph->outcoming_arcs[pos_out_neighbor];
+                        for (unsigned int j = in_neighbor; j < core_graph->indegrees.size(); ++j)
+                            core_graph->indegrees[j]--;
+                        unsigned int pos_in_neighbor = core_graph->in_neighbors(in_neighbor);
+                        vector<unsigned int>::iterator it;
+                        it = find(core_graph->incoming_arcs.begin()+pos_in_neighbor, core_graph->incoming_arcs.begin()+pos_in_neighbor + core_graph->in_degree(in_neighbor), i);
+                        core_graph->incoming_arcs.erase(it);
+                        core_graph->arcs--;
+                    }
+                    if(indegree == 1){
+                        unsigned int pos_in_neighbor = core_graph->in_neighbors(i);
+                        for (unsigned int j = i; j < core_graph->indegrees.size(); ++j)
+                            core_graph->indegrees[j]--;
+                        core_graph->incoming_arcs.erase(core_graph->incoming_arcs.begin()+pos_in_neighbor);
+                        unsigned int out_neighbor = core_graph->incoming_arcs[pos_in_neighbor];
+                        for (unsigned int j = out_neighbor; j < core_graph->outdegrees.size(); ++j)
+                            core_graph->outdegrees[j]--;
+                        unsigned int pos_out_neighbor = core_graph->out_neighbors(out_neighbor);
+                        vector<unsigned int>::iterator it;
+                        it = find(core_graph->outcoming_arcs.begin()+pos_out_neighbor, core_graph->outcoming_arcs.begin()+pos_out_neighbor + core_graph->out_degree(out_neighbor), i);
+                        core_graph->outcoming_arcs.erase(it);
+                        core_graph->arcs--;
+                    }
+                }
+            }
+        }
+    } while(marked);*/
+
+    cerr << "done" << endl;
+    cerr << "computing ensemble graph" << endl;
+    ofstream foutput;
+    foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
+    // Computing weighted graph from previous steps
+    double min_weight = .05;
+    tmp->outcoming_weights.assign(tmp->outcoming_weights.size(), min_weight);
+    tmp->incoming_weights.assign(tmp->incoming_weights.size(), min_weight);
+    for (unsigned int node = 0; node < tmp->nodes; ++node) {
+        size_t p = tmp->out_neighbors(node);
+        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
+            // If the arc is not in the map or has one core value false we assign min_weight to it
+            if(weights.count(make_pair(node,tmp->outcoming_arcs[p + i]))>0) 
+                if(true) {
+                //if(core[i] && core[tmp->outcoming_arcs[p + i]]) {
+                    tmp->outcoming_weights[p + i] = min_weight + ((1-min_weight)*((double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/50));
+                    unsigned int pos_in_neighbor = tmp->in_neighbors(tmp->outcoming_arcs[p+i]);
+                    for(size_t j= 0; j < tmp->in_degree(tmp->outcoming_arcs[p+i]); ++j) {
+                        if(tmp->incoming_arcs[pos_in_neighbor+j]==node) {
+                            tmp->incoming_weights[pos_in_neighbor+j] = min_weight + ((1-min_weight)*((double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/50));
+                        }
+                    }
+                }
+            foutput << g->correspondance[node] << " " << g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
+            tmp->outcoming_weights[p+i] << endl;
+        }
+    }
+
+    cerr << 
+    accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)) << " " <<  
+    accumulate(tmp->incoming_weights.begin(), tmp->incoming_weights.end(), decltype(tmp->incoming_weights)::value_type(0)) << 
+    endl;
+    
+    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
+
+    foutput.close();
+    
+    return tmp;
+}
 // Friend and static functions are defered to a different file for readability 
 #include "community_friend_static.cpp"

@@ -41,7 +41,7 @@ double gain_from_removal(const Community &c, const unsigned int& node, const int
     double totc_out             = c.communities_arcs[comm].total_outcoming_arcs;
     double totc_in              = c.communities_arcs[comm].total_incoming_arcs;
     double m                    = (c.community_graph)->get_total_weight();
-    return ((-dnodecomm / m) + ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
+    return ((-dnodecomm / m) + c.gamma * ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
 }
 
 // Function computing the modularity gain from inserting a node within a given community
@@ -50,7 +50,7 @@ double gain_from_insertion(const Community &c, const unsigned int& node, const i
     double totc_out             = c.communities_arcs[comm].total_outcoming_arcs + weighted_out_degree;
     double totc_in              = c.communities_arcs[comm].total_incoming_arcs + weighted_in_degree;
     double m                    = (c.community_graph)->get_total_weight();
-    return ((dnodecomm / m) - ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
+    return ((dnodecomm / m) - c.gamma * ((weighted_out_degree * totc_in + weighted_in_degree * totc_out)) / (m*m));
 }
 
 // Function computing the weights and positions of communities neighboring a given node (including its own) 
@@ -102,4 +102,3 @@ void list_neighboring_communities(const unsigned int& node, const Community &c, 
         }
     }
 }
-
