@@ -23,7 +23,7 @@ int main(int argc, char ** argv) {
     parse_args(argc, argv);
 
     // Creating Community object
-    Community *c = new Community(filename, precision, reproducibility, renumbering, randomized);
+    Community *c = new Community(filename, precision, gamma, reproducibility, renumbering, randomized);
 
     auto end = chrono::high_resolution_clock::now();
     // Displaying time (seconds) needed to renumber and load graph
