@@ -27,6 +27,7 @@ The graph **must** be in edgelist format, that is one edge per line as follows (
 
     src dest [weight]
 
+Weighted graphs are automatically recognized by the program and there is no need to specify it in the command line. 
 Moreover, it is **mandatory** that vertices of the input graph are numbered from `0` to `n-1`. 
 To ensure a proper computation of the communities, the default computation encompasses a renumbering of the input graph. 
 The option `-n` indicates that the graph is already numbered from `0` to `n-1` and hence avoids renumbering. 
@@ -42,9 +43,10 @@ In this case, the only mandatory option is `-w` to indicate whether the graph is
 
 Several options are available, among which:
 + `-f` path to the input graph (edgelist or binary format (`.bin`))
-+ `-w` to indicate that the input graph is weighted
++ `-g` value of the resolution parameter: the algorithm favors larger communities if less than 1 and smaller otherwise
 + `-n` to indicate that the input graph is correctly numbered (from `0` to `n-1`)
-+ `-r` for reproducibility purposes: the renumbered graph is stored on hard drive. 
++ `-r` for reproducibility purposes: the renumbered graph is stored on hard drive.
++ `-s` for disabling randomness: the algorithm will consider vertices from `0` to `n-1`
 
 More options and information are provided using `./bin/community`
 
