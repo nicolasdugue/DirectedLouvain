@@ -63,24 +63,24 @@ Example of CSR format for a directed graph. The displayed arrays contain informa
 ![CSR example](docs/CSR.png "Example of CSR format for a directed graph. The displayed arrays contain information regarding out-neighbors and weighted out--degrees only.")
 
 ## Examples 
-Using `graph/graph.txt` one obtains: 
+Using `examples/graph.txt` one obtains: 
 
-    ./bin/community -f graph/graph.txt -l -1 -v -w -r > graph/graph.tree
+    ./bin/community -f examples/graph.txt -l -1 -v -r > examples/graph.tree
 
 to compute hierarchical community structure (using **original** label nodes) 
 by first renumbering the graph, and 
 then writing files for reproducibility. The next runs would thus be: 
 
-    ./bin/community -f graph/graph.bin -w -l -1 > graph/graph.tree
+    ./bin/community -f examples/graph.txt -l -1 > examples/graph.tree
 
 Another useful value for `-l` is `-2`, which computes only the last level of the hierarchical structure. 
 Finally, using an already renumbered graph one gets: 
 
-    ./bin/community -f graph/graph_renum.txt -l -1 -v -w -n > graph/graph.tree
+    ./bin/community -f examples/graph_renum.txt -l -1 -v -n > examples/graph.tree
 
 The program can also start with any given partition using -p option
 
-    ./community graph.bin -p graph.part -v
+    ./bin/community -f examples/graph.txt -p examples/graph.part -v
 
 ### Improvements
 
@@ -88,7 +88,7 @@ To ensure a faster computation (with a loss of quality), one can use
 the -q option to specify that the program must stop if the increase of
 modularity is below epsilon for a given iteration or pass:
 
-    ./bin/community graph/graph.bin -w -l -1 -q 0.0001 > graph/graph.tree
+    ./bin/community examples/graph.txt -l -1 -q 0.0001 > examples/graph.tree
 
 -----------------------------------------------------------------------------
 **Display communities information**
