@@ -57,13 +57,16 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
     unsigned int cpt = 0;
 
     // Read the graph file to generate a map of node
+    istringstream iss;
     string line;
+    vector<unsigned int> node;
     while (getline(finput, line)) {
-        istringstream iss(line);
-        vector<unsigned int> node;
+        node.clear();
+        iss.clear();
+        iss.str(line);
         unsigned int src, dest, tmp;
 
-        while(iss >> tmp)
+        while(iss >> tmp) 
             node.push_back(tmp);
 
         assert(node.size() <= 3);
@@ -89,34 +92,34 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
     finput.clear();
     finput.seekg(0);
    
-    int c = 0; 
+    vector<double> arc;
+    istringstream iss_arc;
     while (getline(finput, line)) {
-        istringstream iss(line);
-        vector<double> node;
+        arc.clear();
+        iss_arc.clear();
+        iss_arc.str(line);
         double tmp = 1.f;
         unsigned int src, dest, map_src, map_dest;
         double weight = 1.f;
 
-        while(iss >> tmp)
-            node.push_back(tmp);
+        while(iss_arc >> tmp) 
+            arc.push_back(tmp);
 
-        src = (unsigned int)node[0];
-        dest = (unsigned int)node[1];
+        src = (unsigned int)arc[0];
+        dest = (unsigned int)arc[1];
         // If the input file contains three columns, the graph is weighted
-        if (node.size()==3) {
+        if (arc.size()==3) {
             
             if(!g.is_weighted()) 
                 g.set_weighted(true);
 
-            weight = node[2];
-            c += weight;
+            weight = arc[2];
         }
 
         map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
         map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
 
         LOUT[map_src].push_back(make_pair(map_dest, weight));
-        //if(map_src!=map_dest)
         LIN[map_dest].push_back(make_pair(map_src, weight));
 
         if(reproducibility) {
