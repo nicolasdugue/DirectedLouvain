@@ -75,6 +75,7 @@ class Community {
          */
         bool one_level(double &modularity);
         Graph* egc_graph(unsigned int);
+        Graph* linear_egc_graph(unsigned int);
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 

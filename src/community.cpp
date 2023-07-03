@@ -379,6 +379,14 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
     return level;
 }
 
+/* Inspired by https://github.com/igraph/igraph/blob/7632007bdfd837bfc68d5087ce6f34f1e9139385/src/centrality/coreness.c#L31 
+ * Extracted from https://arxiv.org/pdf/cs/0310049.pdf Algorithm 1
+ */
+Graph* Community::linear_egc_graph(unsigned int nb_runs) {
+    Graph *tmp = new Graph(*(this->g));
+
+    return tmp;
+}
 Graph* Community::egc_graph(unsigned int nb_runs) {
     Graph *tmp = new Graph(*(this->g));
 
