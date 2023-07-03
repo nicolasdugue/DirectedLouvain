@@ -405,7 +405,7 @@ Graph* Community::egc_graph(unsigned int nb_runs) {
     }
     cerr << "done" << endl;
     
-    /*cerr << "computing 2-core" << endl;
+    cerr << "computing 2-core" << endl;
     // 2-core
     vector<bool> core(size, true);
     Graph* core_graph = new Graph(*(this->g));
@@ -422,36 +422,40 @@ Graph* Community::egc_graph(unsigned int nb_runs) {
                     marked = true;
                     if(outdegree==1) {
                         unsigned int pos_out_neighbor = core_graph->out_neighbors(i);
-                        for (unsigned int j = i; j < core_graph->outdegrees.size(); ++j)
-                            core_graph->outdegrees[j]--;
-                        core_graph->outcoming_arcs.erase(core_graph->outcoming_arcs.begin()+pos_out_neighbor);
                         unsigned int in_neighbor = core_graph->outcoming_arcs[pos_out_neighbor];
-                        for (unsigned int j = in_neighbor; j < core_graph->indegrees.size(); ++j)
-                            core_graph->indegrees[j]--;
                         unsigned int pos_in_neighbor = core_graph->in_neighbors(in_neighbor);
                         vector<unsigned int>::iterator it;
                         it = find(core_graph->incoming_arcs.begin()+pos_in_neighbor, core_graph->incoming_arcs.begin()+pos_in_neighbor + core_graph->in_degree(in_neighbor), i);
-                        core_graph->incoming_arcs.erase(it);
-                        core_graph->arcs--;
+                        if(it!=core_graph->incoming_arcs.end()) {
+                            core_graph->incoming_arcs.erase(it);
+                            core_graph->arcs--;
+                        }
+                        for (unsigned int j = i; j < core_graph->outdegrees.size(); ++j)
+                            core_graph->outdegrees[j]--;
+                        core_graph->outcoming_arcs.erase(core_graph->outcoming_arcs.begin()+pos_out_neighbor);
+                        for (unsigned int j = in_neighbor; j < core_graph->indegrees.size(); ++j)
+                            core_graph->indegrees[j]--;
                     }
                     if(indegree == 1){
                         unsigned int pos_in_neighbor = core_graph->in_neighbors(i);
-                        for (unsigned int j = i; j < core_graph->indegrees.size(); ++j)
-                            core_graph->indegrees[j]--;
-                        core_graph->incoming_arcs.erase(core_graph->incoming_arcs.begin()+pos_in_neighbor);
                         unsigned int out_neighbor = core_graph->incoming_arcs[pos_in_neighbor];
-                        for (unsigned int j = out_neighbor; j < core_graph->outdegrees.size(); ++j)
-                            core_graph->outdegrees[j]--;
                         unsigned int pos_out_neighbor = core_graph->out_neighbors(out_neighbor);
                         vector<unsigned int>::iterator it;
                         it = find(core_graph->outcoming_arcs.begin()+pos_out_neighbor, core_graph->outcoming_arcs.begin()+pos_out_neighbor + core_graph->out_degree(out_neighbor), i);
-                        core_graph->outcoming_arcs.erase(it);
-                        core_graph->arcs--;
+                        if(it!=core_graph->outcoming_arcs.end()) {
+                            core_graph->outcoming_arcs.erase(it);
+                            core_graph->arcs--;
+                        }
+                        for (unsigned int j = i; j < core_graph->indegrees.size(); ++j)
+                            core_graph->indegrees[j]--;
+                        core_graph->incoming_arcs.erase(core_graph->incoming_arcs.begin()+pos_in_neighbor);
+                        for (unsigned int j = out_neighbor; j < core_graph->outdegrees.size(); ++j)
+                            core_graph->outdegrees[j]--;
                     }
                 }
             }
         }
-    } while(marked);*/
+    } while(marked);
 
     cerr << "done" << endl;
     cerr << "computing ensemble graph" << endl;
