@@ -335,7 +335,10 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
 
     if(egc) {
         cerr << "computing Ensemble Graph" << endl; 
-        this->community_graph = this->undirected_egc_graph(nb_runs);
+        this->community_graph = this->linear_egc_graph(nb_runs);
+        /* If the original graph is not weighted we need to update this attribute */
+        if(!this->g->is_weighted())
+            this->community_graph->set_weighted(true);
     }
 
     else
@@ -500,7 +503,6 @@ Graph* Community::undirected_egc_graph(unsigned int nb_runs) {
     endl;
     
     tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
-
     foutput.close();
     
     return tmp;
@@ -691,6 +693,8 @@ Graph* Community::linear_egc_graph(unsigned int nb_runs) {
     endl;
     
     tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
+
+    cerr << tmp->total_weight << endl;
 
     foutput.close();
     

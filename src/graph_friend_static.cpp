@@ -68,7 +68,7 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
 
         char* token = strtok(line_to_split, " \t");
 
-        while(token != NULL && number_of_tokens<3) {
+        while(token != NULL && number_of_tokens<2) {
             if(number_of_tokens==0)
                 src = atoi(token);
             if(number_of_tokens==1)
@@ -77,7 +77,7 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
             token = strtok(NULL, " ");
         }
 
-        assert(number_of_tokens <= 3);
+        assert(number_of_tokens == 2);
 
         delete[] line_to_split;
 
@@ -168,10 +168,7 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     g.arcs = g.outdegrees[g.nodes - 1];
     g.outcoming_arcs.resize(g.arcs);
 
-    if(g.weighted) 
-        g.outcoming_weights.resize(g.arcs);
-    else 
-        g.outcoming_weights.resize(0);
+    g.outcoming_weights.resize(g.arcs);
 
     // Stocking out-neighbors and weights (if any)
     unsigned long int total_LOUT = 0;
@@ -202,10 +199,7 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     }
     g.incoming_arcs.resize(g.arcs);
 
-    if(g.weighted) 
-        g.incoming_weights.resize(g.arcs);
-    else 
-        g.incoming_weights.resize(0);
+    g.incoming_weights.resize(g.arcs);
 
     // Stocking in-neighbors and weights (if any)
     unsigned long int total_LIN = 0;
