@@ -85,7 +85,7 @@ double Community::modularity() {
     double m = g->get_total_weight();
     for (unsigned int i = 0; i < size; ++i) {
         if (this->communities_arcs[i].total_incoming_arcs > 0 || this->communities_arcs[i].total_outcoming_arcs > 0) {
-            double total_outcoming_arcs_var     = (this->communities_arcs[i].total_outcoming_arcs) / m;
+            double total_outcoming_arcs_var     = this->communities_arcs[i].total_outcoming_arcs / m;
             double total_incoming_arcs_var      = this->communities_arcs[i].total_incoming_arcs / m;
             q                                   += this->communities_arcs[i].total_arcs_inside / m - (total_outcoming_arcs_var * total_incoming_arcs_var);
         }
@@ -240,8 +240,7 @@ void Community::partition_to_graph() {
 bool Community::one_level(double &modularity) {
     int nb_moves = 0;
     bool improvement = false;
-    double new_modularity = this->modularity();
-    double current_modularity = new_modularity;
+    double current_modularity = this->modularity();
 
     // Order in which to proceed nodes of the graph...
     vector < int > random_order(size);
@@ -264,7 +263,6 @@ bool Community::one_level(double &modularity) {
     do {
         nb_moves = 0;
         total_increase = 0.;
-        current_modularity = new_modularity;
 
         // For each node: remove it from its community and insert it in the best community (if any)
         for (unsigned int node_tmp = 0; node_tmp < size; ++node_tmp) {
@@ -310,16 +308,15 @@ bool Community::one_level(double &modularity) {
         }
         
         // Computing the difference between the two modularities
-        new_modularity = this->modularity();
-        //cerr << new_modularity << " " << current_modularity << endl;
+        current_modularity += total_increase;
 
-    } while (nb_moves > 0 && new_modularity-current_modularity > precision);
+    } while (nb_moves > 0 && total_increase > precision);
 
-    modularity = current_modularity;
+    modularity = this->modularity();
     return improvement;
 }
 
-int Community::run(bool verbose, const int& display_level, const string& filename_part, bool egc) {
+int Community::run(bool verbose, const int& display_level, const string& filename_part, bool egc, unsigned int nb_runs=1) {
     int level = 0;
 
     if(verbose) {
@@ -338,12 +335,12 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
 
     if(egc) {
         cerr << "computing Ensemble Graph" << endl; 
-        Graph *old_g = this->g;
-        this->g = this->egc_graph(50);
-        delete old_g;
+        this->community_graph = this->undirected_egc_graph(nb_runs);
     }
 
-    this->community_graph   = new Graph(*(this->g));
+    else
+        this->community_graph   = new Graph(*(this->g));
+
     this->init_attributes();
     double mod = this->modularity();
     cerr << mod << endl;
@@ -379,14 +376,327 @@ int Community::run(bool verbose, const int& display_level, const string& filenam
     return level;
 }
 
+Graph* Community::undirected_egc_graph(unsigned int nb_runs) {
+    Graph *tmp = new Graph(*(this->g));
+
+    //Ensemble-Clustering-for-Graphs
+    cerr << "computing votes ensemble..." << endl;
+    map<pair<unsigned int, unsigned int>, unsigned int> weights;
+    for (unsigned int i = 0; i < nb_runs; ++i) {
+        // Directed Louvain: main procedure
+        this->community_graph = new Graph(*(this->g));
+        this->init_attributes();
+
+        double new_mod = 0;
+        this->one_level(new_mod);
+        cerr << "modularity at step " << i << ":" << this->modularity() << endl;
+        for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
+            for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
+                size_t p = this->g->out_neighbors(origin);
+                int destination = this->g->outcoming_arcs[p+j];
+                if(this->node_to_community[origin] == this->node_to_community[destination]){
+                    pair<unsigned int, unsigned int> to_add(origin, destination);
+                    weights[to_add]++;
+                }
+            }
+        }
+        delete this->community_graph;
+    }
+    cerr << "done" << endl;
+
+    cerr << "computing core indices" << endl;
+
+    vector<unsigned int> bin;
+    vector<unsigned int> vert(this->g->nodes);
+    vector<unsigned int> pos(this->g->nodes);
+    
+    /* Computing max degree */
+    vector<unsigned int> cores(this->g->nodes);
+
+    /* We do not consider weights for this algorithm, is this correct? */
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        cores[i] = this->g->out_degree(i)+this->g->in_degree(i);
+
+    unsigned int max_degree = *(max_element(cores.begin(), cores.end()));
+
+    /* Computing degree histogram */
+    bin.resize(max_degree+1,0);
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        bin[cores[i]] += 1;
+
+    /* Start pointers */
+    unsigned int j = 0;
+    for(unsigned int i = 0; i < max_degree+1; ++i) {
+        unsigned int k = bin[i];
+        bin[i] = j;
+        j += k;
+    }
+
+    /* Sorting in vert (and corrupting bin) */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        pos[i] = bin[cores[i]];
+        vert[pos[i]] = i;
+        bin[cores[i]] += 1;
+    }
+
+    /* Correcting bin */
+    for(size_t i = max_degree; i > 0; --i)
+        bin[i] = bin[i-1];
+
+    /* Main algorithm */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        unsigned int v = vert[i];
+        size_t p = this->g->out_neighbors(v);
+        for(size_t j = 0; j < this->g->out_degree(v); ++j) {
+            unsigned int u = this->g->outcoming_arcs[p+j];
+            if(cores[u] > cores[v]) {
+                unsigned int du = cores[u];
+                unsigned int pu = pos[u];
+                unsigned int pw = bin[du];
+                unsigned int w = vert[pw];
+                if(u != w) {
+                    pos[u] = pw; 
+                    vert[pu] = w;
+                    pw = bin[du];
+                    w = vert[pw];
+                }
+                bin[du] += 1;
+                cores[u] -= 1;
+            }
+        }
+    } 
+
+    cerr << "computing ensemble graph" << endl;
+    ofstream foutput;
+    foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
+    // Computing weighted graph from previous steps
+    double min_weight = .05;
+    tmp->outcoming_weights.assign(tmp->outcoming_weights.size(), min_weight);
+    tmp->incoming_weights.assign(tmp->incoming_weights.size(), min_weight);
+
+    /* Out-cores */
+    for (unsigned int node = 0; node < tmp->nodes; ++node) {
+        size_t p = tmp->out_neighbors(node);
+        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
+            // If the arc is not in the map or has one core value false we assign min_weight to it
+            if(weights.count(make_pair(node,tmp->outcoming_arcs[p + i]))>0) 
+                if(cores[i]>1 && cores[tmp->outcoming_arcs[p + i]] > 1)  {
+                    tmp->outcoming_weights[p + i] = min_weight + (1-min_weight)*(double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs;
+                    unsigned int pos_in_neighbor = tmp->in_neighbors(tmp->outcoming_arcs[p+i]);
+                    for(size_t j= 0; j < tmp->in_degree(tmp->outcoming_arcs[p+i]); ++j) {
+                        if(tmp->incoming_arcs[pos_in_neighbor+j]==node) {
+                            tmp->incoming_weights[pos_in_neighbor+j] = min_weight + ((1-min_weight)*((double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs));
+                        }
+                    }
+                }
+            foutput << g->correspondance[node] << " " << g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
+            tmp->outcoming_weights[p+i] << endl;
+        }
+    }
+
+    cerr << 
+    accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)) << " " <<  
+    accumulate(tmp->incoming_weights.begin(), tmp->incoming_weights.end(), decltype(tmp->incoming_weights)::value_type(0)) << 
+    endl;
+    
+    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
+
+    foutput.close();
+    
+    return tmp;
+}
+
 /* Inspired by https://github.com/igraph/igraph/blob/7632007bdfd837bfc68d5087ce6f34f1e9139385/src/centrality/coreness.c#L31 
  * Extracted from https://arxiv.org/pdf/cs/0310049.pdf Algorithm 1
  */
 Graph* Community::linear_egc_graph(unsigned int nb_runs) {
     Graph *tmp = new Graph(*(this->g));
 
+    //Ensemble-Clustering-for-Graphs
+    cerr << "computing votes ensemble..." << endl;
+    map<pair<unsigned int, unsigned int>, unsigned int> weights;
+    for (unsigned int i = 0; i < nb_runs; ++i) {
+        // Directed Louvain: main procedure
+        this->community_graph = new Graph(*(this->g));
+        this->init_attributes();
+        double new_mod = 0;
+        this->one_level(new_mod);
+        for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
+            for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
+                size_t p = this->g->out_neighbors(origin);
+                int destination = this->g->outcoming_arcs[p+j];
+                if(this->node_to_community[origin] == this->node_to_community[destination]){
+                    pair<unsigned int, unsigned int> to_add(origin, destination);
+                    weights[to_add]++;
+                }
+            }
+        }
+        delete this->community_graph;
+    }
+    cerr << "done" << endl;
+
+    cerr << "computing core indices" << endl;
+
+    vector<unsigned int> bin;
+    vector<unsigned int> vert(this->g->nodes);
+    vector<unsigned int> pos(this->g->nodes);
+    
+    /* Computing max degree */
+    vector<unsigned int> out_cores(this->g->nodes);
+
+    /* We do not consider weights for this algorithm, is this correct? */
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        out_cores[i] = this->g->out_degree(i);
+
+    unsigned int out_max_degree = *(max_element(out_cores.begin(), out_cores.end()));
+
+    /* Computing degree histogram */
+    bin.resize(out_max_degree+1,0);
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        bin[out_cores[i]] += 1;
+
+    /* Start pointers */
+    unsigned int j = 0;
+    for(unsigned int i = 0; i < out_max_degree+1; ++i) {
+        unsigned int k = bin[i];
+        bin[i] = j;
+        j += k;
+    }
+
+    /* Sorting in vert (and corrupting bin) */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        pos[i] = bin[out_cores[i]];
+        vert[pos[i]] = i;
+        bin[out_cores[i]] += 1;
+    }
+
+    /* Correcting bin */
+    for(size_t i = out_max_degree; i > 0; --i)
+        bin[i] = bin[i-1];
+
+    /* Main algorithm */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        unsigned int v = vert[i];
+        size_t p = this->g->out_neighbors(v);
+        for(size_t j = 0; j < this->g->out_degree(v); ++j) {
+            unsigned int u = this->g->outcoming_arcs[p+j];
+            if(out_cores[u] > out_cores[v]) {
+                unsigned int du = out_cores[u];
+                unsigned int pu = pos[u];
+                unsigned int pw = bin[du];
+                unsigned int w = vert[pw];
+                if(u != w) {
+                    pos[u] = pw; 
+                    vert[pu] = w;
+                    pw = bin[du];
+                    w = vert[pw];
+                }
+                bin[du] += 1;
+                out_cores[u] -= 1;
+            }
+        }
+    } 
+
+    /* Computing max degree */
+    vector<unsigned int> in_cores(this->g->nodes);
+    vert.clear();
+    pos.clear();
+    bin.clear();
+
+    /* We do not consider weights for this algorithm, is this correct? */
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        in_cores[i] = this->g->in_degree(i);
+
+    unsigned int in_max_degree = *(max_element(in_cores.begin(), in_cores.end()));
+
+    /* Computing degree histogram */
+    bin.resize(in_max_degree+1,0);
+    for(size_t i = 0; i < this->g->nodes; ++i)
+        bin[in_cores[i]] += 1;
+
+    /* Start pointers */
+    j = 0;
+    for(unsigned int i = 0; i < in_max_degree+1; ++i) {
+        unsigned int k = bin[i];
+        bin[i] = j;
+        j += k;
+    }
+
+    /* Sorting in vert (and corrupting bin) */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        pos[i] = bin[in_cores[i]];
+        vert[pos[i]] = i;
+        bin[in_cores[i]] += 1;
+    }
+
+    /* Correcting bin */
+    for(size_t i = in_max_degree; i > 0; --i)
+        bin[i] = bin[i-1];
+
+    /* Main algorithm */
+    for(size_t i = 0; i < this->g->nodes; ++i) {
+        unsigned int v = vert[i];
+        size_t p = this->g->in_neighbors(v);
+        for(size_t j = 0; j < this->g->in_degree(v); ++j) {
+            unsigned int u = this->g->incoming_arcs[p+j];
+            if(in_cores[u] > in_cores[v]) {
+                unsigned int du = in_cores[u];
+                unsigned int pu = pos[u];
+                unsigned int pw = bin[du];
+                unsigned int w = vert[pw];
+                if(u != w) {
+                    pos[u] = pw; 
+                    vert[pu] = w;
+                    pw = bin[du];
+                    w = vert[pw];
+                }
+                bin[du] += 1;
+                in_cores[u] -= 1;
+            }
+        }
+    } 
+    cerr << "done" << endl;
+
+    cerr << "computing ensemble graph" << endl;
+    ofstream foutput;
+    foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
+    // Computing weighted graph from previous steps
+    double min_weight = .05;
+    tmp->outcoming_weights.assign(tmp->outcoming_weights.size(), min_weight);
+    tmp->incoming_weights.assign(tmp->incoming_weights.size(), min_weight);
+
+    /* Out-cores */
+    for (unsigned int node = 0; node < tmp->nodes; ++node) {
+        size_t p = tmp->out_neighbors(node);
+        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
+            // If the arc is not in the map or has one core value false we assign min_weight to it
+            if(weights.count(make_pair(node,tmp->outcoming_arcs[p + i]))>0) 
+                if((out_cores[i]>1 && out_cores[tmp->outcoming_arcs[p + i]] > 1) || (in_cores[i]>1 && in_cores[tmp->outcoming_arcs[p + i]] > 1))  {
+                    tmp->outcoming_weights[p + i] = min_weight + (1-min_weight)*(double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs;
+                    unsigned int pos_in_neighbor = tmp->in_neighbors(tmp->outcoming_arcs[p+i]);
+                    for(size_t j= 0; j < tmp->in_degree(tmp->outcoming_arcs[p+i]); ++j) {
+                        if(tmp->incoming_arcs[pos_in_neighbor+j]==node) {
+                            tmp->incoming_weights[pos_in_neighbor+j] = min_weight + ((1-min_weight)*((double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs));
+                        }
+                    }
+                }
+            foutput << g->correspondance[node] << " " << g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
+            tmp->outcoming_weights[p+i] << endl;
+        }
+    }
+
+    cerr << 
+    accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)) << " " <<  
+    accumulate(tmp->incoming_weights.begin(), tmp->incoming_weights.end(), decltype(tmp->incoming_weights)::value_type(0)) << 
+    endl;
+    
+    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
+
+    foutput.close();
+    
     return tmp;
 }
+
 Graph* Community::egc_graph(unsigned int nb_runs) {
     Graph *tmp = new Graph(*(this->g));
 

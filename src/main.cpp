@@ -32,7 +32,7 @@ int main(int argc, char ** argv) {
     cerr << "loading graph in: " << fixed << time_taken << " seconds" << endl;
    
     // Computing communities and keeping the number of levels computed
-    int levels = c->run(verbose, display_level, filename_part,egc);
+    int levels = c->run(verbose, display_level, filename_part,egc,50);
     // The last level of the hierarchical structure can be printed using the following
     //c->print_level(levels-1);
 

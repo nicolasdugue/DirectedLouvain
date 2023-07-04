@@ -76,6 +76,7 @@ class Community {
         bool one_level(double &modularity);
         Graph* egc_graph(unsigned int);
         Graph* linear_egc_graph(unsigned int);
+        Graph* undirected_egc_graph(unsigned int);
     public:
         //! Constructor from edgelist format (initializes Graph object)
         /*! 
@@ -133,7 +134,7 @@ class Community {
          *        we never used it. Should we plug it back? (easy to do but...)
          * \sa one_level(), modularity_gain()
          */
-        int run(bool verbose, const int& display_level, const string& filename_part, bool egc);
+        int run(bool verbose, const int& display_level, const string& filename_part, bool egc, unsigned int nb_runs);
 
         //! Member function printing a given hierarchical level on standard output
         /*!
