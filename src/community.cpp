@@ -398,7 +398,7 @@ Graph* Community::egc_graph(unsigned int nb_runs) {
         this->community_graph = new Graph(*(this->g));
         this->init_attributes();
         double new_mod = 0;
-        bool improvement = this->one_level(new_mod);
+        this->one_level(new_mod);
         for (unsigned int origin = 0; origin < this->g->nodes; origin++) {
             for (unsigned int j = 0; j < this->g->out_degree(origin); ++j) {
                 size_t p = this->g->out_neighbors(origin);
