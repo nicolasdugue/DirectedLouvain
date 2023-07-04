@@ -37,6 +37,7 @@ modularity_values_directed_louvain.txt
 *.tree
 *.wgt
 *renum*
+*.swp
 snap/
 graph/
 config-doxygen
