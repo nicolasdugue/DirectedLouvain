@@ -58,9 +58,9 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
 
     // Read the graph file to generate a map of node
     string line;
+    unsigned int src = 0; 
+    unsigned int dest = 0; 
     while (getline(finput, line)) {
-        unsigned int src = 0; 
-        unsigned int dest = 0; 
         size_t number_of_tokens = 0;
        
         char* line_to_split = new char[line.size()+1];
@@ -101,8 +101,6 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
     finput.seekg(0);
    
     while (getline(finput, line)) {
-        unsigned int src = 0;
-        unsigned int dest = 0; 
         unsigned int map_src, map_dest;
         double weight = 1.f;
         size_t number_of_tokens = 0;
