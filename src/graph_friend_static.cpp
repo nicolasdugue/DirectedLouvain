@@ -1,5 +1,3 @@
-#include<sstream>
-
 // This method adds node to the small or large int correspondance "map"
 // A reference to a counter is given, which will be the number of nodes in the end
 static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned long> &correspondance, vector<int> &corres, map<unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
@@ -57,21 +55,29 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
     unsigned int cpt = 0;
 
     // Read the graph file to generate a map of node
-    istringstream iss;
     string line;
-    vector<unsigned int> node;
+    unsigned int src = 0;
+    unsigned int dest = 0; 
     while (getline(finput, line)) {
-        node.clear();
-        iss.clear();
-        iss.str(line);
-        unsigned int src, dest, tmp;
+        size_t number_of_tokens = 0;
+       
+        char* line_to_split = new char[line.size()+1];
+        strcpy(line_to_split, line.c_str());
 
-        while(iss >> tmp) 
-            node.push_back(tmp);
+        char* token = strtok(line_to_split, " \t");
 
-        assert(node.size() <= 3);
-        src = node[0];
-        dest = node[1];
+        while(token != NULL && number_of_tokens<2) {
+            if(number_of_tokens==0)
+                src = atoi(token);
+            if(number_of_tokens==1)
+                dest = atoi(token);
+            number_of_tokens++;
+            token = strtok(NULL, " ");
+        }
+
+        assert(number_of_tokens == 2);
+
+        delete[] line_to_split;
 
         add_to_map(src, cpt, correspondance, corres, corres_big_ids, renumbering);
         add_to_map(dest, cpt, correspondance, corres, corres_big_ids, renumbering);
@@ -92,29 +98,34 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
     finput.clear();
     finput.seekg(0);
    
-    vector<double> arc;
-    istringstream iss_arc;
     while (getline(finput, line)) {
-        arc.clear();
-        iss_arc.clear();
-        iss_arc.str(line);
-        double tmp = 1.f;
-        unsigned int src, dest, map_src, map_dest;
+        unsigned int map_src, map_dest;
         double weight = 1.f;
+        size_t number_of_tokens = 0;
+       
+        char* line_to_split = new char[line.size()+1];
+        strcpy(line_to_split, line.c_str());
 
-        while(iss_arc >> tmp) 
-            arc.push_back(tmp);
+        char* token = strtok(line_to_split, " \t");
 
-        src = (unsigned int)arc[0];
-        dest = (unsigned int)arc[1];
-        // If the input file contains three columns, the graph is weighted
-        if (arc.size()==3) {
+        while(token != NULL && number_of_tokens<2) {
+            if(number_of_tokens==0)
+                src = atoi(token);
+            if(number_of_tokens==1)
+                dest = atoi(token);
+            number_of_tokens++;
+            token = strtok(NULL, " ");
+        }
+
+        if (token !=NULL) {
             
             if(!g.is_weighted()) 
                 g.set_weighted(true);
 
-            weight = arc[2];
+            weight = atof(token);
         }
+
+        delete[] line_to_split;
 
         map_src = get_mapped_node(src, corres, corres_big_ids, renumbering);
         map_dest = get_mapped_node(dest, corres, corres_big_ids, renumbering);
