@@ -512,8 +512,6 @@ Graph* Community::undirected_egc_graph(unsigned int nb_runs) {
  * Extracted from https://arxiv.org/pdf/cs/0310049.pdf Algorithm 1
  */
 Graph* Community::linear_egc_graph(unsigned int nb_runs) {
-    Graph *tmp = new Graph(*(this->g));
-
     //Ensemble-Clustering-for-Graphs
     cerr << "computing votes ensemble..." << endl;
     map<pair<unsigned int, unsigned int>, unsigned int> weights;
@@ -664,43 +662,30 @@ Graph* Community::linear_egc_graph(unsigned int nb_runs) {
     foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
     // Computing weighted graph from previous steps
     double min_weight = .05;
-    tmp->outcoming_arcs.resize(this->tmp->nb_arcs);
-    tmp->outcoming_weights.assign(tmp->outcoming_weights.size(), min_weight);
-    tmp->incoming_arcs.resize(this->tmp->nb_arcs);
-    tmp->incoming_weights.assign(tmp->incoming_weights.size(), min_weight);
 
     /* Out-cores */
-    for (unsigned int node = 0; node < tmp->nodes; ++node) {
-        size_t p = tmp->out_neighbors(node);
-        for (unsigned int i = 0; i < tmp->out_degree(node); ++i) {
+    for (unsigned int node = 0; node < this->g->nodes; ++node) {
+        size_t p = this->g->out_neighbors(node);
+        for (unsigned int i = 0; i < this->g->out_degree(node); ++i) {
+            double weight = min_weight;
             // If the arc is not in the map or has one core value false we assign min_weight to it
-            if(weights.count(make_pair(node,tmp->outcoming_arcs[p + i]))>0) 
-                if((out_cores[i]>1 && out_cores[tmp->outcoming_arcs[p + i]] > 1) || (in_cores[i]>1 && in_cores[tmp->outcoming_arcs[p + i]] > 1))  {
-                    tmp->outcoming_weights[p + i] = min_weight + (1-min_weight)*(double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs;
-                    unsigned int pos_in_neighbor = tmp->in_neighbors(tmp->outcoming_arcs[p+i]);
+            if(weights.count(make_pair(node,this->g->outcoming_arcs[p + i]))>0) 
+                if((out_cores[i]>1 && out_cores[this->g->outcoming_arcs[p + i]] > 1) || (in_cores[i]>1 && in_cores[this->g->outcoming_arcs[p + i]] > 1))  {
+                    weight = min_weight + (1-min_weight)*(double)weights[make_pair(node,this->g->outcoming_arcs[p + i])]/nb_runs;
+                    /*unsigned int pos_in_neighbor = tmp->in_neighbors(tmp->outcoming_arcs[p+i]);
                     for(size_t j= 0; j < tmp->in_degree(tmp->outcoming_arcs[p+i]); ++j) {
                         if(tmp->incoming_arcs[pos_in_neighbor+j]==node) {
                             tmp->incoming_weights[pos_in_neighbor+j] = min_weight + ((1-min_weight)*((double)weights[make_pair(node,tmp->outcoming_arcs[p + i])]/nb_runs));
                         }
-                    }
+                    }*/
                 }
-            foutput << g->correspondance[node] << " " << g->correspondance[tmp->outcoming_arcs[p + i]] << " " << 
-            tmp->outcoming_weights[p+i] << endl;
+            foutput << g->correspondance[node] << " " << g->correspondance[this->g->outcoming_arcs[p + i]] << " " << weight << endl;
+            //foutput << g->correspondance[this->g->outcoming_arcs[p + i]] << " " << g->correspondance[node]<< " " << weight << endl;
         }
     }
-
-    cerr << 
-    accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)) << " " <<  
-    accumulate(tmp->incoming_weights.begin(), tmp->incoming_weights.end(), decltype(tmp->incoming_weights)::value_type(0)) << 
-    endl;
-    
-    tmp->total_weight =  accumulate(tmp->outcoming_weights.begin(), tmp->outcoming_weights.end(), decltype(tmp->outcoming_weights)::value_type(0)); 
-
-    cerr << tmp->total_weight << endl;
-
     foutput.close();
     
-    return tmp;
+    return new Graph("graph/EGC.txt",false,true,true);
 }
 
 Graph* Community::egc_graph(unsigned int nb_runs) {
