@@ -664,7 +664,9 @@ Graph* Community::linear_egc_graph(unsigned int nb_runs) {
     foutput.open("graph/EGC.txt", fstream::out | fstream::binary);
     // Computing weighted graph from previous steps
     double min_weight = .05;
+    tmp->outcoming_arcs.resize(this->tmp->nb_arcs);
     tmp->outcoming_weights.assign(tmp->outcoming_weights.size(), min_weight);
+    tmp->incoming_arcs.resize(this->tmp->nb_arcs);
     tmp->incoming_weights.assign(tmp->incoming_weights.size(), min_weight);
 
     /* Out-cores */

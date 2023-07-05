@@ -168,7 +168,10 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     g.arcs = g.outdegrees[g.nodes - 1];
     g.outcoming_arcs.resize(g.arcs);
 
-    g.outcoming_weights.resize(g.arcs);
+    if(g.weighted)
+        g.outcoming_weights.resize(g.arcs);
+    else
+        g.outcoming_weights.resize(0);
 
     // Stocking out-neighbors and weights (if any)
     unsigned long int total_LOUT = 0;
@@ -199,7 +202,10 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     }
     g.incoming_arcs.resize(g.arcs);
 
-    g.incoming_weights.resize(g.arcs);
+    if(g.weighted)
+        g.incoming_weights.resize(g.arcs);
+    else
+        g.incoming_weights.resize(0);
 
     // Stocking in-neighbors and weights (if any)
     unsigned long int total_LIN = 0;
