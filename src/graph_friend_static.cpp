@@ -1,3 +1,5 @@
+#include<sstream>
+
 // This method adds node to the small or large int correspondance "map"
 // A reference to a counter is given, which will be the number of nodes in the end
 static void add_to_map(unsigned int node, unsigned int &cpt, vector<unsigned long> &correspondance, vector<int> &corres, map<unsigned long, unsigned int> &corres_big_ids, bool renumbering) {
@@ -56,7 +58,7 @@ static unsigned int build_map(Graph &g, string filename, vector<unsigned long> &
 
     // Read the graph file to generate a map of node
     string line;
-    unsigned int src = 0;
+    unsigned int src = 0; 
     unsigned int dest = 0; 
     while (getline(finput, line)) {
         size_t number_of_tokens = 0;
@@ -164,9 +166,9 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     g.arcs = g.outdegrees[g.nodes - 1];
     g.outcoming_arcs.resize(g.arcs);
 
-    if(g.weighted) 
+    if(g.weighted)
         g.outcoming_weights.resize(g.arcs);
-    else 
+    else
         g.outcoming_weights.resize(0);
 
     // Stocking out-neighbors and weights (if any)
@@ -198,9 +200,9 @@ void init_attributes(Graph &g, vector<vector<pair<unsigned int,double> > > &LOUT
     }
     g.incoming_arcs.resize(g.arcs);
 
-    if(g.weighted) 
+    if(g.weighted)
         g.incoming_weights.resize(g.arcs);
-    else 
+    else
         g.incoming_weights.resize(0);
 
     // Stocking in-neighbors and weights (if any)
