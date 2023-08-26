@@ -35,7 +35,7 @@ The option `-n` indicates that the graph is already numbered from `0` to `n-1` a
 
 The standard command is:
 
-    ./bin/community -f graph/graph.txt -l -1 -v > graph.tree
+    ./bin/community -f examples/graph.txt -l -1 -v > graph.tree
 
 Several options are available, among which:
 + `-f` path to the input graph (edgelist or binary format (`.bin`))
