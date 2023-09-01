@@ -93,17 +93,17 @@ modularity is below epsilon for a given iteration or pass:
 -----------------------------------------------------------------------------
 **Display communities information**
 
-Displays information on the tree structure (number of hierarchical
+The following command displays information on the tree structure (number of hierarchical
 levels and nodes per level):
 
-    ./hierarchy graph.tree
+    ./bin/hierarchy graph.tree
 
-Displays the belonging of nodes to communities for a given level of
+The following command displays the belonging of nodes to communities for a given level of
 the tree:
 
-    ./hierarchy graph.tree -l 2 > graph_node2comm_level2
+    ./bin/hierarchy graph.tree -l 2 > graph_node2comm_level2
 
-The option `-l -1` displays information regarding the hierarchical structure, including number of levels. 
+Using `-l -1` displays the last level of the hierarchy. 
 
 -----------------------------------------------------------------------------
 ## References
