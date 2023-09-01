@@ -66,7 +66,7 @@ void parse_args(int argc, char **argv) {
     int option_index = 0;
     bool isnumber=true;
     // The first colon allows to separate error messages for missing argument and unknown options 
-    while ((arg = getopt_long(argc, argv, ":f:rnp:q:g:l:vh", long_options, &option_index)) != -1) {
+    while ((arg = getopt_long(argc, argv, ":f:rsnp:q:g:l:vh", long_options, &option_index)) != -1) {
         switch (arg) {
             case 0:
                 break;

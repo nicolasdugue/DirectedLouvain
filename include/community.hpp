@@ -42,7 +42,7 @@ class Community {
         unsigned int size;                      /*!< Number of nodes in the graph */
         double precision;                       /*!< A real number describing the minimum improvement on modularity to carry on computation */
         double gamma;                           /*!< Define the size of generated clusters. Higher gamma means smaller clusters */
-        bool randomized;                            /*!< Use to shuffle or not the process order of nodes */
+        bool randomized;                        /*!< Use to shuffle or not the process order of nodes */
 
         vector<int> node_to_community;          /*!< Community to which each node belongs */
         vector < vector<int> > levels;          /*! Hierarchical community structure */
