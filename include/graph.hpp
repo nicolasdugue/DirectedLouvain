@@ -65,9 +65,22 @@ class Graph {
          * \param filename          the file to read the graph from 
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
          * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param undirected        boolean value indicating whether the graph is undirected
          * \param verbose           boolean value indicating whether to print information
          */
-        Graph(string filename, bool reproducibility, bool renumbering=true, bool verbose=false); 
+        Graph(string filename, bool reproducibility, bool renumbering=true, bool undirected=false, bool verbose=false); 
+        //! Constructor with arguments
+        /*! 
+         * \param links_out         weighted out-neighbors 
+         * \param links_in          weighted in-neighbors 
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param undirected        boolean value indicating whether the graph is undirected
+         * \param undirected        boolean value indicating whether the graph is weighted
+         * \param verbose           boolean value indicating whether to print information
+         */
+        Graph(vector< pair<unsigned long, double> > links_out, vector< pair<unsigned long, double> > links_in, 
+                bool reproducibility, bool renumbering=true, bool undirected=false, bool weighted=false, bool verbose=false); 
         //! Friend method to initialize all attributes 
         /*!
          * \param g the Graph object to initialize
