@@ -15,6 +15,14 @@ Community::Community(const string& in_filename, const double precision, const do
     init_attributes();
 }
 
+Community::Community(const Graph& graph, const double precision, const double gamma, bool reproducibility, bool renumbering, bool randomized) {
+    this->g                 = new Graph(graph);
+    this->precision         = precision;
+    this->gamma             = gamma;
+    this->randomized        = randomized;
+    init_attributes();
+}
+
 void Community::init_attributes() {
     this->size              = g->nodes;
     this->node_to_community.resize(this->size); 

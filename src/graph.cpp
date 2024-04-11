@@ -43,6 +43,46 @@ Graph::Graph(string filename, bool reproducibility, bool renumbering, bool verbo
         this->load(filename, verbose);
 }
 
+Graph::Graph(vector<vector<pair<unsigned int, double> > > adjacency_list, bool reproducibility, bool renumbering, bool verbose, bool weighted) {
+    vector<vector<pair<unsigned int,double> > > LIN(adjacency_list.size());
+
+    this->correspondance.resize(0);
+    for(unsigned int i = 0; i < adjacency_list.size(); ++i)
+        correspondance.push_back(i);
+
+    this->nodes = adjacency_list.size();
+
+    /* Building incoming links from outcoming links */
+    for(unsigned int i = 0 ; i < adjacency_list.size(); ++i) {
+        for( auto v : adjacency_list[i] ) {
+            LIN[v.first].push_back(make_pair(i,v.second));
+        }
+    }
+
+    init_attributes(*this, adjacency_list, LIN, verbose);
+}
+
+Graph::Graph(vector<vector<unsigned int > > adjacency_list, bool reproducibility, bool renumbering, bool verbose, bool weighted) {
+    vector<vector<pair<unsigned int,double> > > LOUT(adjacency_list.size());
+    vector<vector<pair<unsigned int,double> > > LIN(adjacency_list.size());
+
+    this->correspondance.resize(0);
+    for(unsigned int i = 0; i < adjacency_list.size(); ++i)
+        correspondance.push_back(i);
+
+    this->nodes = adjacency_list.size();
+
+    /* Building incoming links from outcoming links */
+    for(unsigned int i = 0 ; i < adjacency_list.size(); ++i) {
+        for( auto v : adjacency_list[i] ) {
+            LOUT[i].push_back(make_pair(v,1));
+            LIN[v].push_back(make_pair(i,1));
+        }
+    }
+
+    init_attributes(*this, LOUT, LIN, verbose);
+}
+
 Graph::Graph(const Graph &g) {
     this->weighted          = g.weighted; 
 

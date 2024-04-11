@@ -92,6 +92,23 @@ class Community {
             bool reproducibility=false,
             bool renumbering=false,
             bool randomized=true);
+        //! Constructor from Graph object
+        /*! 
+         * \param graph             the Graph object 
+         * \param precision         double value indicating the threshold for modularity improvement
+         * \param gamma             double value indicating the size of generated clusters (higher gamma means smaller clusters)
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param randomized        boolean value indicating whether vertices are considered in random order
+         * \sa Graph()
+         */
+        Community (
+            const Graph& graph,
+            const double precision=0.0001,
+            const double gamma=1,
+            bool reproducibility=false,
+            bool renumbering=false,
+            bool randomized=true);
         //! Destructor
         ~Community(); 
 

@@ -60,7 +60,7 @@ class Graph {
     public:
         //! Default constructor
         Graph();
-        //! Constructor with arguments
+        //! Constructor with arguments --from file
         /*! 
          * \param filename          the file to read the graph from 
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
@@ -68,9 +68,25 @@ class Graph {
          * \param verbose           boolean value indicating whether to print information
          */
         Graph(string filename, bool reproducibility, bool renumbering=true, bool verbose=false); 
+        //! Constructor with arguments --from weighted adjacency list
+        /*! 
+         * \param adjacency_list    adjacency list to build (weighted) graph from 
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param verbose           boolean value indicating whether to print information
+         */
+        Graph(vector<vector<pair<unsigned int, double> > >, bool reproducibility, bool renumbering=true, bool verbose=false, bool weighted=true); 
+        //! Constructor with arguments --from unweighted adjacency list
+        /*! 
+         * \param adjacency_list    adjacency list to build graph from 
+         * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
+         * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param verbose           boolean value indicating whether to print information
+         */
+        Graph(vector<vector<unsigned int > >, bool reproducibility, bool renumbering=true, bool verbose=false, bool weighted=false); 
         //! Friend method to initialize all attributes 
         /*!
-         * \param g the Graph object to initialize
+         * \param g the weighted Graph object to initialize
          * \param LOUT adjacency list for outcoming arcs
          * \param LIN adjacency list for incoming arcs
          * \param verbose           boolean value indicating whether to print information
