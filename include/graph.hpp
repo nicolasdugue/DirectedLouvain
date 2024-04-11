@@ -65,6 +65,7 @@ class Graph {
          * \param filename          the file to read the graph from 
          * \param reproducibility   boolean value indicating whether to write the renumbered graph on hard drive (readable format)
          * \param renumbering       boolean value indicating whether the graph must be renumbered
+         * \param undirected        boolean value indicating whether the graph is undirected
          * \param verbose           boolean value indicating whether to print information
          */
         Graph(string filename, bool reproducibility, bool renumbering=true, bool verbose=false); 
